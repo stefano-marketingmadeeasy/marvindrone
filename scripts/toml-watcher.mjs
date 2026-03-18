@@ -5,6 +5,7 @@ import * as toml from "toml";
 const configFilePath = path.resolve("./src/config/config.toml");
 const outputDir = path.resolve("./.astro");
 const outputFilePath = path.join(outputDir, "config.generated.json");
+const shouldWatch = process.argv.includes("--watch");
 
 /**
  * Convert TOML → JSON and write to `.astro`
@@ -25,20 +26,12 @@ function convertTomlToJson() {
   }
 }
 
-/**
- * Run immediately if JSON is missing
- */
-if (!fs.existsSync(outputFilePath)) {
-  // console.log("[toml-watcher] JSON not found. Generating...");
-  convertTomlToJson();
-}
+convertTomlToJson();
 
-/**
- * Watch TOML file for changes
- */
-fs.watch(configFilePath, (eventType) => {
-  if (eventType === "change") {
-    // console.log("[toml-watcher] TOML file changed. Regenerating...");
-    convertTomlToJson();
-  }
-});
+if (shouldWatch) {
+  fs.watch(configFilePath, (eventType) => {
+    if (eventType === "change") {
+      convertTomlToJson();
+    }
+  });
+}
