@@ -1,0 +1,12 @@
+[
+  {
+    "name": "Poppins",
+    "cssVariable": "--font-primary",
+    "fallback": "sans-serif"
+  },
+  {
+    "name": "Poppins",
+    "cssVariable": "--font-secondary",
+    "fallback": "sans-serif"
+  }
+]

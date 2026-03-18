@@ -1,0 +1,121 @@
+---
+import { ArrowUpRight } from "@lucide/astro";
+import { getProductionPath } from "@/lib/strapi/productions";
+import { useTranslations } from "@/lib/utils/i18nUtils";
+import { markdownify } from "@/lib/utils/textConverter";
+import type { Production } from "@/types/productions";
+import StrapiImage from "@/components/productions/StrapiImage.astro";
+
+interface Props {
+  production: Production;
+}
+
+const { production } = Astro.props;
+const currentLocale = Astro.currentLocale || "it";
+const href = getProductionPath(production, currentLocale);
+const t = await useTranslations(currentLocale);
+const coverImage =
+  production.heroImage || production.poster || production.gallery[0];
+const shootingTypesLabel = production.shootingTypes.join(" / ");
+const cardShadow = "0 10px 30px rgba(15,23,42,0.04)";
+const cardShadowHover = "0 40px 50px rgba(15,23,42,0.28)";
+---
+
+<article
+  data-production-card
+  data-category={production.category.slug}
+  class="group h-full min-w-0 w-full">
+  <a
+    href={href}
+    style={`--card-shadow:${cardShadow}; --card-shadow-hover:${cardShadowHover};`}
+    class="production-card-link relative flex aspect-video h-full w-full min-w-0 overflow-hidden rounded-[2rem] bg-stone-950 shadow-[var(--card-shadow)] transition duration-500">
+    <div class="absolute inset-0 overflow-hidden bg-stone-100">
+      {
+        coverImage ? (
+          <StrapiImage
+            url={coverImage.url}
+            alt={coverImage.alt || production.title}
+            width={coverImage.width}
+            height={coverImage.height}
+            loading="lazy"
+            class="production-card-image h-full w-full object-cover transition duration-700"
+          />
+        ) : (
+          <div class="flex h-full items-center justify-center bg-stone-200 px-8 text-center text-sm tracking-[0.24em] text-stone-500 uppercase">
+            {t("productions.card.noImage")}
+          </div>
+        )
+      }
+      <div
+        class="absolute inset-x-0 top-0 flex items-center justify-end gap-3 p-5">
+        {
+          production.year && (
+            <span class="rounded-full border border-white/25 bg-white/15 px-3 py-1 text-xs font-medium text-white backdrop-blur">
+              {production.year}
+            </span>
+          )
+        }
+      </div>
+      <div class="production-card-overlay pointer-events-none absolute inset-0 bg-black/20 transition duration-500"></div>
+      <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.16),_transparent_28%)]"></div>
+    </div>
+
+    <div class="relative z-10 flex flex-1 items-center justify-center p-6 text-white md:p-8">
+      <div class="flex w-full min-w-0 flex-col items-center justify-center text-center">
+        <div class="production-card-content w-full max-w-[82%] translate-y-0 space-y-4 transition duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] sm:max-w-[78%] lg:max-w-[74%]">
+          {
+            shootingTypesLabel && (
+              <div>
+                <span class="rounded-full border border-white/30 bg-black/45 px-3 py-1 text-[11px] font-medium tracking-[0.24em] text-white uppercase backdrop-blur">
+                  {shootingTypesLabel}
+                </span>
+              </div>
+            )
+          }
+          <h3
+            class="mx-auto max-w-[11ch] break-words text-[clamp(1.5rem,2vw,2.8rem)] leading-[0.96] font-semibold text-white sm:max-w-[12ch] lg:max-w-[13ch]"
+            set:html={markdownify(production.title)}
+          />
+        </div>
+
+        <div class="pointer-events-none absolute inset-x-0 bottom-4 flex justify-center px-4 sm:bottom-6 sm:px-5 md:bottom-8 md:px-6">
+          <span
+            class="production-card-open inline-flex translate-y-5 items-center gap-1 rounded-full border border-white/28 bg-white/12 px-3 py-2 text-[10px] font-semibold tracking-[0.12em] text-white uppercase opacity-0 backdrop-blur transition duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] sm:gap-1.5 sm:px-4 sm:py-2.5 sm:text-[11px] sm:tracking-[0.14em] md:gap-2 md:px-5 md:py-3 md:text-sm md:tracking-[0.18em]">
+            {t("productions.card.open")}
+            <ArrowUpRight
+              size={12}
+              stroke-width={2}
+              class="size-3 sm:size-3.5 md:size-4"
+            />
+          </span>
+        </div>
+      </div>
+    </div>
+  </a>
+</article>
+
+<style>
+  @media (hover: hover) and (pointer: fine) {
+    .group:hover .production-card-link {
+      transform: translateY(-0.25rem);
+      box-shadow: var(--card-shadow-hover);
+    }
+
+    .group:hover .production-card-image {
+      transform: scale(1.05);
+    }
+
+    .group:hover .production-card-overlay {
+      background-color: rgb(0 0 0 / 0.5);
+    }
+
+    .group:hover .production-card-content {
+      transform: translateY(-1.75rem);
+    }
+
+    .group:hover .production-card-open {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+</style>

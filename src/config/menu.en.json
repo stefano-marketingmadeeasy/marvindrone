@@ -1,0 +1,102 @@
+{
+  "main": [
+    {
+      "enable": true,
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "enable": true,
+      "name": "Productions",
+      "url": "/produzioni/"
+    },
+    {
+      "enable": true,
+      "name": "Rental",
+      "url": "#"
+    }
+  ],
+  "footerMenu": [
+    {
+      "enable": true,
+      "name": "Terms and conditions",
+      "url": "/terms-conditions/"
+    },
+    {
+      "enable": true,
+      "name": "Privacy policy",
+      "url": "/privacy-policy/"
+    }
+  ],
+  "footerMenuQuickLink": [
+    {
+      "enable": true,
+      "name": "Productions",
+      "url": "/produzioni/"
+    },
+    {
+      "enable": true,
+      "name": "About",
+      "url": "/about/"
+    },
+    {
+      "enable": true,
+      "name": "Contact",
+      "url": "/contact/"
+    },
+    {
+      "enable": true,
+      "name": "Pricing",
+      "url": "/pricing/"
+    },
+    {
+      "enable": true,
+      "name": "Testimonials",
+      "url": "/"
+    },
+    {
+      "enable": true,
+      "name": "Team",
+      "url": "/team/"
+    },
+    {
+      "enable": true,
+      "name": "Services",
+      "url": "/services/"
+    }
+  ],
+  "footerMenuResources": [
+    {
+      "enable": true,
+      "name": "Productions",
+      "url": "/produzioni/"
+    },
+    {
+      "enable": true,
+      "name": "Blog",
+      "url": "/blog/"
+    },
+    {
+      "enable": true,
+      "name": "FAQ",
+      "url": "/faq/"
+    },
+    {
+      "enable": true,
+      "name": "Case studies",
+      "url": "/case-studies/"
+    }
+  ],
+  "footerMenuLegal": [
+    {
+      "enable": true,
+      "name": "Terms and conditions",
+      "url": "/terms-conditions/"
+    },
+    {
+      "enable": true,
+      "name": "Privacy policy",
+      "url": "/privacy-policy/"
+    }
+  ]
+}

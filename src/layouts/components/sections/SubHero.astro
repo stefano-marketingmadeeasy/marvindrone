@@ -1,0 +1,222 @@
+---
+import { getEntryCTM } from "@/lib/contentParser.astro";
+import { markdownify } from "@/lib/utils/textConverter";
+import { Image } from "astro:assets";
+import MarvinDroneLogo from "@/assets/images/logos/logo_marvindrone.com.svg";
+import sectionBackground from "@/assets/images/sezione1/sezione1_background.png";
+import sectionDrone from "@/assets/images/sezione1/sezione1_drone.png";
+
+type SubHeroContent = {
+  enable?: boolean;
+  title?: string;
+  paragraphOne?: string;
+  paragraphTwo?: string;
+};
+
+const content = (await getEntryCTM("sections", "home-sub-hero", Astro.currentLocale))
+  ?.data as SubHeroContent;
+
+const { enable = true, title, paragraphOne, paragraphTwo } = content || {};
+const logoColor = "#000000";
+const subHeroFadeDelay = "0.25s";
+const droneStartOffsetY = 200;
+const droneEndOffsetY = -250;
+---
+
+{
+  enable && (
+    <section
+      id="home-sub-hero"
+      class="py-12 md:py-16 lg:py-20 subhero"
+      style={`--subhero-delay: ${subHeroFadeDelay}; --subhero-bg-y: 0px; --subhero-bg-scale: 1.06; --subhero-drone-y: ${droneStartOffsetY}px;`}>
+      <div class="container">
+        <div class="mx-auto flex max-w-6xl flex-col items-start gap-8 md:flex-row md:items-start md:gap-10 lg:gap-14">
+          <MarvinDroneLogo
+            class="w-52 shrink-0 md:w-60 lg:w-100 subhero-logo"
+            color={logoColor}
+            style={`color: ${logoColor};`}
+            role="img"
+            aria-label="Marvin Drone"
+          />
+          <div class="max-w-4xl text-left subhero-text">
+            {title && (
+              <h2
+                class="text-4xl leading-tight font-bold tracking-tight text-slate-950 sm:text-3xl lg:text-4xl"
+                set:html={markdownify(title)}
+              />
+            )}
+            {(paragraphOne || paragraphTwo) && (
+              <div class="mt-6 space-y-6 text-base leading-8 text-slate-700 md:mt-8 md:text-lg lg:text-l">
+                {paragraphOne && <p set:html={markdownify(paragraphOne)} />}
+                {paragraphTwo && <p set:html={markdownify(paragraphTwo)} />}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="relative mt-14 h-[48svh] w-full overflow-hidden bg-[#070b11] md:mt-16 md:h-[56svh] lg:mt-20 lg:h-[68svh]"
+        data-subhero-parallax-scene>
+        <div class="absolute inset-0">
+          <Image
+            src={sectionBackground}
+            alt=""
+            class="h-full w-full object-cover object-center [transform:translate3d(0,var(--subhero-bg-y),0)_scale(var(--subhero-bg-scale))] will-change-transform"
+            sizes="100vw"
+            width={sectionBackground.width}
+            height={sectionBackground.height}
+          />
+        </div>
+        <div class="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(6,10,18,0.08)_0%,rgba(6,10,18,0.24)_52%,rgba(6,10,18,0.66)_100%)]"></div>
+        <div class="pointer-events-none absolute inset-0">
+          <Image
+            src={sectionDrone}
+            alt=""
+            class="h-full w-full object-cover object-center [transform:translate3d(0,var(--subhero-drone-y),0)] will-change-transform"
+            sizes="100vw"
+            width={sectionDrone.width}
+            height={sectionDrone.height}
+          />
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<script is:inline define:vars={{ droneStartOffsetY, droneEndOffsetY }}>
+  const section = document.querySelector("#home-sub-hero");
+  const parallaxScene = document.querySelector("[data-subhero-parallax-scene]");
+
+  if (section) {
+    if (!("IntersectionObserver" in window)) {
+      section.classList.add("subhero-is-visible");
+    } else {
+      const observer = new IntersectionObserver(
+        (entries, observerInstance) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              section.classList.add("subhero-is-visible");
+              observerInstance.unobserve(section);
+            }
+          }
+        },
+        { threshold: 0.25 }
+      );
+
+      observer.observe(section);
+    }
+  }
+
+  if (
+    section instanceof HTMLElement &&
+    parallaxScene instanceof HTMLElement &&
+    !section.dataset.parallaxReady
+  ) {
+    section.dataset.parallaxReady = "true";
+
+    const reducedMotionQuery = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    );
+    let rafId = 0;
+
+    const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
+    const updateParallax = () => {
+      rafId = 0;
+
+      if (reducedMotionQuery.matches) {
+        section.style.setProperty("--subhero-bg-y", "0px");
+        section.style.setProperty("--subhero-bg-scale", "1.06");
+        section.style.setProperty("--subhero-drone-y", `${droneStartOffsetY}px`);
+        return;
+      }
+
+      const rect = parallaxScene.getBoundingClientRect();
+      const viewportHeight = window.innerHeight || 1;
+      const progress = clamp(
+        (viewportHeight - rect.top) / (viewportHeight + rect.height),
+        0,
+        1
+      );
+      const centeredProgress = progress - 0.5;
+
+      section.style.setProperty(
+        "--subhero-bg-y",
+        `${Math.round(centeredProgress * -70)}px`
+      );
+      section.style.setProperty(
+        "--subhero-bg-scale",
+        `${1.06 + progress * 0.06}`
+      );
+      section.style.setProperty(
+        "--subhero-drone-y",
+        `${Math.round(
+          droneStartOffsetY + (droneEndOffsetY - droneStartOffsetY) * progress
+        )}px`
+      );
+    };
+
+    const requestParallaxUpdate = () => {
+      if (rafId) return;
+      rafId = window.requestAnimationFrame(updateParallax);
+    };
+
+    requestParallaxUpdate();
+    window.addEventListener("scroll", requestParallaxUpdate, { passive: true });
+    window.addEventListener("resize", requestParallaxUpdate);
+
+    if (typeof reducedMotionQuery.addEventListener === "function") {
+      reducedMotionQuery.addEventListener("change", requestParallaxUpdate);
+    }
+  }
+</script>
+
+<style>
+  .subhero .subhero-logo,
+  .subhero .subhero-text {
+    opacity: 0;
+  }
+
+  .subhero .subhero-text {
+    transform: translateX(30px);
+  }
+
+  .subhero .subhero-logo {
+    transform: translateX(-30px);
+  }
+
+  .subhero.subhero-is-visible .subhero-logo {
+    animation: subhero-fade-in-left 0.8s ease-out forwards;
+    animation-delay: var(--subhero-delay);
+  }
+
+  .subhero.subhero-is-visible .subhero-text {
+    animation: subhero-fade-in-right 0.8s ease-out forwards;
+    animation-delay: calc(var(--subhero-delay) + 0.1s);
+  }
+
+  @keyframes subhero-fade-in-left {
+    from {
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes subhero-fade-in-right {
+    from {
+      opacity: 0;
+      transform: translateX(30px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+</style>

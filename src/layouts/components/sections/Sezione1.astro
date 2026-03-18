@@ -1,0 +1,44 @@
+---
+import { getEntryCTM } from "@/lib/contentParser.astro";
+import overrideObjects from "@/lib/utils/overrideObjects.ts";
+import Sezione1Parallax from "../../../components/parallax-cards/sezione1-parallax";
+
+type SectionCard = {
+  title: string;
+  description: string;
+  icon: "cinema" | "serie-tv" | "documentari" | "adv" | "eventi";
+};
+
+type SectionType = {
+  enable?: boolean;
+  title?: string;
+  paragraphOne?: string;
+  paragraphTwo?: string;
+  cards?: SectionCard[];
+};
+
+type Props = {
+  content?: SectionType;
+};
+
+let defaultContent = (
+  await getEntryCTM("sections", "sezione1", Astro.currentLocale)
+)?.data as SectionType;
+
+let actualContent = overrideObjects(
+  { ...defaultContent },
+  Astro.props.content,
+) as SectionType;
+
+let { enable = true, cards = [] } = actualContent;
+---
+
+{
+  enable && (
+    <section class="bg-white">
+      <div class="py-10 sm:py-12 lg:py-16">
+        <Sezione1Parallax client:load cards={cards} />
+      </div>
+    </section>
+  )
+}

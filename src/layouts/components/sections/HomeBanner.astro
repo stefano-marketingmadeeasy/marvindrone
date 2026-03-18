@@ -1,0 +1,323 @@
+---
+import overrideObjects from "@/lib/utils/overrideObjects.ts";
+import { markdownify } from "@/lib/utils/textConverter";
+import type { Section } from "@/types";
+import OptimizedImage from "@/components/utilities/OptimizedImage.astro";
+import { getEntryCTM } from "@/lib/contentParser.astro";
+import CustomButton from "../CustomButton.astro";
+import type { TypeOf } from "astro:schema";
+import type { sharedButtonTag } from "@/content.config";
+
+type SliderItem = {
+  title: string;
+  description: string;
+  backgroundImage: string;
+  entranceDelay?: string;
+  entranceDuration?: string;
+  button: TypeOf<typeof sharedButtonTag>;
+  secondaryButton?: TypeOf<typeof sharedButtonTag>;
+};
+
+type HomeBannerSectionType = Section & {
+  scrollSteps?: number;
+  transitionTitle?: string;
+  transitionParagraphOne?: string;
+  transitionParagraphTwo?: string;
+  secondaryScrollSteps?: number;
+  tertiaryScrollSteps?: number;
+  mainBlock: {
+    slides: SliderItem[];
+  };
+};
+
+type Props = {
+  content?: HomeBannerSectionType;
+};
+
+let defaultContent = (
+  await getEntryCTM("sections", "home-banner", Astro.currentLocale)
+)?.data as HomeBannerSectionType;
+
+let actualContent = overrideObjects(
+  { ...defaultContent },
+  Astro.props.content,
+) as HomeBannerSectionType;
+
+const slide = actualContent?.mainBlock?.slides?.[0];
+const heroTransitionTitle = actualContent?.transitionTitle || "";
+const heroTransitionParagraphOne = actualContent?.transitionParagraphOne || "";
+const heroTransitionParagraphTwo = actualContent?.transitionParagraphTwo || "";
+const primaryScrollSteps = Math.max(actualContent?.scrollSteps ?? 5, 1);
+const secondaryScrollSteps = Math.max(actualContent?.secondaryScrollSteps ?? 3, 1);
+const tertiaryScrollSteps = Math.max(actualContent?.tertiaryScrollSteps ?? 3, 1);
+const heroIntroSteps = 2;
+const heroGapSteps = 2;
+const heroSecondaryGapSteps = 2;
+const heroOutroSteps = 2;
+const heroTotalSteps =
+  heroIntroSteps +
+  primaryScrollSteps +
+  heroGapSteps +
+  secondaryScrollSteps +
+  heroSecondaryGapSteps +
+  tertiaryScrollSteps +
+  heroOutroSteps;
+---
+
+<section
+  class:list={[
+    "group relative z-20 w-screen overflow-clip bg-[#05070d] pt-0!",
+    "min-h-[calc(100svh+(var(--hero-scroll-total-steps)*var(--hero-scroll-step-size)))]",
+    "[--hero-bg-blur:0px] [--hero-bg-scale:1.02]",
+    "[--hero-primary-opacity:1] [--hero-primary-scale:1] [--hero-primary-y:0px]",
+    "[--hero-secondary-opacity:0] [--hero-secondary-scale:0.985] [--hero-secondary-y:20px]",
+    "[--hero-tertiary-opacity:0] [--hero-tertiary-scale:0.985] [--hero-tertiary-y:20px]",
+    "[--hero-arrow-opacity:1]",
+  ]}
+  style={{
+    "--hero-scroll-step-size": "8svh",
+    "--hero-scroll-total-steps": String(heroTotalSteps),
+  }}
+  data-home-banner>
+  <div class="sticky top-0 h-[100svh] w-screen min-w-[100vw] overflow-hidden bg-[#05070d]">
+    {
+      slide && (
+        <div class="absolute inset-0 -z-10 overflow-hidden">
+          <div
+            class="absolute inset-[-4rem] overflow-hidden bg-[#05070d] [filter:blur(var(--hero-bg-blur))] will-change-[filter] motion-reduce:filter-none"
+            data-hero-parallax-layer>
+            <OptimizedImage
+              src={slide.backgroundImage}
+              alt="Banner Image"
+              class="block h-[calc(100svh+8rem)] min-h-[calc(100svh+8rem)] w-[calc(100vw+8rem)] min-w-[calc(100vw+8rem)] object-cover object-center [transform:scale(var(--hero-bg-scale))] [transform-origin:center] will-change-transform motion-reduce:transform-none"
+              sizes="(max-width: 640px) 200vw, (min-width: 1320px) 1320w, 100vw"
+              data-content={slide.backgroundImage}
+            />
+          </div>
+        </div>
+      )
+    }
+
+    <div class="container">
+      <div class="relative z-30 flex min-h-[70vh] items-center justify-center py-32 md:min-h-[82vh] md:py-40 lg:min-h-[100svh]">
+        {
+          slide && (
+            <div
+              class="flex max-w-3xl flex-col items-center justify-center text-center text-white"
+              style={{
+                "--hero-enter-delay": slide.entranceDelay || "150ms",
+                "--hero-enter-duration": slide.entranceDuration || "1000ms",
+              }}>
+              <div
+                class="opacity-[var(--hero-primary-opacity)] [transform:translate3d(0,var(--hero-primary-y),0)_scale(var(--hero-primary-scale))] will-change-[transform,opacity] motion-reduce:[transform:none]"
+                data-hero-primary-content>
+                {slide.title && (
+                  <h1
+                    class="mb-6 !text-7xl text-inherit md:text-5xl/tight"
+                    set:html={markdownify(slide.title)}
+                  />
+                )}
+                {slide.description && (
+                  <div class="overflow-hidden">
+                    <p
+                      class="mx-auto max-w-2xl text-2xl opacity-90"
+                      set:html={markdownify(slide.description)}
+                    />
+                  </div>
+                )}
+                {(slide.button?.enable || slide.secondaryButton?.enable) && (
+                  <div class="mt-10 flex flex-wrap justify-center gap-5">
+                    {slide.button?.enable && (
+                      <CustomButton
+                        size="md"
+                        {...slide.button}
+                      />
+                    )}
+                    {slide.secondaryButton?.enable && (
+                      <CustomButton
+                        size="md"
+                        {...slide.secondaryButton}
+                      />
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          )
+        }
+      </div>
+    </div>
+
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute inset-0 z-30 grid place-items-center px-6 text-center text-white group-data-[secondary-active=true]:pointer-events-auto md:px-10">
+      <div class="[grid-area:1/1] flex w-full max-w-[48rem] flex-col items-center justify-center text-center text-white opacity-[var(--hero-secondary-opacity)] [transform:translate3d(0,var(--hero-secondary-y),0)_scale(var(--hero-secondary-scale))] will-change-[transform,opacity] motion-reduce:[transform:none]">
+        <h2 class="mx-auto text-balance text-2xl leading-tight font-bold tracking-tight text-white [-webkit-text-fill-color:#fff] [-webkit-text-stroke:0.015em_rgba(255,255,255,0.2)] [text-shadow:0_0_1px_rgba(255,255,255,0.95),0_0_18px_rgba(255,255,255,0.14),0_0_24px_rgba(0,0,0,0.45),0_12px_34px_rgba(0,0,0,0.55)] md:text-3xl/tight lg:text-4xl/tight">
+          {heroTransitionTitle}
+        </h2>
+        <div class="mt-6 grid w-full gap-4 text-balance text-base leading-[1.8] text-white/70 [text-shadow:0_8px_24px_rgba(0,0,0,0.5)] sm:text-lg lg:text-xl">
+          <p class="m-0">{heroTransitionParagraphOne}</p>
+        </div>
+      </div>
+
+      <div class="[grid-area:1/1] flex w-full max-w-[44rem] items-center justify-center opacity-[var(--hero-tertiary-opacity)] [transform:translate3d(0,var(--hero-tertiary-y),0)_scale(var(--hero-tertiary-scale))] will-change-[transform,opacity] motion-reduce:[transform:none]">
+        <p class="m-0 max-w-[44rem] text-balance text-lg leading-[1.8] text-white/98 [text-shadow:0_0_1px_rgba(255,255,255,0.9),0_12px_34px_rgba(0,0,0,0.6)] sm:text-xl lg:text-2xl">
+          {heroTransitionParagraphTwo}
+        </p>
+      </div>
+    </div>
+
+    <button
+      type="button"
+      aria-label="Scorri alla sezione introduttiva"
+      data-lenis-scroll-target="#home-sub-hero"
+      data-lenis-duration="1.35"
+      data-lenis-ease-power="4"
+      data-lenis-reveal-hero-first="true"
+      class="absolute bottom-8 left-1/2 z-30 inline-flex h-14 w-14 -translate-x-1/2 items-center justify-center rounded-full border border-white/35 bg-white/10 text-white opacity-[var(--hero-arrow-opacity)] backdrop-blur-sm transition duration-300 will-change-[opacity] hover:bg-white hover:text-slate-950 md:bottom-10">
+      <svg
+        viewBox="0 0 24 24"
+        class="h-5 w-5"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true">
+        <path d="M12 5v14"></path>
+        <path d="m6 13 6 6 6-6"></path>
+      </svg>
+    </button>
+  </div>
+</section>
+
+<script
+  is:inline
+  define:vars={{
+    heroIntroSteps,
+    heroGapSteps,
+    heroSecondaryGapSteps,
+    primaryScrollSteps,
+    secondaryScrollSteps,
+    tertiaryScrollSteps,
+  }}>
+  const heroBanner = document.querySelector("[data-home-banner]");
+
+  if (heroBanner instanceof HTMLElement && !heroBanner.dataset.parallaxReady) {
+    heroBanner.dataset.parallaxReady = "true";
+
+    const reducedMotionQuery = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    );
+    let rafId = 0;
+
+    const normalizeRange = (value, start, end) => {
+      if (value <= start) return 0;
+      if (value >= end) return 1;
+
+      return (value - start) / (end - start);
+    };
+
+    const updateParallax = () => {
+      rafId = 0;
+
+      if (reducedMotionQuery.matches) {
+        heroBanner.style.setProperty("--hero-bg-blur", "0px");
+        heroBanner.style.setProperty("--hero-bg-scale", "1.02");
+        heroBanner.style.setProperty("--hero-primary-opacity", "1");
+        heroBanner.style.setProperty("--hero-primary-scale", "1");
+        heroBanner.style.setProperty("--hero-primary-y", "0px");
+        heroBanner.style.setProperty("--hero-secondary-opacity", "0");
+        heroBanner.style.setProperty("--hero-secondary-scale", "0.985");
+        heroBanner.style.setProperty("--hero-secondary-y", "20px");
+        heroBanner.style.setProperty("--hero-tertiary-opacity", "0");
+        heroBanner.style.setProperty("--hero-tertiary-scale", "0.985");
+        heroBanner.style.setProperty("--hero-tertiary-y", "20px");
+        heroBanner.style.setProperty("--hero-arrow-opacity", "1");
+        heroBanner.dataset.secondaryActive = "false";
+        return;
+      }
+
+      const rect = heroBanner.getBoundingClientRect();
+      const scrollRange = Math.max(heroBanner.offsetHeight - window.innerHeight, 1);
+      const distance = Math.min(Math.max(-rect.top, 0), scrollRange);
+      const progress = Math.min(distance / scrollRange, 1);
+      const blur = progress * 18;
+      const progressSteps =
+        progress *
+        (heroIntroSteps +
+          primaryScrollSteps +
+          heroGapSteps +
+          secondaryScrollSteps +
+          heroSecondaryGapSteps +
+          tertiaryScrollSteps);
+      const bgZoomProgress = normalizeRange(
+        progressSteps,
+        0,
+        heroIntroSteps + primaryScrollSteps
+      );
+      const bgScale = 1.02 + bgZoomProgress * 0.08;
+      const secondaryStart = heroIntroSteps + primaryScrollSteps + heroGapSteps;
+      const secondaryEnd = secondaryStart + secondaryScrollSteps;
+      const tertiaryStart = secondaryEnd + heroSecondaryGapSteps;
+      const tertiaryEnd = tertiaryStart + tertiaryScrollSteps;
+      const primaryFade = normalizeRange(
+        progressSteps,
+        heroIntroSteps,
+        heroIntroSteps + primaryScrollSteps
+      );
+      const secondaryReveal = normalizeRange(progressSteps, secondaryStart, secondaryEnd);
+      const secondaryExit = normalizeRange(progressSteps, secondaryEnd, tertiaryStart);
+      const secondaryVisibility = secondaryReveal * (1 - secondaryExit);
+      const tertiaryReveal = normalizeRange(progressSteps, tertiaryStart, tertiaryEnd);
+      const arrowFade = normalizeRange(progressSteps, 1, heroIntroSteps);
+
+      heroBanner.style.setProperty("--hero-bg-blur", `${blur}px`);
+      heroBanner.style.setProperty("--hero-bg-scale", `${bgScale}`);
+      heroBanner.style.setProperty("--hero-primary-opacity", `${1 - primaryFade}`);
+      heroBanner.style.setProperty(
+        "--hero-primary-scale",
+        `${1 - primaryFade * 0.04}`
+      );
+      heroBanner.style.setProperty("--hero-primary-y", `${primaryFade * -18}px`);
+      heroBanner.style.setProperty(
+        "--hero-secondary-opacity",
+        `${secondaryVisibility}`
+      );
+      heroBanner.style.setProperty(
+        "--hero-secondary-scale",
+        `${0.985 + secondaryVisibility * 0.015}`
+      );
+      heroBanner.style.setProperty(
+        "--hero-secondary-y",
+        `${(1 - secondaryVisibility) * 20}px`
+      );
+      heroBanner.style.setProperty("--hero-tertiary-opacity", `${tertiaryReveal}`);
+      heroBanner.style.setProperty(
+        "--hero-tertiary-scale",
+        `${0.985 + tertiaryReveal * 0.015}`
+      );
+      heroBanner.style.setProperty(
+        "--hero-tertiary-y",
+        `${(1 - tertiaryReveal) * 20}px`
+      );
+      heroBanner.style.setProperty("--hero-arrow-opacity", `${1 - arrowFade}`);
+      heroBanner.dataset.secondaryActive =
+        secondaryVisibility > 0.04 || tertiaryReveal > 0.04 ? "true" : "false";
+    };
+
+    const requestParallaxUpdate = () => {
+      if (rafId) return;
+      rafId = window.requestAnimationFrame(updateParallax);
+    };
+
+    requestParallaxUpdate();
+
+    window.addEventListener("scroll", requestParallaxUpdate, { passive: true });
+    window.addEventListener("resize", requestParallaxUpdate);
+
+    if (typeof reducedMotionQuery.addEventListener === "function") {
+      reducedMotionQuery.addEventListener("change", requestParallaxUpdate);
+    }
+  }
+</script>

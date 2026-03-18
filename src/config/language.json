@@ -1,0 +1,16 @@
+[
+  {
+    "languageName": "Italiano",
+    "languageCode": "it",
+    "contentDir": "italian",
+    "locale": "it_IT",
+    "weight": 1
+  },
+  {
+    "languageName": "English",
+    "languageCode": "en",
+    "contentDir": "english",
+    "locale": "en_US",
+    "weight": 2
+  }
+]

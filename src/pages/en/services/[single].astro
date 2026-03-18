@@ -1,0 +1,57 @@
+---
+import CallToAction from "@/components/sections/CallToAction.astro";
+import FaqSection from "@/components/sections/FaqSection.astro";
+import ServiceDetailsSection from "@/components/sections/ServiceDetailsSection.astro";
+import ServiceImpact from "@/components/sections/ServiceImpact.astro";
+import ServiceSingleIntro from "@/components/sections/PageIntroSection.astro";
+import ServicesSection from "@/components/sections/ServicesSection.astro";
+import PageHeader from "@/components/widgets/PageHeader.astro";
+import Base from "@/layouts/Base.astro";
+import { getCollectionCTM } from "@/lib/contentParser.astro";
+import { getEntryCTM } from "@/lib/contentParser.astro";
+import config from ".astro/config.generated.json" assert { type: "json" };
+
+export async function getStaticPaths() {
+  const { servicesFolder } = config.settings;
+  const serviceIndex = await getEntryCTM(
+    servicesFolder as "services",
+    "-index",
+    "en",
+  );
+  const services = await getCollectionCTM(servicesFolder as "services", "en");
+
+  if (serviceIndex?.data.draft && import.meta.env.PROD) {
+    return [];
+  }
+
+  return services.map((service) => ({
+    params: {
+      single:
+        service.data?.customSlug ||
+        service.id
+          .replace(/\.mdx?|\.md/g, "")
+          .split("/")
+          .pop(),
+    },
+    props: {
+      service,
+      serviceIndex,
+    },
+  }));
+}
+
+const { service, serviceIndex: entry } = Astro.props;
+---
+
+<Base {...service.data}>
+  <PageHeader {...service.data} />
+  <ServiceSingleIntro
+    content={service.data.intro}
+    serviceImage={service.data.image}
+  />
+  <ServiceDetailsSection content={service.data.details} />
+  <ServiceImpact content={service.data.impact} />
+  <ServicesSection content={entry?.data.servicesSection} />
+  <FaqSection content={entry?.data.faqSection} />
+  <CallToAction />
+</Base>

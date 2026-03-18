@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_produzione_crediti",
+  "info": {
+    "displayName": "Credito",
+    "description": "Blocco crediti produzione"
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string",
+      "required": true
+    },
+    "values": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.text-item"
+    }
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "common": {
+    "readMore": "Leggi di piu",
+    "readMoreAbout": "Scopri di piu su",
+    "learnMoreAbout": "Approfondisci",
+    "viewMoreDetails": "Vedi piu dettagli",
+    "emailPlaceholder": "Indirizzo email",
+    "monthlyPlan": "Mensile",
+    "paginationNext": "Successivo",
+    "paginationPrevious": "Precedente"
+  },
+  "widgets": {
+    "postSearchTitle": "Cerca articolo",
+    "postSearchFormPlaceholder": "Cerca...",
+    "categoriesTitle": "Categoria",
+    "recentPostsTitle": "Articoli recenti"
+  },
+  "career": {
+    "location": "Sede",
+    "deadline": "Scadenza candidatura",
+    "jobType": "Tipologia"
+  },
+  "blog": {
+    "writtenBy": "Scritto da",
+    "publishedOn": "Pubblicato il",
+    "category": "Categoria"
+  },
+  "navigation": {
+    "buttonLabel": "Contattaci",
+    "languageSwitcherLabel": "Seleziona lingua"
+  },
+  "subscription": {
+    "label": "Iscriviti alla newsletter per ricevere gli ultimi aggiornamenti"
+  },
+  "footer": {
+    "quickLinks": "Link rapidi",
+    "legal": "Legale",
+    "resources": "Risorse",
+    "description": "marvindrone.com e una agenzia creativa e digitale. In questa fase il sito utilizza i contenuti demo del tema Looka, riadattati in una struttura mono-lingua italiana.",
+    "copyright": "Copyright {{ year }} / Tutti i diritti riservati a marvindrone.com",
+    "_comment": "We kindly appreciate it if you retain the theme copyright. Thank you for supporting Getastrothemes!"
+  },
+  "productions": {
+    "archive": {
+      "all": "Tutte",
+      "emptyLabel": "Nessun contenuto disponibile",
+      "emptyTitle": "L'archivio produzioni e vuoto",
+      "emptyDescription": "Collega Strapi e pubblica almeno una produzione per popolare questa pagina.",
+      "emptyFilterLabel": "Nessun risultato",
+      "emptyFilterTitle": "Non ci sono produzioni per questo filtro",
+      "emptyFilterDescription": "Prova a selezionare un'altra tipologia oppure torna alla vista completa."
+    },
+    "card": {
+      "open": "Apri",
+      "noImage": "Nessuna immagine"
+    },
+    "detail": {
+      "back": "Torna a Produzioni",
+      "synopsis": "Sinossi",
+      "editorial": "Scheda editoriale",
+      "credits": "Crediti",
+      "cast": "Cast",
+      "gallery": "Gallery",
+      "information": "Informazioni",
+      "awards": "Premi e selezioni",
+      "tags": "Tag"
+    },
+    "meta": {
+      "indexTitle": "Produzioni",
+      "indexDescription": "Archivio produzioni aggiornato da Strapi con filtri lato client e pagine dettaglio dedicate.",
+      "indexMetaTitle": "Produzioni | marvindrone.com",
+      "indexMetaDescription": "Esplora l'archivio produzioni di marvindrone.com, filtrabile per tipologia e alimentato da Strapi.",
+      "singleSuffix": "Produzioni",
+      "singleFallbackDescription": "Scheda produzione"
+    }
+  }
+}

@@ -1,0 +1,87 @@
+---
+import OptimizedImage from "@/components/utilities/OptimizedImage.astro";
+
+type Props = {
+  icon?: string;
+  class?: string;
+};
+
+const { icon, class: className } = Astro.props as Props;
+const customIconClasses = [
+  "button-icon",
+  "has-inherited-colors",
+  "text-inherit",
+  className,
+]
+  .filter(Boolean)
+  .join(" ");
+const fallbackIconClasses = ["button-icon", "button-icon-fallback", "text-inherit", className]
+  .filter(Boolean)
+  .join(" ");
+
+const isRemoteIcon = !!icon?.startsWith("http://") || !!icon?.startsWith("https://");
+const isLocalSvgIcon = !!icon?.endsWith(".svg") && !isRemoteIcon;
+
+let rawSvg = "";
+
+if (icon && isLocalSvgIcon) {
+  const iconsRaw = import.meta.glob(
+    [
+      "/src/assets/images/**/*.svg",
+      "/src/content/**/*.svg",
+      "/public/images/**/*.svg",
+    ],
+    {
+      query: "raw",
+      import: "default",
+    },
+  );
+
+  const key = Object.keys(iconsRaw).find((k) => k.includes(icon));
+  rawSvg = key ? ((await iconsRaw[key]()) as string) : "";
+
+  if (rawSvg) {
+    rawSvg = rawSvg
+      .replace(/<style[\s\S]*?<\/style>/g, "")
+      .replace(/fill:\s*#(?:[0-9a-fA-F]{3,8})/g, "fill: currentColor")
+      .replace(/stroke:\s*#(?:[0-9a-fA-F]{3,8})/g, "stroke: currentColor")
+      .replace(/fill=\"#(?:[0-9a-fA-F]{3,8})\"/g, 'fill="currentColor"')
+      .replace(/stroke=\"#(?:[0-9a-fA-F]{3,8})\"/g, 'stroke="currentColor"')
+      .replace(
+        "<svg",
+        `<svg class="${customIconClasses}" aria-hidden="true" style="color: inherit;" fill="currentColor" stroke="currentColor"`,
+      );
+  }
+}
+---
+
+{
+  rawSvg ? (
+    <Fragment set:html={rawSvg} />
+  ) : icon ? (
+    <OptimizedImage
+      src={icon}
+      inlineSvg={icon.endsWith(".svg")}
+      alt=""
+      class={customIconClasses}
+      aria-hidden="true"
+    />
+  ) : (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2.4"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+      data-lucide="ArrowUpRight"
+      class={fallbackIconClasses}>
+      <path d="M7 7h10v10" />
+      <path d="M7 17 17 7" />
+    </svg>
+  )
+}

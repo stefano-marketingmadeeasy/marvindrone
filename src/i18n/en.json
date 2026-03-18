@@ -1,0 +1,77 @@
+{
+  "common": {
+    "readMore": "Read more",
+    "readMoreAbout": "Learn more about",
+    "learnMoreAbout": "Learn more",
+    "viewMoreDetails": "View more details",
+    "emailPlaceholder": "Email address",
+    "monthlyPlan": "Monthly",
+    "paginationNext": "Next",
+    "paginationPrevious": "Previous"
+  },
+  "widgets": {
+    "postSearchTitle": "Search article",
+    "postSearchFormPlaceholder": "Search...",
+    "categoriesTitle": "Category",
+    "recentPostsTitle": "Recent posts"
+  },
+  "career": {
+    "location": "Location",
+    "deadline": "Application deadline",
+    "jobType": "Type"
+  },
+  "blog": {
+    "writtenBy": "Written by",
+    "publishedOn": "Published on",
+    "category": "Category"
+  },
+  "navigation": {
+    "buttonLabel": "Contact us",
+    "languageSwitcherLabel": "Select language"
+  },
+  "subscription": {
+    "label": "Subscribe to the newsletter to receive the latest updates"
+  },
+  "footer": {
+    "quickLinks": "Quick links",
+    "legal": "Legal",
+    "resources": "Resources",
+    "description": "marvindrone.com is a creative and digital agency. The English content currently mirrors the Markdown source structure used by the Italian site.",
+    "copyright": "Copyright {{ year }} / All rights reserved by marvindrone.com",
+    "_comment": "We kindly appreciate it if you retain the theme copyright. Thank you for supporting Getastrothemes!"
+  },
+  "productions": {
+    "archive": {
+      "all": "All",
+      "emptyLabel": "No content available",
+      "emptyTitle": "The productions archive is empty",
+      "emptyDescription": "Connect Strapi and publish at least one production to populate this page.",
+      "emptyFilterLabel": "No results",
+      "emptyFilterTitle": "There are no productions for this filter",
+      "emptyFilterDescription": "Try selecting another category or return to the full archive."
+    },
+    "card": {
+      "open": "Open",
+      "noImage": "No image"
+    },
+    "detail": {
+      "back": "Back to Productions",
+      "synopsis": "Synopsis",
+      "editorial": "Editorial sheet",
+      "credits": "Credits",
+      "cast": "Cast",
+      "gallery": "Gallery",
+      "information": "Information",
+      "awards": "Awards and selections",
+      "tags": "Tags"
+    },
+    "meta": {
+      "indexTitle": "Productions",
+      "indexDescription": "Production archive updated from Strapi with client-side filters and dedicated detail pages.",
+      "indexMetaTitle": "Productions | marvindrone.com",
+      "indexMetaDescription": "Explore the marvindrone.com production archive, filterable by category and powered by Strapi.",
+      "singleSuffix": "Productions",
+      "singleFallbackDescription": "Production page"
+    }
+  }
+}

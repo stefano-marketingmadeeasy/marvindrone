@@ -1,0 +1,319 @@
+---
+
+---
+
+<script>
+  // @ts-nocheck
+  import Lenis from "lenis";
+  import { easeOutPower, scrollConfig } from "@/config/scroll";
+
+  const bootstrap = async () => {
+    const lenis = initLenis();
+
+    await initLucide();
+
+    // Dynamic Preline imports
+    await loadPrelineComponents();
+
+    // AOS - https://github.com/michalsnik/aos
+    const AOS = await import("aos");
+    AOS.init({
+      duration: 700,
+      easing: "ease-out",
+      disable: "mobile",
+      once: true,
+    });
+
+    initScrollButtons(lenis);
+
+    // Fix: Support horizontal scrolling by using the mouse wheel + shift
+    initHorizontalScroll();
+
+    // Button Hover Animation
+    initCreativeHoverAnimation();
+
+    // Magnetic Hover Animation
+    initMagneticHoverAnimation();
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", bootstrap, { once: true });
+  } else {
+    bootstrap();
+  }
+
+  function initLenis() {
+    if (!shouldEnableLenis()) {
+      window.__lenis = null;
+      return null;
+    }
+
+    const {
+      disableOnMobile,
+      mobileBreakpoint,
+      generalDecelerationPower,
+      ...lenisOptions
+    } = scrollConfig.lenis;
+
+    const lenis = new Lenis({
+      ...lenisOptions,
+      easing: easeOutPower(generalDecelerationPower),
+    });
+
+    let rafId = 0;
+
+    function raf(time: number) {
+      lenis.raf(time);
+      rafId = window.requestAnimationFrame(raf);
+    }
+
+    rafId = window.requestAnimationFrame(raf);
+
+    window.__lenis = lenis;
+    window.__lenisRafId = rafId;
+
+    return lenis;
+  }
+
+  function shouldEnableLenis() {
+    if (!scrollConfig.lenis.disableOnMobile) return true;
+
+    return window.innerWidth >= scrollConfig.lenis.mobileBreakpoint;
+  }
+
+  function initScrollButtons(lenis) {
+    document
+      .querySelectorAll<HTMLElement>("[data-lenis-scroll-target]")
+      .forEach((button) => {
+        button.addEventListener("click", (event) => {
+          event.preventDefault();
+
+          const target =
+            button.dataset.lenisScrollTarget || scrollConfig.heroArrow.target;
+          const duration =
+            Number(button.dataset.lenisDuration) ||
+            scrollConfig.heroArrow.duration;
+          const offset =
+            Number(button.dataset.lenisOffset) || scrollConfig.heroArrow.offset;
+          const decelerationPower =
+            Number(button.dataset.lenisEasePower) ||
+            scrollConfig.heroArrow.decelerationPower;
+          const revealHeroFirst =
+            button.dataset.lenisRevealHeroFirst === "true" ||
+            scrollConfig.heroArrow.revealHeroFirst;
+
+          const scrollTarget = resolveScrollTarget(target, offset, revealHeroFirst);
+
+          if (lenis) {
+            lenis.scrollTo(scrollTarget, {
+              duration,
+              easing: easeOutPower(decelerationPower),
+            });
+            return;
+          }
+
+          window.scrollTo({
+            top: scrollTarget,
+            behavior: "auto",
+          });
+        });
+      });
+  }
+
+  function resolveScrollTarget(target, offset, revealHeroFirst) {
+    const targetElement =
+      typeof target === "string" ? document.querySelector(target) : null;
+    const targetTop = targetElement
+      ? window.scrollY + targetElement.getBoundingClientRect().top + offset
+      : typeof target === "number"
+        ? target + offset
+        : window.scrollY + offset;
+
+    if (!revealHeroFirst) return targetTop;
+
+    const hero = document.querySelector(".home-hero-overlay__hero");
+    const heroHeight = hero?.getBoundingClientRect().height || window.innerHeight;
+
+    return Math.max(targetTop, heroHeight + offset);
+  }
+
+  // Lucide Icons
+  async function initLucide() {
+    const iconElems = document.querySelectorAll("[data-lucide]");
+    const lucideModule = await import("lucide");
+
+    iconElems.forEach((iconElem) => {
+      const iconName = iconElem.getAttribute("data-lucide");
+      if (!iconName) return;
+
+      // @ts-expect-error
+      const IconDef = lucideModule[iconName];
+      if (!IconDef) {
+        console.warn(`Lucide icon "${iconName}" not found`);
+        return;
+      }
+
+      const svg = lucideModule.createElement(IconDef, {
+        ...Object.fromEntries(
+          [...iconElem.attributes].map((attr) => [attr.name, attr.value]),
+        ),
+      });
+
+      iconElem.replaceWith(svg);
+    });
+  }
+
+  // Load Preline components dynamically based on DOM content
+  async function loadPrelineComponents() {
+    const imports = [];
+
+    if (
+      document.querySelector(".hs-overlay") ||
+      document.querySelector("[data-hs-overlay]")
+    ) {
+      imports.push(
+        import("preline/src/plugins/overlay").then((module) => {
+          window.HSOverlay?.autoInit();
+        }),
+      );
+    }
+
+    if (
+      document.querySelector(".hs-dropdown") ||
+      document.querySelector("[data-hs-dropdown]")
+    ) {
+      imports.push(
+        import("@/plugins/preline/dropdown").then((module) => {
+          window.HSDropdown?.autoInit();
+        }),
+      );
+    }
+
+    if (
+      document.querySelector(".hs-select") ||
+      document.querySelector("[data-hs-select]")
+    ) {
+      imports.push(
+        import("@preline/select").then((module) => {
+          window.HSSelect?.autoInit();
+        }),
+      );
+    }
+
+    if (document.querySelector("[data-hs-tab]")) {
+      imports.push(
+        import("@preline/tabs").then((module) => {
+          window.HSTabs?.autoInit();
+        }),
+      );
+    }
+
+    if (document.querySelector(".hs-accordion")) {
+      imports.push(
+        import("@preline/accordion").then((module) => {
+          window.HSAccordion?.autoInit();
+        }),
+      );
+    }
+
+    await Promise.all(imports);
+  }
+
+  // Horizontal scroll with shift + wheel
+  function initHorizontalScroll() {
+    document.querySelectorAll("*").forEach((el) => {
+      if (el.scrollWidth > el.clientWidth) {
+        el.addEventListener(
+          "wheel",
+          function (event) {
+            if (event.shiftKey) {
+              event.preventDefault();
+              this.scrollBy({
+                left: event.deltaY * 3,
+                behavior: "smooth",
+              });
+            }
+          },
+          { passive: false },
+        );
+      }
+    });
+  }
+
+  // Creative hover animation for buttons
+  function initCreativeHoverAnimation() {
+    document.addEventListener("mouseover", function (e) {
+      const target = e.target.closest(".creative-hover-anim");
+      if (target) {
+        const hoverBg = target.querySelector(".hover-bg");
+        if (hoverBg) {
+          const parentOffset = target.getBoundingClientRect();
+          const relX = e.clientX - parentOffset.left;
+          const relY = e.clientY - parentOffset.top;
+          hoverBg.style.setProperty("--creative-hover-top", `${relY}px`);
+          hoverBg.style.setProperty("--creative-hover-left", `${relX}px`);
+        }
+      }
+    });
+  }
+
+  // Magnetic hover animation
+  function initMagneticHoverAnimation() {
+    const speed = 0.3;
+    const maxDistance = 30;
+    let rafId: number;
+
+    function clamp(val: number, max: number): number {
+      return Math.max(-max, Math.min(val, max));
+    }
+
+    function handleMagneticHover(magneticElem: HTMLElement) {
+      let isInside = false;
+
+      function updateTransform(e: MouseEvent) {
+        if (!isInside) return;
+
+        const rect = magneticElem.getBoundingClientRect();
+        const x = (e.clientX - rect.left - rect.width / 2) * speed;
+        const y = (e.clientY - rect.top - rect.height / 2) * speed;
+
+        cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(() => {
+          magneticElem.style.transform = `translate(${clamp(x, maxDistance)}px, ${clamp(y, maxDistance)}px)`;
+        });
+      }
+
+      function resetTransform() {
+        isInside = false;
+        cancelAnimationFrame(rafId);
+        magneticElem.style.transition = "transform 0.2s ease-out";
+        magneticElem.style.transform = "translate(0, 0)";
+      }
+
+      magneticElem.style.willChange = "transform";
+      magneticElem.addEventListener("mouseenter", () => {
+        isInside = true;
+        magneticElem.style.transition = "transform 0.2s ease-out";
+      });
+      magneticElem.addEventListener("mousemove", updateTransform);
+      magneticElem.addEventListener("mouseleave", resetTransform);
+    }
+
+    document
+      .querySelectorAll<HTMLElement>(".magnetic-hover-anim")
+      .forEach((item) => {
+        handleMagneticHover(item.parentElement);
+      });
+
+    window.addEventListener("mouseout", (e) => {
+      if (!e.relatedTarget && !e.toElement) {
+        document
+          .querySelectorAll<HTMLElement>(".magnetic-hover-anim")
+          .forEach((elem) => {
+            elem.style.transition = "transform 0.2s ease-out";
+            elem.style.transform = "translate(0, 0)";
+          });
+      }
+    });
+  }
+</script>

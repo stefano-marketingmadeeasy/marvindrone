@@ -1,0 +1,49 @@
+---
+import Base from "@/layouts/Base.astro";
+import ProductionSingle from "@/components/ProductionSingle.astro";
+import { getAllProductions } from "@/lib/strapi/productions";
+import { useTranslations } from "@/lib/utils/i18nUtils";
+
+export async function getStaticPaths() {
+  const productions = await getAllProductions("it");
+
+  return productions.map((production) => ({
+    params: {
+      category: production.category.slug,
+      slug: production.slug,
+    },
+    props: {
+      production,
+      relatedProductions: productions
+        .filter(
+          (candidate) =>
+            candidate.slug !== production.slug &&
+            candidate.category.slug === production.category.slug,
+        )
+        .slice(0, 3),
+    },
+  }));
+}
+
+const { production, relatedProductions } = Astro.props;
+const t = await useTranslations("it");
+const coverImage =
+  production.heroImage || production.poster || production.gallery[0];
+---
+
+<Base
+  title={production.title}
+  description={production.excerpt || production.synopsis}
+  image={coverImage?.url}
+  forceBlueHeader={true}
+  metaTitle={production.seo.metaTitle ||
+    `${production.title} | ${t("productions.meta.singleSuffix")}`}
+  metaDescription={production.seo.metaDescription ||
+    production.excerpt ||
+    production.synopsis ||
+    t("productions.meta.singleFallbackDescription")}>
+  <ProductionSingle
+    production={production}
+    relatedProductions={relatedProductions}
+  />
+</Base>

@@ -1,0 +1,168 @@
+---
+import Logo from "@/components/global/Logo.astro";
+import config from ".astro/config.generated.json" assert { type: "json" };
+import LanguageSwitcher from "@/layouts/components/global/header/LanguageSwitcher.astro";
+import NavMenuItem from "@/layouts/components/global/header/MenuItem.astro";
+import NavToggleBtn from "@/layouts/components/global/header/NavToggleBtn.astro";
+import type { NavigationLink } from "@/types";
+import { getLocaleUrlCTM, useTranslations } from "@/lib/utils/i18nUtils.ts";
+import { filteredEnabled } from "@/lib/utils/filteredEnabled";
+
+const t = await useTranslations(Astro.currentLocale as string);
+let main = t("main") as NavigationLink[];
+main = filteredEnabled(main);
+
+const currentPath = Astro.url.pathname.replace(/\/+$/, "") || "/";
+const homePath =
+  getLocaleUrlCTM("/", Astro.currentLocale).replace(/\/+$/, "") || "/";
+const forceBlueHeader = Astro.props.forceBlueHeader === true;
+const isOverlayHeader = currentPath === homePath && !forceBlueHeader;
+const isDarkHeader = isOverlayHeader || forceBlueHeader;
+
+const { stickyHeader } = config.settings;
+---
+
+<header
+  class:list={[
+    "header group/header transform",
+    { "sticky-header fixed": stickyHeader && isOverlayHeader },
+    { "sticky-header": stickyHeader && !isOverlayHeader },
+    { "header-dark": isDarkHeader },
+    { "header-home-top": isOverlayHeader },
+  ]}>
+  <nav class="relative container">
+    <div
+      class="hs-dropdown relative flex items-center justify-between py-4 [--auto-close:inside] [--gpu-acceleration:false] [--strategy:absolute] lg:[--strategy:static]">
+      <Logo
+        src="/images/logos/logo_top_menu.svg"
+        class="navbar-brand"
+        logoWidth="180px"
+        logoHeight="21px"
+        logoText=""
+      />
+
+      <ul
+        id="nav-menu"
+        class="navbar hs-dropdown-menu hs-dropdown-open:flex hs-dropdown-open:max-lg:mt-2 has-customized-scrollbar hs-dropdown-open:static max-lg:absolute max-lg:transform-none! lg:static! lg:transform-none!">
+        {main.map((menu) => <NavMenuItem menu={menu} />)}
+        <li class="max-lg:px-4 max-lg:py-2 lg:hidden" role="menuitem">
+          <LanguageSwitcher />
+        </li>
+      </ul>
+
+      <div
+        class="hidden gap-3.5 max-lg:me-4 max-lg:ml-auto lg:flex lg:items-center">
+        <LanguageSwitcher />
+      </div>
+      <NavToggleBtn isDarkHeader={isDarkHeader} />
+    </div>
+  </nav>
+</header>
+
+<script is:inline define:vars={{ isOverlayHeader }}>
+  function stickyHeader() {
+    const header = document.querySelector(".sticky-header");
+    if (!header) return;
+
+    let prevScrollPos = window.scrollY;
+    let currentState = "visible";
+    let currentAnimation;
+    const startStickyAt = 0;
+    const minScrollDiff = 0;
+    const animationOptions = {
+      duration: 700,
+      easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+      fill: "forwards",
+    };
+
+    const animateHeader = (nextState) => {
+      if (currentState === nextState) return;
+
+      const currentStyles = getComputedStyle(header);
+      const currentTransform =
+        currentStyles.transform === "none"
+          ? "translateY(0)"
+          : currentStyles.transform;
+      const currentBackgroundColor = currentStyles.backgroundColor;
+
+      currentAnimation?.cancel();
+
+      if (nextState === "hidden") {
+        header.classList.remove("scroll-up");
+        header.classList.add("scroll-down");
+        header.style.backgroundColor = currentBackgroundColor;
+        currentAnimation = header.animate(
+          [{ transform: currentTransform }, { transform: "translateY(-100%)" }],
+          animationOptions,
+        );
+      } else {
+        header.classList.remove("scroll-down");
+        header.classList.add("scroll-up");
+        const visibleBackgroundColor = getComputedStyle(header).backgroundColor;
+        header.style.backgroundColor = visibleBackgroundColor;
+        currentAnimation = header.animate(
+          [{ transform: currentTransform }, { transform: "translateY(0)" }],
+          animationOptions,
+        );
+      }
+
+      currentAnimation.onfinish = () => {
+        header.style.transform =
+          nextState === "hidden" ? "translateY(-100%)" : "translateY(0)";
+        if (nextState === "visible") {
+          header.style.backgroundColor = "";
+        }
+        currentAnimation = null;
+      };
+
+      currentAnimation.oncancel = () => {
+        currentAnimation = null;
+      };
+
+      currentState = nextState;
+    };
+
+    const syncHomeTopState = (currentScrollPos) => {
+      if (!isOverlayHeader) return;
+
+      header.classList.toggle("header-home-top", currentScrollPos === 0);
+    };
+
+    syncHomeTopState(prevScrollPos);
+    header.style.transform = "translateY(0)";
+
+    window.addEventListener("scroll", () => {
+      const currentScrollPos = window.scrollY;
+      const scrollDiff = Math.abs(currentScrollPos - prevScrollPos);
+      syncHomeTopState(currentScrollPos);
+
+      // Reset at top of page
+      if (currentScrollPos === 0) {
+        currentAnimation?.cancel();
+        header.classList.remove("scroll-up", "scroll-down");
+        header.style.transform = "translateY(0)";
+        header.style.backgroundColor = "";
+        currentState = "visible";
+        prevScrollPos = currentScrollPos;
+        return;
+      }
+
+      // Only apply logic if we've scrolled past the threshold
+      if (currentScrollPos > startStickyAt) {
+        if (scrollDiff >= minScrollDiff) {
+          if (currentScrollPos > prevScrollPos) {
+            // Scrolling down
+            animateHeader("hidden");
+          } else {
+            // Scrolling up
+            animateHeader("visible");
+          }
+
+          prevScrollPos = currentScrollPos;
+        }
+      }
+    });
+  }
+
+  stickyHeader();
+</script>

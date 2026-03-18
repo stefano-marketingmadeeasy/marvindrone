@@ -1,0 +1,109 @@
+---
+import CustomButtonIcon from "./CustomButtonIcon.astro";
+
+const {
+  label,
+  variant,
+  title,
+  icon,
+  iconPosition = "right",
+  animateIcon = true,
+  showIcon,
+  isTextFlipHoverEffect,
+  isMagneticTextFlipHoverEffect,
+} = Astro.props;
+
+// Applcable only if button have the text-flip hover animation
+let dataContent;
+if (isTextFlipHoverEffect || isMagneticTextFlipHoverEffect) {
+  dataContent = !variant.includes("text") ? label : undefined;
+}
+
+// Check if the label contain "learn more" "read more" type of text that need to add support for accessibility
+let addAriaLabel = false;
+if (
+  label?.toLowerCase().includes("learn more") ||
+  label?.toLowerCase().includes("read more")
+) {
+  addAriaLabel = true;
+}
+---
+
+{
+  !variant.includes("text") && <span class="hover-bg" />
+}
+
+<span class="btn-content">
+  {
+    showIcon && iconPosition === "left" ? (
+      <span class="icons-wrapper">
+        {
+          animateIcon ? (
+            <>
+              <span class="icon icon-before flex items-center justify-center">
+                <CustomButtonIcon icon={icon} />
+              </span>
+              <span
+                class="icon icon-after flex items-center justify-center"
+                aria-hidden="true">
+                <CustomButtonIcon icon={icon} />
+              </span>
+            </>
+          ) : (
+            <span class="icon icon-static flex items-center justify-center">
+              <CustomButtonIcon icon={icon} />
+            </span>
+          )
+        }
+      </span>
+    ) : null
+  }
+
+  {
+    (isTextFlipHoverEffect || isMagneticTextFlipHoverEffect) &&
+    !variant.includes("text") ? (
+      <>
+        <span
+          class="text-flip-inner"
+          set:html={label}
+          data-content={dataContent}
+        />
+        {addAriaLabel && (
+          <span class="sr-only" set:html={title || "Details"} />
+        )}
+      </>
+    ) : (
+      <>
+        <Fragment set:html={label} />
+        {addAriaLabel && (
+          <span class="sr-only" set:html={title || "Details"} />
+        )}
+      </>
+    )
+  }
+
+  {
+    showIcon && iconPosition !== "left" ? (
+      <span class="icons-wrapper">
+        {
+          animateIcon ? (
+            <>
+              <span class="icon icon-before flex items-center justify-center">
+                <CustomButtonIcon icon={icon} />
+              </span>
+              <span
+                class="icon icon-after flex items-center justify-center"
+                aria-hidden="true">
+                <CustomButtonIcon icon={icon} />
+              </span>
+            </>
+          ) : (
+            <span class="icon icon-static flex items-center justify-center">
+              <CustomButtonIcon icon={icon} />
+            </span>
+          )
+        }
+      </span>
+    ) : null
+  }
+</span>

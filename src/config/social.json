@@ -1,0 +1,28 @@
+{
+  "main": [
+    {
+      "enable": false,
+      "label": "facebook",
+      "icon": "/images/icons/social/facebook.svg",
+      "url": "https://www.facebook.com/marvindrone"
+    },
+    {
+      "enable": false,
+      "label": "twitter",
+      "icon": "/images/icons/social/twitter.svg",
+      "url": "https://twitter.com/marvindrone"
+    },
+    {
+      "enable": false,
+      "label": "instagram",
+      "icon": "/images/icons/social/instagram.svg",
+      "url": "https://www.instagram.com/marvindrone"
+    },
+    {
+      "enable": false,
+      "label": "linkedin",
+      "icon": "/images/icons/social/linkedin.svg",
+      "url": "https://www.linkedin.com/company/marvindrone"
+    }
+  ]
+}

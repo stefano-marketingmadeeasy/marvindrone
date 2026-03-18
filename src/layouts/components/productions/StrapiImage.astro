@@ -1,0 +1,36 @@
+---
+interface Props {
+  url?: string;
+  alt?: string;
+  width?: number;
+  height?: number;
+  class?: string;
+  loading?: "eager" | "lazy";
+  sizes?: string;
+}
+
+const {
+  url,
+  alt = "",
+  width,
+  height,
+  class: className,
+  loading = "lazy",
+  sizes,
+} = Astro.props;
+---
+
+{
+  url && (
+    <img
+      src={url}
+      alt={alt}
+      width={width}
+      height={height}
+      loading={loading}
+      decoding="async"
+      sizes={sizes}
+      class={className}
+    />
+  )
+}

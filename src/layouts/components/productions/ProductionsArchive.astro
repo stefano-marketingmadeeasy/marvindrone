@@ -1,0 +1,304 @@
+---
+import ProductionCard from "@/components/cards/ProductionCard.astro";
+import { getProductionFilters } from "@/lib/strapi/productions";
+import { strapiEnabled } from "@/lib/strapi/client";
+import { useTranslations } from "@/lib/utils/i18nUtils";
+import type { Production } from "@/types/productions";
+
+interface Props {
+  productions: Production[];
+}
+
+const { productions } = Astro.props;
+const currentLocale = Astro.currentLocale || "it";
+const filters = await getProductionFilters(productions, currentLocale);
+const isStrapiConfigured = strapiEnabled();
+const t = await useTranslations(currentLocale);
+---
+
+<section class="relative overflow-hidden bg-white py-14 md:py-18">
+  <div class="relative mx-auto w-full max-w-[1920px] space-y-8 px-[clamp(1rem,2.5vw,3.5rem)]">
+    <div
+      class="overflow-hidden rounded-full border border-black/8 bg-stone-50 p-4 shadow-[0_18px_50px_rgba(15,23,42,0.06)] md:p-5">
+      <div
+        class="relative inline-flex flex-wrap gap-3"
+        data-productions-filters>
+        <span
+          data-filter-indicator
+          aria-hidden="true"
+          class="pointer-events-none absolute left-0 top-0 rounded-full bg-stone-900 shadow-[0_12px_30px_rgba(15,23,42,0.18)] transition-[transform,width,height] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]">
+        </span>
+        <button
+          type="button"
+          data-filter-button
+          data-filter="all"
+          aria-pressed="true"
+          class="production-filter-button relative z-10 rounded-full border border-stone-300 bg-transparent px-5 py-3 text-sm font-medium text-stone-700 transition-[color,border-color,transform] duration-300 hover:border-stone-900 hover:text-stone-950">
+          <span class="filter-button-label block transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]">
+            {t("productions.archive.all")}
+          </span>
+        </button>
+        {
+          filters.map((filter) => (
+            <button
+              type="button"
+              data-filter-button
+              data-filter={filter.slug}
+              aria-pressed="false"
+              class="production-filter-button relative z-10 rounded-full border border-stone-300 bg-transparent px-5 py-3 text-sm font-medium text-stone-700 transition-[color,border-color,transform] duration-300 hover:border-stone-900 hover:text-stone-950">
+              <span class="filter-button-label block transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]">
+                {filter.name}
+              </span>
+            </button>
+          ))
+        }
+      </div>
+    </div>
+
+    {
+      productions.length > 0 ? (
+        <div
+          data-productions-grid
+          class="grid grid-cols-1 gap-[clamp(1rem,2vw,2rem)] md:grid-cols-2 xl:grid-cols-3">
+          {productions.map((production) => (
+            <ProductionCard production={production} />
+          ))}
+        </div>
+      ) : (
+        <div class="rounded-[2rem] border border-dashed border-stone-300 bg-white px-6 py-14 text-center shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
+          <p class="text-xs font-semibold tracking-[0.24em] text-stone-500 uppercase">
+            {t("productions.archive.emptyLabel")}
+          </p>
+          <h3 class="text-h5 mt-3 text-inherit">
+            {t("productions.archive.emptyTitle")}
+          </h3>
+          <p class="mx-auto mt-4 max-w-2xl text-sm leading-7 text-stone-600 md:text-base">
+            {t("productions.archive.emptyDescription")}
+          </p>
+          {import.meta.env.DEV && !isStrapiConfigured && (
+            <p class="mx-auto mt-4 max-w-2xl text-sm leading-7 text-stone-500">
+              Variabile richiesta in sviluppo: <code>STRAPI_URL</code>.
+            </p>
+          )}
+        </div>
+      )
+    }
+
+    <div
+      data-productions-empty
+      hidden
+      class="rounded-[2rem] border border-dashed border-stone-300 bg-white px-6 py-14 text-center shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
+      <p
+        class="text-xs font-semibold tracking-[0.24em] text-stone-500 uppercase">
+        {t("productions.archive.emptyFilterLabel")}
+      </p>
+      <h3 class="text-h5 mt-3 text-inherit">
+        {t("productions.archive.emptyFilterTitle")}
+      </h3>
+      <p
+        class="mx-auto mt-4 max-w-2xl text-sm leading-7 text-stone-600 md:text-base">
+        {t("productions.archive.emptyFilterDescription")}
+      </p>
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  const archive = document.querySelector("[data-productions-grid]");
+  const filterButtons = Array.from(
+    document.querySelectorAll("[data-filter-button]"),
+  );
+  const filterIndicator = document.querySelector("[data-filter-indicator]");
+  const emptyState = document.querySelector("[data-productions-empty]");
+
+  if (archive && filterButtons.length > 0) {
+    const cards = Array.from(
+      archive.querySelectorAll("[data-production-card]"),
+    );
+    let isAnimating = false;
+    let hasAppliedInitialFilter = false;
+
+    const updateIndicator = (activeButton) => {
+      if (!filterIndicator || !activeButton) return;
+
+      const filtersRect = activeButton.parentElement?.getBoundingClientRect();
+      const buttonRect = activeButton.getBoundingClientRect();
+      if (!filtersRect) return;
+
+      const offsetLeft = buttonRect.left - filtersRect.left;
+      const offsetTop = buttonRect.top - filtersRect.top;
+
+      filterIndicator.style.width = `${buttonRect.width}px`;
+      filterIndicator.style.height = `${buttonRect.height}px`;
+      filterIndicator.style.transform = `translate3d(${offsetLeft}px, ${offsetTop}px, 0)`;
+    };
+
+    const updateButtons = (activeFilter) => {
+      filterButtons.forEach((button) => {
+        const isActive = button.dataset.filter === activeFilter;
+        const label = button.querySelector(".filter-button-label");
+        button.setAttribute("aria-pressed", String(isActive));
+        button.classList.toggle("border-stone-900", isActive);
+        button.classList.toggle("text-white", isActive);
+        button.classList.toggle("border-stone-300", !isActive);
+        button.classList.toggle("text-stone-700", !isActive);
+        if (label) {
+          label.animate(
+            [
+              {
+                opacity: 0.55,
+                transform: "translate3d(0, 0.45rem, 0)",
+              },
+              {
+                opacity: 1,
+                transform: "translate3d(0, 0, 0)",
+              },
+            ],
+            {
+              duration: 260,
+              easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+            },
+          );
+        }
+      });
+
+      updateIndicator(
+        filterButtons.find((button) => button.dataset.filter === activeFilter),
+      );
+    };
+
+    const animateVisibleCards = (visibleCards) => {
+      visibleCards.forEach((card, index) => {
+        card.animate(
+          [
+            {
+              opacity: 0,
+              transform: "translate3d(0, 22px, 0) scale(0.985)",
+            },
+            {
+              opacity: 1,
+              transform: "translate3d(0, 0, 0) scale(1)",
+            },
+          ],
+          {
+            duration: 420,
+            delay: index * 55,
+            easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+            fill: "both",
+          },
+        );
+      });
+    };
+
+    const animateOutCards = (visibleCards) =>
+      Promise.all(
+        visibleCards.map((card) =>
+          card
+            .animate(
+              [
+                {
+                  opacity: 1,
+                  transform: "translate3d(0, 0, 0) scale(1)",
+                },
+                {
+                  opacity: 0,
+                  transform: "translate3d(0, -14px, 0) scale(0.985)",
+                },
+              ],
+              {
+                duration: 180,
+                easing: "ease-out",
+                fill: "forwards",
+              },
+            )
+            .finished.catch(() => undefined),
+        ),
+      );
+
+    const applyFilter = async (filter) => {
+      if (isAnimating) return;
+
+      isAnimating = true;
+      const activeFilter = filter && filter !== "all" ? filter : "all";
+      const currentlyVisibleCards = cards.filter(
+        (card) => !card.hasAttribute("hidden"),
+      );
+
+      if (hasAppliedInitialFilter && currentlyVisibleCards.length > 0) {
+        await animateOutCards(currentlyVisibleCards);
+      }
+
+      let visibleCardsCount = 0;
+      const nextVisibleCards = [];
+      cards.forEach((card) => {
+        const category = card.dataset.category || "";
+        const isVisible = activeFilter === "all" || category === activeFilter;
+        card.toggleAttribute("hidden", !isVisible);
+        if (isVisible) {
+          visibleCardsCount += 1;
+          nextVisibleCards.push(card);
+        }
+      });
+
+      if (emptyState) {
+        emptyState.toggleAttribute("hidden", visibleCardsCount !== 0);
+      }
+
+      const url = new URL(window.location.href);
+      if (activeFilter === "all") {
+        url.searchParams.delete("filter");
+      } else {
+        url.searchParams.set("filter", activeFilter);
+      }
+      window.history.replaceState({}, "", url);
+
+      updateButtons(activeFilter);
+      animateVisibleCards(nextVisibleCards);
+      hasAppliedInitialFilter = true;
+      isAnimating = false;
+    };
+
+    filterButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        applyFilter(button.dataset.filter || "all");
+      });
+    });
+
+    const initialFilter =
+      new URLSearchParams(window.location.search).get("filter") || "all";
+    applyFilter(initialFilter);
+
+    requestAnimationFrame(() => {
+      const activeButton = filterButtons.find(
+        (button) => button.getAttribute("aria-pressed") === "true",
+      );
+      updateIndicator(activeButton);
+    });
+
+    window.addEventListener("resize", () => {
+      const activeButton = filterButtons.find(
+        (button) => button.getAttribute("aria-pressed") === "true",
+      );
+      updateIndicator(activeButton);
+    });
+
+    window.addEventListener("load", () => {
+      const activeButton = filterButtons.find(
+        (button) => button.getAttribute("aria-pressed") === "true",
+      );
+      updateIndicator(activeButton);
+    });
+  }
+</script>
+
+<style>
+  .production-filter-button[aria-pressed="true"] {
+    color: white;
+    border-color: rgb(28 25 23);
+  }
+
+  .production-filter-button[aria-pressed="false"] {
+    color: rgb(87 83 78);
+    border-color: rgb(214 211 209);
+  }
+</style>

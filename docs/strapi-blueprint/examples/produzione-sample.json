@@ -1,0 +1,83 @@
+{
+  "title": "Un bel giorno",
+  "slug": "un-bel-giorno",
+  "excerpt": "Un film che attraversa una giornata sospesa tra desiderio, conflitto e rinascita.",
+  "synopsis": "La storia segue i protagonisti in una giornata che cambia tutto.",
+  "body": "Qui puoi inserire la scheda editoriale completa, in testo o contenuto formattato.",
+  "releaseDate": "2026-01-10",
+  "year": 2026,
+  "duration": "102 min",
+  "stato": "completata",
+  "genre": "Drammatico",
+  "location": "Italia",
+  "broadcaster": "Cinema",
+  "trailerUrl": "https://www.youtube.com/watch?v=example",
+  "sortOrder": 1,
+  "featured": true,
+  "tipologia": {
+    "connect": [
+      {
+        "slug": "film"
+      }
+    ]
+  },
+  "cast": [
+    {
+      "value": "Nome Attore 1"
+    },
+    {
+      "value": "Nome Attore 2"
+    }
+  ],
+  "awards": [
+    {
+      "value": "Festival Example 2026"
+    }
+  ],
+  "tags": [
+    {
+      "value": "cinema"
+    },
+    {
+      "value": "drama"
+    }
+  ],
+  "credits": [
+    {
+      "label": "Regia",
+      "values": [
+        {
+          "value": "Mario Rossi"
+        }
+      ]
+    },
+    {
+      "label": "Sceneggiatura",
+      "values": [
+        {
+          "value": "Giulia Bianchi"
+        }
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "label": "Produzione",
+      "value": "Marvin Drone"
+    },
+    {
+      "label": "Distribuzione",
+      "value": "Cinema Italia"
+    }
+  ],
+  "externalLinks": [
+    {
+      "label": "Trailer ufficiale",
+      "url": "https://www.youtube.com/watch?v=example"
+    }
+  ],
+  "seo": {
+    "metaTitle": "Un bel giorno | Produzioni",
+    "metaDescription": "Scheda produzione di Un bel giorno."
+  }
+}

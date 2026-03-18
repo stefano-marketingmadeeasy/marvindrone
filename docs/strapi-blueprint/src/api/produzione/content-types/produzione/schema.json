@@ -1,0 +1,132 @@
+{
+  "kind": "collectionType",
+  "collectionName": "produzioni",
+  "info": {
+    "singularName": "produzione",
+    "pluralName": "produzioni",
+    "displayName": "Produzione",
+    "description": "Schede dettagliate delle produzioni"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "title",
+      "required": true
+    },
+    "excerpt": {
+      "type": "text"
+    },
+    "synopsis": {
+      "type": "richtext"
+    },
+    "body": {
+      "type": "richtext"
+    },
+    "releaseDate": {
+      "type": "date"
+    },
+    "year": {
+      "type": "integer"
+    },
+    "duration": {
+      "type": "string"
+    },
+    "stato": {
+      "type": "enumeration",
+      "enum": [
+        "sviluppo",
+        "preproduzione",
+        "produzione",
+        "postproduzione",
+        "distribuzione",
+        "completata"
+      ]
+    },
+    "genre": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "broadcaster": {
+      "type": "string"
+    },
+    "trailerUrl": {
+      "type": "string"
+    },
+    "sortOrder": {
+      "type": "integer",
+      "default": 0
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "tipologia": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::tipologia-produzione.tipologia-produzione",
+      "inversedBy": "produzioni",
+      "required": true
+    },
+    "heroImage": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": ["images"]
+    },
+    "poster": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "gallery": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": ["images"]
+    },
+    "cast": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.text-item"
+    },
+    "awards": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.text-item"
+    },
+    "tags": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.text-item"
+    },
+    "credits": {
+      "type": "component",
+      "repeatable": true,
+      "component": "produzione.credito"
+    },
+    "facts": {
+      "type": "component",
+      "repeatable": true,
+      "component": "produzione.informazione"
+    },
+    "externalLinks": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.link"
+    },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.seo"
+    }
+  }
+}

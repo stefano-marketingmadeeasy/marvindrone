@@ -1,0 +1,27 @@
+---
+
+---
+
+<div
+  class="page-loader pointer-events-none fixed bottom-0 left-0 z-50 size-full bg-white transition duration-300 [&.inactive]:invisible [&.inactive]:opacity-0">
+  <script>
+    const pageLoader = document.querySelector(".page-loader");
+    let hideTimeoutId: ReturnType<typeof setTimeout> | undefined;
+
+    const hideLoader = () => {
+      if (pageLoader) {
+        clearTimeout(hideTimeoutId);
+        hideTimeoutId = setTimeout(() => {
+          pageLoader.classList.add("inactive");
+        }, 100);
+      }
+    };
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", hideLoader, { once: true });
+      window.addEventListener("load", hideLoader, { once: true });
+    } else {
+      hideLoader();
+    }
+  </script>
+</div>
