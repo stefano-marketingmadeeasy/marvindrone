@@ -16,6 +16,7 @@ const currentPath = Astro.url.pathname.replace(/\/+$/, "") || "/";
 const homePath =
   getLocaleUrlCTM("/", Astro.currentLocale).replace(/\/+$/, "") || "/";
 const forceBlueHeader = Astro.props.forceBlueHeader === true;
+const forceOverlayHeader = Astro.props.overlayHeader === true;
 const isOverlayHeader = currentPath === homePath && !forceBlueHeader;
 const isDarkHeader = isOverlayHeader || forceBlueHeader;
 
@@ -25,8 +26,8 @@ const { stickyHeader } = config.settings;
 <header
   class:list={[
     "header group/header transform",
-    { "sticky-header fixed": stickyHeader && isOverlayHeader },
-    { "sticky-header": stickyHeader && !isOverlayHeader },
+    { "sticky-header fixed": stickyHeader && (isOverlayHeader || forceOverlayHeader) },
+    { "sticky-header": stickyHeader && !isOverlayHeader && !forceOverlayHeader },
     { "header-dark": isDarkHeader },
     { "header-home-top": isOverlayHeader },
   ]}>

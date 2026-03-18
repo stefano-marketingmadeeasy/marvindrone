@@ -13,7 +13,7 @@
     {
       "enable": true,
       "name": "Noleggio",
-      "url": "#"
+      "url": "/noleggio/"
     }
   ],
   "footerMenu": [
@@ -33,6 +33,11 @@
       "enable": true,
       "name": "Produzioni",
       "url": "/produzioni/"
+    },
+    {
+      "enable": true,
+      "name": "Noleggio",
+      "url": "/noleggio/"
     },
     {
       "enable": true,
@@ -70,6 +75,11 @@
       "enable": true,
       "name": "Produzioni",
       "url": "/produzioni/"
+    },
+    {
+      "enable": true,
+      "name": "Noleggio",
+      "url": "/noleggio/"
     },
     {
       "enable": true,

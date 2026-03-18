@@ -1,0 +1,403 @@
+---
+import RentalCard from "@/components/cards/RentalCard.astro";
+import { strapiEnabled } from "@/lib/strapi/client";
+import { getRentalFilters } from "@/lib/strapi/rentals";
+import type { Rental } from "@/types/rentals";
+import type { RentalsPageContent } from "@/types/rentals-page";
+
+interface Props {
+  rentals: Rental[];
+  content: Pick<RentalsPageContent, "archive" | "card">;
+}
+
+const currentLocale = Astro.currentLocale || "it";
+const { rentals, content } = Astro.props;
+const { archive, card } = content;
+const filters = getRentalFilters(rentals, currentLocale);
+const isStrapiConfigured = strapiEnabled();
+const revealStartDelay = 0.12;
+---
+
+<section
+  data-rentals-root
+  class="relative bg-white py-2 md:py-4">
+  <div class="mx-auto w-full max-w-[1480px] px-[clamp(1rem,2.5vw,3.5rem)]">
+    <div class="grid gap-8 lg:grid-cols-[minmax(13.5rem,16rem)_minmax(0,1fr)] lg:items-start lg:gap-10">
+      <aside class="lg:sticky lg:top-[var(--rental-header-offset,76px)] lg:self-start">
+        <div
+          data-rentals-filters
+          class="rounded-[2rem] border border-stone-200 bg-white p-5 shadow-[0_22px_60px_rgba(15,23,42,0.05)] md:p-6">
+          <div class="grid grid-cols-1 gap-4">
+            <label class="grid gap-2">
+              <span class="text-xs font-semibold tracking-[0.18em] text-stone-500 uppercase">
+                {archive.brandLabel}
+              </span>
+              <select
+                data-rental-filter-brand
+                class="min-h-[3.5rem] rounded-[1.25rem] border border-stone-200 bg-stone-50 px-4 text-sm text-stone-900 outline-none transition focus:border-stone-900">
+                <option value="all">{archive.brandPlaceholder}</option>
+                {
+                  filters.brands.map((brand) => (
+                    <option value={brand.slug}>{brand.name}</option>
+                  ))
+                }
+              </select>
+            </label>
+
+            <label class="grid gap-2">
+              <span class="text-xs font-semibold tracking-[0.18em] text-stone-500 uppercase">
+                {archive.usageLabel}
+              </span>
+              <select
+                data-rental-filter-usage
+                class="min-h-[3.5rem] rounded-[1.25rem] border border-stone-200 bg-stone-50 px-4 text-sm text-stone-900 outline-none transition focus:border-stone-900">
+                <option value="all">{archive.usagePlaceholder}</option>
+                {
+                  filters.usages.map((usage) => (
+                    <option value={usage.slug}>{usage.name}</option>
+                  ))
+                }
+              </select>
+            </label>
+
+            <div class="pt-2">
+              <button
+                type="button"
+                data-rental-filter-reset
+                class="min-h-[3.5rem] w-full rounded-full border border-stone-300 px-5 text-sm font-medium text-stone-700 transition hover:border-stone-900 hover:text-stone-950">
+                {archive.resetFilters}
+              </button>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <div class="min-w-0 space-y-6">
+        {
+          rentals.length > 0 ? (
+            <div data-rentals-list class="grid grid-cols-1 gap-6">
+              {rentals.map((rental) => <RentalCard rental={rental} labels={card} />)}
+            </div>
+          ) : (
+            <div class="rounded-[2rem] border border-dashed border-stone-300 bg-white px-6 py-14 text-center shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
+              <p class="text-xs font-semibold tracking-[0.24em] text-stone-500 uppercase">
+                {archive.emptyLabel}
+              </p>
+              <h3 class="text-h5 mt-3 text-inherit">
+                {archive.emptyTitle}
+              </h3>
+              <p class="mx-auto mt-4 max-w-2xl text-sm leading-7 text-stone-600 md:text-base">
+                {archive.emptyDescription}
+              </p>
+              {import.meta.env.DEV && !isStrapiConfigured && (
+                <p class="mx-auto mt-4 max-w-2xl text-sm leading-7 text-stone-500">
+                  Variabile richiesta in sviluppo: <code>STRAPI_URL</code>.
+                </p>
+              )}
+            </div>
+          )
+        }
+
+        <div
+          data-rentals-empty
+          hidden
+          class="rounded-[2rem] border border-dashed border-stone-300 bg-white px-6 py-14 text-center shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
+          <p class="text-xs font-semibold tracking-[0.24em] text-stone-500 uppercase">
+            {archive.emptyFilterLabel}
+          </p>
+          <h3 class="text-h5 mt-3 text-inherit">
+            {archive.emptyFilterTitle}
+          </h3>
+          <p class="mx-auto mt-4 max-w-2xl text-sm leading-7 text-stone-600 md:text-base">
+            {archive.emptyFilterDescription}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script is:inline define:vars={{ revealStartDelay }}>
+  const root = document.querySelector("[data-rentals-root]");
+
+  if (root) {
+    const brandSelect = root.querySelector("[data-rental-filter-brand]");
+    const usageSelect = root.querySelector("[data-rental-filter-usage]");
+    const resetButton = root.querySelector("[data-rental-filter-reset]");
+    const filtersPanel = root.querySelector("[data-rentals-filters]");
+    const list = root.querySelector("[data-rentals-list]");
+    const emptyState = root.querySelector("[data-rentals-empty]");
+    const cards = list
+      ? Array.from(list.querySelectorAll("[data-rental-card]"))
+      : [];
+    const reducedMotionQuery = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    );
+    let filterTimeout = 0;
+    let revealTicking = false;
+
+    const syncUrl = (activeBrand, activeUsage) => {
+      const url = new URL(window.location.href);
+      if (activeBrand === "all") {
+        url.searchParams.delete("brand");
+      } else {
+        url.searchParams.set("brand", activeBrand);
+      }
+
+      if (activeUsage === "all") {
+        url.searchParams.delete("use");
+      } else {
+        url.searchParams.set("use", activeUsage);
+      }
+
+      window.history.replaceState({}, "", url);
+    };
+
+    const clearCardAnimationClasses = () => {
+      cards.forEach((card) => {
+        card.classList.remove("is-filter-enter", "is-filter-enter-active", "is-filter-exit");
+        card.style.removeProperty("--rental-filter-delay");
+      });
+    };
+
+    const updateResults = (visibleCards) => {
+      cards.forEach((card) => {
+        const isVisible = visibleCards.includes(card);
+        card.toggleAttribute("hidden", !isVisible);
+      });
+
+      if (emptyState) {
+        const shouldShowEmpty = visibleCards.length === 0;
+        emptyState.toggleAttribute("hidden", !shouldShowEmpty);
+        emptyState.classList.toggle("is-visible", shouldShowEmpty);
+      }
+    };
+
+    const animateResultsIn = (visibleCards) => {
+      if (reducedMotionQuery.matches) return;
+
+      visibleCards.forEach((card, index) => {
+        card.classList.add("is-filter-enter");
+        card.style.setProperty("--rental-filter-delay", `${index * 45}ms`);
+      });
+
+      requestAnimationFrame(() => {
+        visibleCards.forEach((card) => {
+          card.classList.add("is-filter-enter-active");
+        });
+      });
+
+      window.clearTimeout(filterTimeout);
+      filterTimeout = window.setTimeout(() => {
+        clearCardAnimationClasses();
+      }, 520);
+    };
+
+    const applyFilters = ({ animate = true } = {}) => {
+      if (!brandSelect || !usageSelect) return;
+
+      const activeBrand = brandSelect.value || "all";
+      const activeUsage = usageSelect.value || "all";
+      const nextVisibleCards = cards.filter((card) => {
+        const brand = card.dataset.brand || "";
+        const usages = (card.dataset.usages || "")
+          .split(",")
+          .map((value) => value.trim())
+          .filter(Boolean);
+        const matchesBrand = activeBrand === "all" || brand === activeBrand;
+        const matchesUsage =
+          activeUsage === "all" || usages.includes(activeUsage);
+
+        return matchesBrand && matchesUsage;
+      });
+
+      const finalizeFilterChange = () => {
+        updateResults(nextVisibleCards);
+        syncUrl(activeBrand, activeUsage);
+        animateResultsIn(nextVisibleCards);
+      };
+
+      if (!animate || reducedMotionQuery.matches) {
+        clearCardAnimationClasses();
+        finalizeFilterChange();
+        return;
+      }
+
+      cards
+        .filter((card) => !card.hidden)
+        .forEach((card, index) => {
+          card.classList.remove("is-filter-enter", "is-filter-enter-active");
+          card.classList.add("is-filter-exit");
+          card.style.setProperty("--rental-filter-delay", `${index * 20}ms`);
+        });
+
+      window.clearTimeout(filterTimeout);
+      filterTimeout = window.setTimeout(() => {
+        clearCardAnimationClasses();
+        finalizeFilterChange();
+      }, 170);
+    };
+
+    const applyInitialFilters = () => {
+      if (!brandSelect || !usageSelect) return;
+
+      const search = new URLSearchParams(window.location.search);
+      const brand = search.get("brand");
+      const usage = search.get("use");
+
+      if (brand && brandSelect.querySelector(`option[value="${brand}"]`)) {
+        brandSelect.value = brand;
+      }
+
+      if (usage && usageSelect.querySelector(`option[value="${usage}"]`)) {
+        usageSelect.value = usage;
+      }
+
+      applyFilters({ animate: false });
+    };
+
+    const clamp = (value, min = 0, max = 1) =>
+      Math.min(Math.max(value, min), max);
+    const revealConfig = {
+      filtersStart: 0.96 + revealStartDelay,
+      filtersEnd: 0.62,
+      listStart: 0.98 + revealStartDelay,
+      listEnd: 0.58,
+    };
+
+    const setRevealProgress = (element, startRatio, endRatio) => {
+      if (!(element instanceof HTMLElement)) return;
+
+      if (reducedMotionQuery.matches) {
+        element.style.setProperty("--rental-reveal-progress", "1");
+        return;
+      }
+
+      const viewportHeight = window.innerHeight || 1;
+      const rect = element.getBoundingClientRect();
+      const start = viewportHeight * startRatio;
+      const end = viewportHeight * endRatio;
+      const progress = clamp((start - rect.top) / Math.max(start - end, 1));
+      element.style.setProperty(
+        "--rental-reveal-progress",
+        progress.toFixed(4),
+      );
+    };
+
+    const updateReveal = () => {
+      setRevealProgress(
+        filtersPanel,
+        revealConfig.filtersStart,
+        revealConfig.filtersEnd,
+      );
+      setRevealProgress(
+        list,
+        revealConfig.listStart,
+        revealConfig.listEnd,
+      );
+      if (emptyState instanceof HTMLElement && !emptyState.hidden) {
+        setRevealProgress(
+          emptyState,
+          revealConfig.listStart,
+          revealConfig.listEnd,
+        );
+      }
+      revealTicking = false;
+    };
+
+    const requestRevealUpdate = () => {
+      if (revealTicking) return;
+      revealTicking = true;
+      window.requestAnimationFrame(updateReveal);
+    };
+
+    brandSelect?.addEventListener("change", applyFilters);
+    usageSelect?.addEventListener("change", applyFilters);
+    resetButton?.addEventListener("click", () => {
+      if (!brandSelect || !usageSelect) return;
+
+      brandSelect.value = "all";
+      usageSelect.value = "all";
+      applyFilters();
+    });
+
+    applyInitialFilters();
+    updateReveal();
+    window.addEventListener("scroll", requestRevealUpdate, { passive: true });
+    window.addEventListener("resize", requestRevealUpdate);
+  }
+</script>
+
+<style>
+  [data-rentals-filters],
+  [data-rentals-list],
+  [data-rentals-empty] {
+    --rental-reveal-progress: 0;
+    opacity: var(--rental-reveal-progress);
+    will-change: opacity, transform;
+  }
+
+  [data-rentals-filters] {
+    transform: translate3d(
+      0,
+      calc((1 - var(--rental-reveal-progress)) * -36px),
+      0
+    );
+  }
+
+  [data-rentals-list],
+  [data-rentals-empty] {
+    transform: translate3d(
+      0,
+      calc((1 - var(--rental-reveal-progress)) * 42px),
+      0
+    );
+  }
+
+  @media (min-width: 1024px) {
+    [data-rentals-filters],
+    [data-rentals-list],
+    [data-rentals-empty] {
+      transform: none;
+    }
+  }
+
+  [data-rental-card] {
+    will-change: opacity, transform;
+  }
+
+  [data-rental-card].is-filter-exit {
+    opacity: 0;
+    transform: translate3d(0, -18px, 0) scale(0.985);
+    transition:
+      opacity 0.16s ease,
+      transform 0.22s ease;
+    transition-delay: var(--rental-filter-delay, 0ms);
+    pointer-events: none;
+  }
+
+  [data-rental-card].is-filter-enter {
+    opacity: 0;
+    transform: translate3d(0, 24px, 0) scale(0.985);
+  }
+
+  [data-rental-card].is-filter-enter.is-filter-enter-active {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    transition:
+      opacity 0.32s ease,
+      transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--rental-filter-delay, 0ms);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-rentals-filters],
+    [data-rentals-list],
+    [data-rentals-empty],
+    [data-rental-card] {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>

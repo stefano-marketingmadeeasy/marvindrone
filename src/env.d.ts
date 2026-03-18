@@ -5,6 +5,8 @@ interface ImportMetaEnv {
   readonly STRAPI_URL?: string;
   readonly STRAPI_TOKEN?: string;
   readonly STRAPI_PRODUCTIONS_ENDPOINT?: string;
+  readonly STRAPI_RENTALS_ENDPOINT?: string;
+  readonly WHATSAPP_PHONE?: string;
 }
 
 interface ImportMeta {

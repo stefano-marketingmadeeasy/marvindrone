@@ -49,7 +49,7 @@ const { content: list, ...rest } = Astro.props;
               ]}>
               <div class="prose-styles pb-4">
                 <div
-                  class="bg-theme-light rounded-md px-4 py-4 [&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
+                  class="rounded-md px-4 py-4 [&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
                   set:html={markdownify(item.content, true)}
                 />
               </div>

@@ -1,0 +1,21 @@
+---
+import Base from "@/layouts/Base.astro";
+import RentalsPage from "@/components/rentals/RentalsPage.astro";
+import { getEntryCTM } from "@/lib/contentParser.astro";
+import { getAllRentals } from "@/lib/strapi/rentals";
+import type { RentalsPageContent } from "@/types/rentals-page";
+
+const rentals = await getAllRentals("en");
+const contentEntry = await getEntryCTM("sections", "rentals-page", "en");
+const content = contentEntry?.data as RentalsPageContent;
+---
+
+<Base
+  title={content.title}
+  description={content.description}
+  forceBlueHeader={true}
+  overlayHeader={true}
+  metaTitle={content.metaTitle}
+  metaDescription={content.metaDescription}>
+  <RentalsPage rentals={rentals} content={content} />
+</Base>
