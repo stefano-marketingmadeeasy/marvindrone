@@ -5,3 +5,4 @@ compatibility_flags    = ["nodejs_compat"]
 
 [vars]
   NODE_VERSION = "22.13.1"
+  STRAPI_URL = "https://cms.paoluccisrl.it/"
