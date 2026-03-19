@@ -40,7 +40,12 @@ const usageOptions = [
               <span class="text-xs font-semibold tracking-[0.18em] text-stone-500 uppercase">
                 {archive.brandLabel}
               </span>
-              <div data-rental-dropdown data-filter-name="brand" class="relative">
+              <select
+                data-rental-filter-brand-mobile
+                class="min-h-[3.5rem] w-full rounded-[1.25rem] border border-stone-200 bg-stone-50 px-4 text-sm text-stone-900 outline-none transition duration-200 focus:border-stone-900 focus:bg-white md:hidden">
+                {brandOptions.map((option) => <option value={option.value}>{option.label}</option>)}
+              </select>
+              <div data-rental-dropdown data-filter-name="brand" class="relative hidden md:block">
                 <select data-rental-filter-brand hidden>
                   {brandOptions.map((option) => <option value={option.value}>{option.label}</option>)}
                 </select>
@@ -75,20 +80,12 @@ const usageOptions = [
                           data-rental-dropdown-option
                           data-value={option.value}
                           class:list={[
-                            "flex w-full items-center justify-between gap-3 rounded-[1rem] px-3.5 py-3 text-left text-sm transition duration-150",
+                            "flex w-full items-center rounded-[1rem] px-3.5 py-3 text-left text-sm transition duration-150",
                             option.value === "all"
                               ? "bg-stone-100 text-stone-950"
                               : "text-stone-700 hover:bg-stone-100 hover:text-stone-950",
                           ]}>
                           <span class="truncate">{option.label}</span>
-                          <span
-                            data-rental-dropdown-check
-                            class:list={[
-                              "text-[0.65rem] font-semibold tracking-[0.22em] uppercase",
-                              option.value === "all" ? "text-stone-500" : "hidden text-stone-500",
-                            ]}>
-                            ok
-                          </span>
                         </button>
                       ))
                     }
@@ -101,7 +98,12 @@ const usageOptions = [
               <span class="text-xs font-semibold tracking-[0.18em] text-stone-500 uppercase">
                 {archive.usageLabel}
               </span>
-              <div data-rental-dropdown data-filter-name="usage" class="relative">
+              <select
+                data-rental-filter-usage-mobile
+                class="min-h-[3.5rem] w-full rounded-[1.25rem] border border-stone-200 bg-stone-50 px-4 text-sm text-stone-900 outline-none transition duration-200 focus:border-stone-900 focus:bg-white md:hidden">
+                {usageOptions.map((option) => <option value={option.value}>{option.label}</option>)}
+              </select>
+              <div data-rental-dropdown data-filter-name="usage" class="relative hidden md:block">
                 <select data-rental-filter-usage hidden>
                   {usageOptions.map((option) => <option value={option.value}>{option.label}</option>)}
                 </select>
@@ -136,20 +138,12 @@ const usageOptions = [
                           data-rental-dropdown-option
                           data-value={option.value}
                           class:list={[
-                            "flex w-full items-center justify-between gap-3 rounded-[1rem] px-3.5 py-3 text-left text-sm transition duration-150",
+                            "flex w-full items-center rounded-[1rem] px-3.5 py-3 text-left text-sm transition duration-150",
                             option.value === "all"
                               ? "bg-stone-100 text-stone-950"
                               : "text-stone-700 hover:bg-stone-100 hover:text-stone-950",
                           ]}>
                           <span class="truncate">{option.label}</span>
-                          <span
-                            data-rental-dropdown-check
-                            class:list={[
-                              "text-[0.65rem] font-semibold tracking-[0.22em] uppercase",
-                              option.value === "all" ? "text-stone-500" : "hidden text-stone-500",
-                            ]}>
-                            ok
-                          </span>
                         </button>
                       ))
                     }
@@ -221,6 +215,8 @@ const usageOptions = [
   if (root) {
     const brandSelect = root.querySelector("[data-rental-filter-brand]");
     const usageSelect = root.querySelector("[data-rental-filter-usage]");
+    const brandSelectMobile = root.querySelector("[data-rental-filter-brand-mobile]");
+    const usageSelectMobile = root.querySelector("[data-rental-filter-usage-mobile]");
     const dropdowns = Array.from(
       root.querySelectorAll("[data-rental-dropdown]"),
     );
@@ -236,6 +232,60 @@ const usageOptions = [
     );
     let filterTimeout = 0;
     let revealTicking = false;
+
+    const releaseInteractiveFocus = () => {
+      const activeElement = document.activeElement;
+      if (activeElement instanceof HTMLElement && root.contains(activeElement)) {
+        activeElement.blur();
+      }
+    };
+
+    const scrollToArchiveStart = () => {
+      if (!(root instanceof HTMLElement)) return;
+      const headerOffset =
+        Number.parseFloat(
+          getComputedStyle(document.documentElement).getPropertyValue(
+            "--rental-header-offset",
+          ),
+        ) || 0;
+      const targetY =
+        window.scrollY + root.getBoundingClientRect().top - headerOffset - 20;
+      const nextY = Math.max(targetY, 0);
+      const shouldJump = Math.abs(window.scrollY - nextY) > 8;
+
+      if (shouldJump) {
+        window.scrollTo({
+          top: nextY,
+          behavior: "auto",
+        });
+      }
+
+      return shouldJump;
+    };
+
+    const getActiveBrandSelect = () =>
+      window.innerWidth < 768
+        ? brandSelectMobile || brandSelect
+        : brandSelect || brandSelectMobile;
+
+    const getActiveUsageSelect = () =>
+      window.innerWidth < 768
+        ? usageSelectMobile || usageSelect
+        : usageSelect || usageSelectMobile;
+
+    const setAllSelectValues = (nextBrand, nextUsage) => {
+      [brandSelect, brandSelectMobile].forEach((select) => {
+        if (select instanceof HTMLSelectElement) {
+          select.value = nextBrand;
+        }
+      });
+
+      [usageSelect, usageSelectMobile].forEach((select) => {
+        if (select instanceof HTMLSelectElement) {
+          select.value = nextUsage;
+        }
+      });
+    };
 
     const getDropdownParts = (dropdown) => {
       if (!(dropdown instanceof HTMLElement)) return null;
@@ -293,10 +343,6 @@ const usageOptions = [
         option.classList.toggle("bg-stone-100", isActive);
         option.classList.toggle("text-stone-950", isActive);
         option.classList.toggle("text-stone-700", !isActive);
-        const check = option.querySelector("[data-rental-dropdown-check]");
-        if (check instanceof HTMLElement) {
-          check.classList.toggle("hidden", !isActive);
-        }
       });
     };
 
@@ -358,10 +404,12 @@ const usageOptions = [
     };
 
     const applyFilters = ({ animate = true } = {}) => {
-      if (!brandSelect || !usageSelect) return;
+      const activeBrandSelect = getActiveBrandSelect();
+      const activeUsageSelect = getActiveUsageSelect();
+      if (!activeBrandSelect || !activeUsageSelect) return;
 
-      const activeBrand = brandSelect.value || "all";
-      const activeUsage = usageSelect.value || "all";
+      const activeBrand = activeBrandSelect.value || "all";
+      const activeUsage = activeUsageSelect.value || "all";
       const nextVisibleCards = cards.filter((card) => {
         const brand = card.dataset.brand || "";
         const usages = (card.dataset.usages || "")
@@ -387,40 +435,58 @@ const usageOptions = [
         return;
       }
 
-      cards
-        .filter((card) => !card.hidden)
-        .forEach((card, index) => {
-          card.classList.remove("is-filter-enter", "is-filter-enter-active");
-          card.classList.add("is-filter-exit");
-          card.style.setProperty("--rental-filter-delay", `${index * 20}ms`);
-        });
+      const startAnimatedFilterChange = () => {
+        cards
+          .filter((card) => !card.hidden)
+          .forEach((card, index) => {
+            card.classList.remove("is-filter-enter", "is-filter-enter-active");
+            card.classList.add("is-filter-exit");
+            card.style.setProperty("--rental-filter-delay", `${index * 20}ms`);
+          });
 
-      window.clearTimeout(filterTimeout);
-      filterTimeout = window.setTimeout(() => {
-        clearCardAnimationClasses();
-        finalizeFilterChange();
-      }, 170);
+        window.clearTimeout(filterTimeout);
+        filterTimeout = window.setTimeout(() => {
+          clearCardAnimationClasses();
+          finalizeFilterChange();
+        }, 170);
+      };
+
+      releaseInteractiveFocus();
+      const didJumpToStart = scrollToArchiveStart();
+      if (didJumpToStart) {
+        window.requestAnimationFrame(() => {
+          window.requestAnimationFrame(startAnimatedFilterChange);
+        });
+      } else {
+        startAnimatedFilterChange();
+      }
     };
 
     const applyInitialFilters = () => {
-      if (!brandSelect || !usageSelect) return;
+      const activeBrandSelect = getActiveBrandSelect();
+      const activeUsageSelect = getActiveUsageSelect();
+      if (!activeBrandSelect || !activeUsageSelect) return;
 
       const search = new URLSearchParams(window.location.search);
       const brand = search.get("brand");
       const usage = search.get("use");
+      const nextBrand =
+        brand &&
+        activeBrandSelect.querySelector(`option[value="${brand}"]`)
+          ? brand
+          : "all";
+      const nextUsage =
+        usage &&
+        activeUsageSelect.querySelector(`option[value="${usage}"]`)
+          ? usage
+          : "all";
 
-      if (brand && brandSelect.querySelector(`option[value="${brand}"]`)) {
-        brandSelect.value = brand;
-      }
-
-      if (usage && usageSelect.querySelector(`option[value="${usage}"]`)) {
-        usageSelect.value = usage;
-      }
+      setAllSelectValues(nextBrand, nextUsage);
 
       const brandDropdown = root.querySelector('[data-filter-name="brand"]');
       const usageDropdown = root.querySelector('[data-filter-name="usage"]');
-      syncDropdownUi(brandDropdown, brandSelect.value || "all");
-      syncDropdownUi(usageDropdown, usageSelect.value || "all");
+      syncDropdownUi(brandDropdown, nextBrand);
+      syncDropdownUi(usageDropdown, nextUsage);
 
       applyFilters({ animate: false });
     };
@@ -480,8 +546,26 @@ const usageOptions = [
       window.requestAnimationFrame(updateReveal);
     };
 
-    brandSelect?.addEventListener("change", applyFilters);
-    usageSelect?.addEventListener("change", applyFilters);
+    const handleBrandChange = (event) => {
+      const target = event.currentTarget;
+      if (!(target instanceof HTMLSelectElement)) return;
+      setAllSelectValues(target.value || "all", getActiveUsageSelect()?.value || "all");
+      syncDropdownUi(root.querySelector('[data-filter-name="brand"]'), target.value || "all");
+      applyFilters();
+    };
+
+    const handleUsageChange = (event) => {
+      const target = event.currentTarget;
+      if (!(target instanceof HTMLSelectElement)) return;
+      setAllSelectValues(getActiveBrandSelect()?.value || "all", target.value || "all");
+      syncDropdownUi(root.querySelector('[data-filter-name="usage"]'), target.value || "all");
+      applyFilters();
+    };
+
+    brandSelect?.addEventListener("change", handleBrandChange);
+    usageSelect?.addEventListener("change", handleUsageChange);
+    brandSelectMobile?.addEventListener("change", handleBrandChange);
+    usageSelectMobile?.addEventListener("change", handleUsageChange);
 
     dropdowns.forEach((dropdown) => {
       const parts = getDropdownParts(dropdown);
@@ -513,10 +597,7 @@ const usageOptions = [
     });
 
     resetButton?.addEventListener("click", () => {
-      if (!brandSelect || !usageSelect) return;
-
-      brandSelect.value = "all";
-      usageSelect.value = "all";
+      setAllSelectValues("all", "all");
       syncDropdownUi(root.querySelector('[data-filter-name="brand"]'), "all");
       syncDropdownUi(root.querySelector('[data-filter-name="usage"]'), "all");
       dropdowns.forEach((dropdown) => closeDropdown(dropdown));

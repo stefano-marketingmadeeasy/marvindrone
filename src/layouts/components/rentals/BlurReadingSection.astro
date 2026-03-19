@@ -1,0 +1,356 @@
+---
+interface Action {
+  href: string;
+  label: string;
+  iconAlt?: string;
+  iconSrc?: string;
+}
+
+interface Props {
+  action?: Action;
+  align?: "left" | "right";
+  animated?: boolean;
+  body: string;
+  note?: string;
+  textStagger?: string;
+  title: string;
+  width?: "default" | "narrow";
+}
+
+const {
+  action,
+  align = "left",
+  animated = true,
+  body,
+  note,
+  textStagger = "0.032",
+  title,
+  width = "default",
+} = Astro.props;
+
+const wrapperClasses =
+  align === "right"
+    ? "ml-auto items-end text-right"
+    : "mr-auto items-start text-left";
+const textBlockClasses = align === "right" ? "ml-auto" : "";
+const wrapperWidthClass = width === "narrow" ? "max-w-[768px]" : "max-w-5xl";
+const bodyWidthClass = width === "narrow" ? "max-w-[768px]" : "max-w-4xl";
+const sectionSpacingClass = animated ? "py-12 md:py-[50svh]" : "py-12 md:py-24";
+const paragraphHtml = note ? `${body} ${note}` : body;
+---
+
+<section
+  class:list={["bg-white", sectionSpacingClass]}
+  data-blur-reading-section
+  data-animated={animated ? "true" : "false"}>
+  {
+    animated ? (
+      <div class="container">
+        <div
+          data-blur-reading-stage
+          class={`flex w-full ${wrapperWidthClass} flex-col gap-6 md:gap-10 ${wrapperClasses}`}>
+          <div class={`w-full ${wrapperWidthClass} ${textBlockClasses}`}>
+            <h2
+              data-blur-reading-title
+              class="text-4xl leading-[1.6] font-semibold tracking-[-0.03em] text-stone-950 md:text-5xl xl:text-[3.2rem]">
+              {title}
+            </h2>
+          </div>
+
+          <div class={`w-full ${bodyWidthClass} ${textBlockClasses}`}>
+            <p
+              data-blur-reading-v4
+              data-blur="10"
+              data-stagger={textStagger}
+              set:html={paragraphHtml}
+              class="w-full leading-[2.0] tracking-[-0.05em] text-stone-600 md:text-4xl lg:text-2xl xl:text-3xl xs:text-xl" />
+          </div>
+
+          {
+            action && (
+              <div class={`pt-3 ${align === "right" ? "ml-auto" : ""}`}>
+                <a
+                  href={action.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-3 rounded-full bg-stone-950 px-6 py-3.5 text-sm font-medium text-white transition hover:bg-stone-800 md:text-base">
+                  {
+                    action.iconSrc && (
+                      <img
+                        src={action.iconSrc}
+                        alt={action.iconAlt || ""}
+                        width="18"
+                        height="18"
+                        class="size-[18px] brightness-0 invert"
+                      />
+                    )
+                  }
+                  <span>{action.label}</span>
+                </a>
+              </div>
+            )
+          }
+        </div>
+      </div>
+    ) : (
+      <div class="container">
+        <div class={`flex w-full ${wrapperWidthClass} flex-col gap-6 md:gap-10 ${wrapperClasses}`}>
+          <div class={`w-full ${wrapperWidthClass} ${textBlockClasses}`}>
+            <h2
+              class="text-4xl leading-[0.98] font-semibold tracking-[-0.03em] text-stone-950 md:text-5xl xl:text-[3.2rem]">
+              {title}
+            </h2>
+          </div>
+
+          <div class={`w-full ${bodyWidthClass} ${textBlockClasses}`}>
+            <p
+              set:html={paragraphHtml}
+              class="w-full text-3xl leading-[1.06] tracking-[-0.05em] text-stone-600 md:text-4xl lg:text-[2.6rem] xl:text-5xl"
+            />
+          </div>
+
+          {
+            action && (
+              <div class={`pt-3 ${align === "right" ? "ml-auto" : ""}`}>
+                <a
+                  href={action.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-3 rounded-full bg-stone-950 px-6 py-3.5 text-sm font-medium text-white transition hover:bg-stone-800 md:text-base">
+                  {
+                    action.iconSrc && (
+                      <img
+                        src={action.iconSrc}
+                        alt={action.iconAlt || ""}
+                        width="18"
+                        height="18"
+                        class="size-[18px] brightness-0 invert"
+                      />
+                    )
+                  }
+                  <span>{action.label}</span>
+                </a>
+              </div>
+            )
+          }
+        </div>
+      </div>
+    )
+  }
+</section>
+
+<script>
+  type BlurEntry = {
+    blur: number;
+    progressOffset: number;
+    rangeMultiplier: number;
+    target: HTMLElement;
+    words: HTMLElement[];
+    stagger: number;
+  };
+
+  const clamp = (value: number, min = 0, max = 1) =>
+    Math.min(Math.max(value, min), max);
+
+  const easeOutPower3 = (value: number) => 1 - Math.pow(1 - value, 3);
+
+  const splitWords = (element: HTMLElement, className = "blur-word-v4") => {
+    const sourceHtml = element.dataset.originalHtml ?? element.innerHTML;
+    if (!sourceHtml.trim()) return [];
+
+    element.dataset.originalHtml = sourceHtml;
+
+    const template = document.createElement("template");
+    template.innerHTML = sourceHtml;
+    const words: HTMLElement[] = [];
+
+    const processNode = (node: Node): Node[] => {
+      if (node.nodeType === Node.TEXT_NODE) {
+        const tokens = (node.textContent || "").match(/\S+|\s+/g) || [];
+
+        return tokens.map((token) => {
+          if (/^\s+$/.test(token)) {
+            return document.createTextNode(token);
+          }
+
+          const span = document.createElement("span");
+          span.className = className;
+          span.textContent = token;
+          words.push(span);
+          return span;
+        });
+      }
+
+      if (node.nodeType !== Node.ELEMENT_NODE) return [];
+
+      const elementNode = node as HTMLElement;
+      if (elementNode.tagName === "BR") {
+        return [document.createElement("br")];
+      }
+
+      const clone = elementNode.cloneNode(false) as HTMLElement;
+      Array.from(elementNode.childNodes).forEach((child) => {
+        processNode(child).forEach((processedChild) => clone.appendChild(processedChild));
+      });
+      return [clone];
+    };
+
+    element.innerHTML = "";
+    Array.from(template.content.childNodes).forEach((child) => {
+      processNode(child).forEach((processedChild) => element.appendChild(processedChild));
+    });
+
+    return words;
+  };
+
+  const setWordState = (word: HTMLElement, progress: number, blurAmount: number) => {
+    const eased = easeOutPower3(progress);
+    word.style.opacity = String(eased);
+    word.style.filter = `blur(${(1 - eased) * blurAmount}px)`;
+    word.style.transform = `skewX(${(1 - eased) * -20}deg)`;
+  };
+
+  const updateEntry = (entry: BlurEntry) => {
+    const rect = entry.target.getBoundingClientRect();
+    const viewportCenter = window.innerHeight * 0.62;
+    const baseProgress = clamp(
+      (viewportCenter - rect.top) /
+        Math.max(rect.height * entry.rangeMultiplier, 1),
+    );
+    const shiftedProgress = clamp(
+      (baseProgress - entry.progressOffset) /
+        Math.max(1 - entry.progressOffset, 0.0001),
+    );
+
+    const duration = 0.62;
+    const totalSpan = duration + entry.stagger * Math.max(entry.words.length - 1, 0);
+    const timelineProgress = shiftedProgress * totalSpan;
+
+    entry.words.forEach((word, index) => {
+      const localStart = index * entry.stagger;
+      const localProgress = clamp((timelineProgress - localStart) / duration);
+      setWordState(word, localProgress, entry.blur);
+    });
+  };
+
+  const initBlurReading = () => {
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (reducedMotion.matches) return;
+    if (window.innerWidth < 1024) return;
+
+    const entries: BlurEntry[] = [];
+    const sections = Array.from(
+      document.querySelectorAll<HTMLElement>(
+        '[data-blur-reading-section][data-animated="true"]',
+      ),
+    );
+
+    sections.forEach((section) => {
+      const paragraph = section.querySelector<HTMLElement>("[data-blur-reading-v4]");
+      const title = section.querySelector<HTMLElement>("[data-blur-reading-title]");
+
+      if (!(paragraph instanceof HTMLElement)) return;
+
+      const blur = Number.parseFloat(paragraph.dataset.blur || "10");
+      const stagger = Number.parseFloat(paragraph.dataset.stagger || "0.05");
+      const titleWords =
+        title instanceof HTMLElement ? splitWords(title, "blur-title-word-v4") : [];
+      const bodyWords = splitWords(paragraph, "blur-word-v4");
+
+      if (title instanceof HTMLElement && titleWords.length) {
+        entries.push({
+          target: title,
+          words: titleWords,
+          blur,
+          progressOffset: 0,
+          rangeMultiplier: 7.5,
+          stagger,
+        });
+      }
+
+      if (bodyWords.length) {
+        entries.push({
+          target: paragraph,
+          words: bodyWords,
+          blur,
+          progressOffset: 0.34,
+          rangeMultiplier: 2.15,
+          stagger,
+        });
+      }
+    });
+
+    if (!entries.length) return;
+
+    let ticking = false;
+
+    const render = () => {
+      entries.forEach(updateEntry);
+      ticking = false;
+    };
+
+    const requestRender = () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(render);
+    };
+
+    render();
+
+    window.addEventListener("scroll", requestRender, { passive: true });
+    window.addEventListener("resize", requestRender);
+
+    const lenis = (window as any).__lenis;
+    if (lenis && !(window as any).__blurReadingLenisBound) {
+      lenis.on("scroll", requestRender);
+      (window as any).__blurReadingLenisBound = true;
+    }
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initBlurReading, {
+      once: true,
+    });
+  } else {
+    initBlurReading();
+  }
+</script>
+
+<style>
+  .blur-word-v4 {
+    display: inline-block;
+    opacity: 0;
+    filter: blur(10px);
+    transform: skewX(-20deg);
+    transform-origin: left center;
+    will-change: opacity, filter, transform;
+  }
+
+  .blur-title-word-v4 {
+    display: inline-block;
+    opacity: 0;
+    filter: blur(8px);
+    transform: skewX(-20deg);
+    transform-origin: left center;
+    will-change: opacity, filter, transform;
+  }
+
+  [data-blur-reading-title] {
+    will-change: opacity, filter, transform;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .blur-word-v4 {
+      opacity: 1 !important;
+      filter: none !important;
+      transform: none !important;
+    }
+
+    .blur-title-word-v4,
+    [data-blur-reading-title] {
+      opacity: 1 !important;
+      filter: none !important;
+      transform: none !important;
+    }
+  }
+</style>

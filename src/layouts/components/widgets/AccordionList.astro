@@ -13,7 +13,7 @@ const { content: list, ...rest } = Astro.props;
 ---
 
 <div {...rest}>
-  <div class="hs-accordion-group divide-y">
+  <div class="divide-y divide-stone-200">
     {
       list.map((item, index) => {
         const uniqueId = rest.tabIndex
@@ -23,33 +23,33 @@ const { content: list, ...rest } = Astro.props;
         return (
           <div
             class:list={[
-              "hs-accordion hs-accordion-active:opacity-100 opacity-70",
-              "[&:last-of-type_.hs-accordion-content>div]:pt-4",
-              "[&:last-of-type_.hs-accordion-toggle]:pb-0",
-              "[&:first-of-type_.hs-accordion-toggle]:pt-0",
-              item.active && "active",
+              "faq-accordion",
+              "[&:last-of-type_.faq-accordion-content>div]:pt-4",
+              "[&:last-of-type_.faq-accordion-toggle]:pb-0",
+              "[&:first-of-type_.faq-accordion-toggle]:pt-0",
             ]}
+            data-faq-accordion
+            data-active={item.active ? "true" : "false"}
             id={"faq-" + uniqueId}>
             <button
               aria-expanded={item.active ? "true" : "false"}
-              class="hs-accordion-toggle text-dark flex w-full items-center justify-between py-4 text-start text-lg"
+              class="faq-accordion-toggle flex w-full items-center justify-between py-4 text-start text-lg text-stone-950"
+              data-faq-accordion-toggle
               aria-controls={"faq-content-" + uniqueId}>
               <span set:html={item.title} />
-              <span class="hs-accordion-active:rotate-180 transition duration-300">
-                <Icons icon="ChevronDown" class="text-dark text-xl" />
+              <span class="faq-accordion-icon transition duration-300">
+                <Icons icon="ChevronDown" class="text-stone-950 text-xl" />
               </span>
             </button>
             <div
               role="region"
               id={"faq-content-" + uniqueId}
               aria-labelledby={"faq-" + uniqueId}
-              class:list={[
-                "hs-accordion-content overflow-hidden transition-[height] duration-300",
-                !item.active && "hidden",
-              ]}>
-              <div class="prose-styles pb-4">
+              data-faq-accordion-content
+              class="faq-accordion-content overflow-hidden transition-[height] duration-300">
+              <div class="prose-styles pb-4 text-stone-950">
                 <div
-                  class="rounded-md px-4 py-4 [&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
+                  class="faq-accordion-body rounded-md px-4 py-4 text-stone-950 [&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
                   set:html={markdownify(item.content, true)}
                 />
               </div>
@@ -62,25 +62,104 @@ const { content: list, ...rest } = Astro.props;
 </div>
 
 <script>
-  // Recalculate AOS Elements positions after accordion is opened
-  // @ts-nocheck
-  import AOS from "aos";
-  import HSAccordion from "preline/src/plugins/accordion";
-
-  document.addEventListener("DOMContentLoaded", () => {
-    const accordions = document.querySelectorAll(".hs-accordion");
+  const initFaqAccordions = () => {
+    const accordions = Array.from(
+      document.querySelectorAll("[data-faq-accordion]"),
+    );
 
     accordions.forEach((accordion) => {
-      setTimeout(() => {
-        const { element } = HSAccordion.getInstance(
-          `#${accordion.getAttribute("id")}`,
-          true,
-        );
+      if (!(accordion instanceof HTMLElement) || accordion.dataset.bound === "true") {
+        return;
+      }
 
-        element.on("open", () => {
-          AOS.refresh();
-        });
-      }, 1000);
+      const toggle = accordion.querySelector("[data-faq-accordion-toggle]");
+      const content = accordion.querySelector("[data-faq-accordion-content]");
+
+      if (!(toggle instanceof HTMLButtonElement) || !(content instanceof HTMLElement)) {
+        return;
+      }
+
+      const syncOpenState = (isOpen: boolean) => {
+        accordion.dataset.active = isOpen ? "true" : "false";
+        toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+
+        if (isOpen) {
+          content.style.height = "auto";
+          const nextHeight = `${content.scrollHeight}px`;
+          content.style.height = "0px";
+          requestAnimationFrame(() => {
+            content.style.height = nextHeight;
+          });
+        } else {
+          const currentHeight = `${content.scrollHeight}px`;
+          content.style.height = currentHeight;
+          void content.offsetHeight;
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              content.style.height = "0px";
+            });
+          });
+        }
+      };
+
+      const initialOpen = accordion.dataset.active === "true";
+      toggle.setAttribute("aria-expanded", initialOpen ? "true" : "false");
+      content.style.height = initialOpen ? "auto" : "0px";
+
+      toggle.addEventListener("click", () => {
+        const isOpen = toggle.getAttribute("aria-expanded") === "true";
+        syncOpenState(!isOpen);
+      });
+
+      content.addEventListener("transitionend", (event) => {
+        if (event.propertyName !== "height") return;
+        const isOpen = toggle.getAttribute("aria-expanded") === "true";
+        content.style.height = isOpen ? "auto" : "0px";
+        (window as Window & { AOS?: { refresh?: () => void } }).AOS?.refresh?.();
+      });
+
+      accordion.dataset.bound = "true";
     });
-  });
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initFaqAccordions, { once: true });
+  } else {
+    initFaqAccordions();
+  }
 </script>
+
+<style is:global>
+  .faq-accordion[data-active="true"] {
+    opacity: 1;
+  }
+
+  .faq-accordion[data-active="true"] .faq-accordion-icon {
+    transform: rotate(180deg);
+  }
+
+  .faq-accordion-content {
+    transition:
+      height 300ms ease,
+      opacity 220ms ease;
+  }
+
+  .faq-accordion-body {
+    opacity: 0;
+    transform: translate3d(0, -10px, 0);
+    transition:
+      opacity 240ms ease,
+      transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform;
+  }
+
+  .faq-accordion[data-active="true"] .faq-accordion-body {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+
+  .faq-accordion .prose-styles,
+  .faq-accordion .prose-styles :where(p, li, strong, b) {
+    color: rgb(0 0 0) !important;
+  }
+</style>

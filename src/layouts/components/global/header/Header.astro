@@ -33,7 +33,7 @@ const { stickyHeader } = config.settings;
   ]}>
   <nav class="relative container">
     <div
-      class="hs-dropdown relative flex items-center justify-between py-4 [--auto-close:inside] [--gpu-acceleration:false] [--strategy:absolute] lg:[--strategy:static]">
+      class="relative flex items-center justify-between py-4">
       <Logo
         src="/images/logos/logo_top_menu.svg"
         class="navbar-brand"
@@ -42,14 +42,16 @@ const { stickyHeader } = config.settings;
         logoText=""
       />
 
-      <ul
-        id="nav-menu"
-        class="navbar hs-dropdown-menu hs-dropdown-open:flex hs-dropdown-open:max-lg:mt-2 has-customized-scrollbar hs-dropdown-open:static max-lg:absolute max-lg:transform-none! lg:static! lg:transform-none!">
-        {main.map((menu) => <NavMenuItem menu={menu} />)}
-        <li class="max-lg:px-4 max-lg:py-2 lg:hidden" role="menuitem">
-          <LanguageSwitcher />
-        </li>
-      </ul>
+      <div id="nav-menu-panel" class="nav-panel">
+        <ul
+          id="nav-menu"
+          class="navbar has-customized-scrollbar max-lg:transform-none! lg:static! lg:transform-none!">
+          {main.map((menu) => <NavMenuItem menu={menu} />)}
+          <li class="max-lg:px-4 max-lg:py-2 lg:hidden" role="menuitem">
+            <LanguageSwitcher />
+          </li>
+        </ul>
+      </div>
 
       <div
         class="hidden gap-3.5 max-lg:me-4 max-lg:ml-auto lg:flex lg:items-center">
@@ -166,4 +168,67 @@ const { stickyHeader } = config.settings;
   }
 
   stickyHeader();
+
+  function mobileNavigation() {
+    const header = document.querySelector(".header");
+    const toggle = document.querySelector(".nav-toggler");
+    const menuPanel = document.querySelector("#nav-menu-panel");
+    const menu = document.querySelector("#nav-menu");
+
+    if (!(header instanceof HTMLElement)) return;
+    if (!(toggle instanceof HTMLButtonElement)) return;
+    if (!(menuPanel instanceof HTMLElement)) return;
+    if (!(menu instanceof HTMLElement)) return;
+
+    const closeMenu = () => {
+      header.classList.remove("mobile-nav-open");
+      toggle.setAttribute("aria-expanded", "false");
+      menuPanel.setAttribute("aria-hidden", "true");
+    };
+
+    const openMenu = () => {
+      header.classList.add("mobile-nav-open");
+      toggle.setAttribute("aria-expanded", "true");
+      menuPanel.setAttribute("aria-hidden", "false");
+    };
+
+    toggle.addEventListener("click", () => {
+      if (header.classList.contains("mobile-nav-open")) {
+        closeMenu();
+      } else {
+        openMenu();
+      }
+    });
+
+    menu.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+
+      if (target.closest("a")) {
+        closeMenu();
+      }
+    });
+
+    document.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof Node)) return;
+
+      if (
+        header.classList.contains("mobile-nav-open") &&
+        !header.contains(target)
+      ) {
+        closeMenu();
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") closeMenu();
+    });
+
+    window.addEventListener("resize", () => {
+      if (window.innerWidth >= 1024) closeMenu();
+    });
+  }
+
+  mobileNavigation();
 </script>

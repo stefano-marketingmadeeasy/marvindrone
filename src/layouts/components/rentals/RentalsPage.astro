@@ -4,6 +4,7 @@ import type { Rental } from "@/types/rentals";
 import type { RentalsPageContent } from "@/types/rentals-page";
 import AccordionList from "@/components/widgets/AccordionList.astro";
 import RentalsArchive from "@/components/rentals/RentalsArchive.astro";
+import BlurReadingSection from "@/components/rentals/BlurReadingSection.astro";
 import { getRentalContactWhatsappUrl } from "@/lib/strapi/rentals";
 import whatsappIcon from "@/assets/images/icons/whatsapp.svg";
 import rentalHeroImage from "@/assets/images/noleggio_hero.jpg";
@@ -32,13 +33,20 @@ const faqItems: FAQItem[] = content.faq.items.map((item, index) => ({
       data-rental-parallax-hero
       class="relative isolate min-h-[100svh] overflow-hidden bg-stone-950 text-white">
       <img
+        data-rental-hero-image
         src={rentalHeroImage.src}
         alt={content.hero.imageAlt}
         class="absolute inset-0 h-full w-full object-cover"
         loading="eager"
       />
-      <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(8,10,15,0.2)_0%,rgba(8,10,15,0.34)_32%,rgba(8,10,15,0.62)_64%,rgba(8,10,15,0.9)_100%)]"></div>
-      <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.14),_transparent_32%)]"></div>
+      <div
+        data-rental-hero-overlay
+        class="absolute inset-0 bg-[linear-gradient(180deg,rgba(8,10,15,0.2)_0%,rgba(8,10,15,0.34)_32%,rgba(8,10,15,0.62)_64%,rgba(8,10,15,0.9)_100%)]">
+      </div>
+      <div
+        data-rental-hero-glow
+        class="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.14),_transparent_32%)]">
+      </div>
       <div
         data-rental-parallax-fade
         class="pointer-events-none absolute inset-0 bg-black opacity-0">
@@ -52,24 +60,24 @@ const faqItems: FAQItem[] = content.faq.items.map((item, index) => ({
             data-rental-hero-content
             class="container flex h-[100svh] items-center justify-center text-center">
             <div class="mx-auto max-w-5xl space-y-6">
-              <h1 class="text-[clamp(2.35rem,5.6vw,5rem)] leading-[0.94] font-semibold text-white">
+              <h1 class="text-[clamp(2.35rem,5.6vw,5rem)] leading-[1.20] font-semibold text-white">
                 {content.hero.title}
               </h1>
-              <p class="mx-auto max-w-3xl text-base leading-8 text-white/88 md:text-lg">
+              <p class="mx-auto max-w-3xl text-xl leading-8 text-white/88 md:text-lg">
                 {content.hero.subtitle}
               </p>
             </div>
           </div>
 
-          <div class="container flex h-[100svh] items-center justify-center text-center">
+          <div class="container mt-6 flex pt-0 pb-14 justify-center text-center md:mt-0 md:h-[100svh] md:items-center md:py-14">
             <div
               data-rental-subhero-content
               class="mx-auto max-w-5xl"
               style={`--rental-subhero-stop-offset: ${subheroStopOffset};`}>
-              <p class="mx-auto max-w-5xl text-center text-lg leading-8 text-white/88 md:text-xl md:leading-9">
+              <p class="mx-auto max-w-5xl text-center xs:text-xl! leading-8 text-white/88 md:text-xl md:leading-9">
                 {content.intro.body}
               </p>
-              <p class="mx-auto mt-5 max-w-4xl text-center text-base font-medium text-white md:text-lg">
+              <p class="mx-auto mt-5 max-w-4xl text-center text-xl! text-white md:text-lg">
                 {content.intro.footnote}
               </p>
             </div>
@@ -78,15 +86,15 @@ const faqItems: FAQItem[] = content.faq.items.map((item, index) => ({
       </div>
     </div>
 
-    <div aria-hidden="true" class="h-[100svh]"></div>
+    <div aria-hidden="true" class="h-0 md:h-[100svh]"></div>
 
     <div
       data-rental-overlay
-      class="bg-body relative z-20 -mt-[5svh] rounded-t-[2.5rem] pt-10 md:-mt-[7svh] md:pt-14">
+      class="bg-body relative z-20 mt-0 rounded-t-[2.5rem] pt-10 md:-mt-[7svh] md:pt-14">
       <section class="bg-white pb-18 md:pb-24">
         <div class="mx-auto mb-8 w-full max-w-[1480px] px-[clamp(1rem,2.5vw,3.5rem)] md:mb-10">
           <div class="w-full space-y-3">
-            <h2 class="w-full text-center text-[clamp(0.95rem,2.45vw,3.15rem)] leading-[0.96] font-semibold whitespace-nowrap text-stone-950">
+            <h2 class="w-full text-center lg:text-4xl xl:text-5xl sm:text-3xl xs:text-xl leading-[1.5] font-semibold text-stone-950">
               {content.catalog.title}
             </h2>
           </div>
@@ -98,70 +106,33 @@ const faqItems: FAQItem[] = content.faq.items.map((item, index) => ({
         />
       </section>
 
-      <section class="bg-stone-950 py-18 text-white md:py-24">
-        <div class="container">
-          <div class="grid gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-start">
-            <div>
-              <p class="text-xs font-semibold tracking-[0.28em] text-white/55 uppercase">
-                {content.conditions.eyebrow}
-              </p>
-              <h2 class="mt-3 text-[clamp(2rem,4vw,3.2rem)] leading-[0.98] font-semibold text-white">
-                {content.conditions.title}
-              </h2>
-            </div>
+      <BlurReadingSection
+        title={content.conditions.title}
+        body={content.conditions.body}
+        note={content.conditions.note}
+        width="default"
+        textStagger="0.1"
+      />
 
-            <div class="space-y-5 rounded-[2rem] border border-white/12 bg-white/6 p-7 shadow-[0_26px_80px_rgba(0,0,0,0.22)] md:p-8">
-              <p class="text-base leading-8 text-white/82 md:text-lg">
-                {content.conditions.body}
-              </p>
-              <p class="text-base font-medium text-white">
-                {content.conditions.note}
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="bg-[#f5f1ea] py-18 md:py-24">
-        <div class="container">
-          <div class="mx-auto max-w-5xl rounded-[2.4rem] border border-stone-200 bg-white px-7 py-10 text-center shadow-[0_30px_90px_rgba(15,23,42,0.08)] md:px-12 md:py-14">
-            <p class="text-xs font-semibold tracking-[0.28em] text-stone-500 uppercase">
-              {content.contact.eyebrow}
-            </p>
-            <h2 class="mt-3 text-[clamp(2rem,4vw,3.2rem)] leading-[0.98] font-semibold text-stone-950">
-              {content.contact.title}
-            </h2>
-            <p class="mx-auto mt-5 max-w-3xl text-base leading-8 text-stone-600 md:text-lg">
-              {content.contact.body}
-            </p>
-            <p class="mx-auto mt-4 max-w-3xl text-base leading-8 text-stone-600 md:text-lg">
-              {content.contact.note}
-            </p>
-
-            <div class="mt-8 flex justify-center">
-              <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="inline-flex items-center gap-3 rounded-full bg-stone-950 px-6 py-3.5 text-sm font-medium text-white transition hover:bg-stone-800 md:text-base">
-                <img
-                  src={whatsappIcon.src}
-                  alt=""
-                  width="18"
-                  height="18"
-                  class="size-[18px]"
-                />
-                <span>{content.contact.cta}</span>
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
+      <BlurReadingSection
+        align="right"
+        title={content.contact.title}
+        body={content.contact.body}
+        note={content.contact.note}
+        width="default"
+        textStagger="0.1"
+        action={{
+          href: whatsappUrl,
+          iconAlt: "",
+          iconSrc: whatsappIcon.src,
+          label: content.contact.cta,
+        }}
+      />
 
       <section class="bg-white py-18 md:py-24">
         <div class="container">
-          <div class="mx-auto max-w-5xl">
-            <div class="max-w-3xl space-y-3">
+          <div class="mx-auto w-full max-w-[min(100%,84rem)]">
+            <div class="mx-auto max-w-3xl space-y-3 text-center">
               <p class="text-xs font-semibold tracking-[0.28em] text-stone-500 uppercase">
                 {content.faq.eyebrow}
               </p>
@@ -170,7 +141,7 @@ const faqItems: FAQItem[] = content.faq.items.map((item, index) => ({
               </h2>
             </div>
 
-            <div class="mt-8 rounded-[2rem] border border-stone-200 bg-white p-6 shadow-[0_24px_70px_rgba(15,23,42,0.06)] md:p-8">
+            <div class="mt-8 rounded-[2rem] border border-stone-200 bg-white p-6 shadow-[0_24px_70px_rgba(15,23,42,0.06)] md:p-8 lg:p-10">
               <AccordionList content={faqItems} tabIndex="rental-faq" />
             </div>
           </div>
@@ -226,6 +197,14 @@ const faqItems: FAQItem[] = content.faq.items.map((item, index) => ({
       const textProgress = clamp(
         (-sectionRect.top - headerHeight) / viewportHeight,
       );
+
+      if (window.innerWidth < 768) {
+        fadeLayer.style.opacity = "0";
+        copyTrack.style.transform = "translate3d(0, 0, 0)";
+        copyStage.style.opacity = "1";
+        ticking = false;
+        return;
+      }
 
       if (reducedMotion.matches) {
         fadeLayer.style.opacity = "0";
@@ -283,5 +262,74 @@ const faqItems: FAQItem[] = content.faq.items.map((item, index) => ({
 
   [data-rental-subhero-content] {
     transform: translateY(calc(var(--rental-subhero-stop-offset, 0rem) * -1));
+  }
+
+  @media (max-width: 767px) {
+    [data-rental-root] {
+      margin-top: 0;
+    }
+
+    [data-rental-parallax-hero] {
+      position: relative;
+      top: auto;
+      height: auto;
+      min-height: 0;
+      background: white;
+    }
+
+    [data-rental-copy-stage] {
+      position: relative;
+      top: auto !important;
+      height: auto !important;
+      overflow: visible;
+      pointer-events: auto;
+    }
+
+    [data-rental-copy-track] {
+      transform: none !important;
+      will-change: auto;
+    }
+
+    [data-rental-hero-content] {
+      box-sizing: border-box;
+      height: auto;
+      min-height: 72svh;
+      padding-top: var(--rental-header-offset);
+    }
+
+    [data-rental-hero-image],
+    [data-rental-hero-overlay],
+    [data-rental-hero-glow],
+    [data-rental-parallax-fade] {
+      top: 0;
+      right: 0;
+      bottom: auto;
+      left: 0;
+      height: 72svh;
+    }
+
+    [data-rental-subhero-content] {
+      transform: none;
+      position: relative;
+      z-index: 1;
+      max-width: 100%;
+      padding: 1.5rem 1.5rem 0;
+      color: rgb(41 37 36);
+    }
+
+    [data-rental-subhero-content] p:first-child {
+      max-width: 36rem;
+      color: rgb(68 64 60);
+      font-size: 1.125rem;
+      line-height: 1.9;
+    }
+
+    [data-rental-subhero-content] p:last-child {
+      max-width: 32rem;
+      color: rgb(28 25 23);
+      font-size: 1rem;
+      line-height: 1.7;
+      margin-top: 1rem;
+    }
   }
 </style>
