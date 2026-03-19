@@ -4,13 +4,15 @@ import { getProductionPath } from "@/lib/strapi/productions";
 import { useTranslations } from "@/lib/utils/i18nUtils";
 import { markdownify } from "@/lib/utils/textConverter";
 import type { Production } from "@/types/productions";
+import type { ProductionsCardContent } from "@/types/productions-page";
 import StrapiImage from "@/components/productions/StrapiImage.astro";
 
 interface Props {
   production: Production;
+  labels?: ProductionsCardContent;
 }
 
-const { production } = Astro.props;
+const { production, labels } = Astro.props;
 const currentLocale = Astro.currentLocale || "it";
 const href = getProductionPath(production, currentLocale);
 const t = await useTranslations(currentLocale);
@@ -19,12 +21,16 @@ const coverImage =
 const shootingTypesLabel = production.shootingTypes.join(" / ");
 const cardShadow = "0 10px 30px rgba(15,23,42,0.04)";
 const cardShadowHover = "0 40px 50px rgba(15,23,42,0.28)";
+const cardLabels = labels || {
+  open: t("productions.card.open"),
+  noImage: t("productions.card.noImage"),
+};
 ---
 
 <article
   data-production-card
   data-category={production.category.slug}
-  class="group h-full min-w-0 w-full">
+  class="group h-full w-full min-w-0">
   <a
     href={href}
     style={`--card-shadow:${cardShadow}; --card-shadow-hover:${cardShadowHover};`}
@@ -42,7 +48,7 @@ const cardShadowHover = "0 40px 50px rgba(15,23,42,0.28)";
           />
         ) : (
           <div class="flex h-full items-center justify-center bg-stone-200 px-8 text-center text-sm tracking-[0.24em] text-stone-500 uppercase">
-            {t("productions.card.noImage")}
+            {cardLabels.noImage}
           </div>
         )
       }
@@ -56,13 +62,20 @@ const cardShadowHover = "0 40px 50px rgba(15,23,42,0.28)";
           )
         }
       </div>
-      <div class="production-card-overlay pointer-events-none absolute inset-0 bg-black/20 transition duration-500"></div>
-      <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.16),_transparent_28%)]"></div>
+      <div
+        class="production-card-overlay pointer-events-none absolute inset-0 bg-black/20 transition duration-500">
+      </div>
+      <div
+        class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.16),_transparent_28%)]">
+      </div>
     </div>
 
-    <div class="relative z-10 flex flex-1 items-center justify-center p-6 text-white md:p-8">
-      <div class="flex w-full min-w-0 flex-col items-center justify-center text-center">
-        <div class="production-card-content w-full max-w-[82%] translate-y-0 space-y-4 transition duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] sm:max-w-[78%] lg:max-w-[74%]">
+    <div
+      class="relative z-10 flex flex-1 items-center justify-center p-6 text-white md:p-8">
+      <div
+        class="flex w-full min-w-0 flex-col items-center justify-center text-center">
+        <div
+          class="production-card-content w-full max-w-[82%] translate-y-0 space-y-4 transition duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] sm:max-w-[78%] lg:max-w-[74%]">
           {
             shootingTypesLabel && (
               <div>
@@ -73,15 +86,16 @@ const cardShadowHover = "0 40px 50px rgba(15,23,42,0.28)";
             )
           }
           <h3
-            class="mx-auto max-w-[11ch] break-words text-[clamp(1.5rem,2vw,2.8rem)] leading-[0.96] font-semibold text-white sm:max-w-[12ch] lg:max-w-[13ch]"
+            class="mx-auto max-w-[11ch] text-[clamp(1.5rem,2vw,2.8rem)] leading-[0.96] font-semibold break-words text-white sm:max-w-[12ch] lg:max-w-[13ch]"
             set:html={markdownify(production.title)}
           />
         </div>
 
-        <div class="pointer-events-none absolute inset-x-0 bottom-4 flex justify-center px-4 sm:bottom-6 sm:px-5 md:bottom-8 md:px-6">
+        <div
+          class="pointer-events-none absolute inset-x-0 bottom-4 flex justify-center px-4 sm:bottom-6 sm:px-5 md:bottom-8 md:px-6">
           <span
             class="production-card-open inline-flex translate-y-5 items-center gap-1 rounded-full border border-white/28 bg-white/12 px-3 py-2 text-[10px] font-semibold tracking-[0.12em] text-white uppercase opacity-0 backdrop-blur transition duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] sm:gap-1.5 sm:px-4 sm:py-2.5 sm:text-[11px] sm:tracking-[0.14em] md:gap-2 md:px-5 md:py-3 md:text-sm md:tracking-[0.18em]">
-            {t("productions.card.open")}
+            {cardLabels.open}
             <ArrowUpRight
               size={12}
               stroke-width={2}

@@ -4,29 +4,49 @@ import { getProductionFilters } from "@/lib/strapi/productions";
 import { strapiEnabled } from "@/lib/strapi/client";
 import { useTranslations } from "@/lib/utils/i18nUtils";
 import type { Production } from "@/types/productions";
+import type {
+  ProductionsArchiveContent,
+  ProductionsCardContent,
+} from "@/types/productions-page";
 
 interface Props {
   productions: Production[];
+  content?: {
+    archive: ProductionsArchiveContent;
+    card: ProductionsCardContent;
+  };
 }
 
-const { productions } = Astro.props;
+const { productions, content } = Astro.props;
 const currentLocale = Astro.currentLocale || "it";
 const filters = await getProductionFilters(productions, currentLocale);
 const isStrapiConfigured = strapiEnabled();
 const t = await useTranslations(currentLocale);
+const archiveContent = content?.archive || {
+  title: "",
+  allLabel: t("productions.archive.all"),
+  emptyLabel: t("productions.archive.emptyLabel"),
+  emptyTitle: t("productions.archive.emptyTitle"),
+  emptyDescription: t("productions.archive.emptyDescription"),
+  emptyFilterLabel: t("productions.archive.emptyFilterLabel"),
+  emptyFilterTitle: t("productions.archive.emptyFilterTitle"),
+  emptyFilterDescription: t("productions.archive.emptyFilterDescription"),
+};
+const cardLabels = content?.card;
 ---
 
 <section class="relative overflow-hidden bg-white py-14 md:py-18">
-  <div class="relative mx-auto w-full max-w-[1920px] space-y-8 px-[clamp(1rem,2.5vw,3.5rem)]">
+  <div
+    class="relative mx-auto w-full max-w-[1920px] space-y-8 px-[clamp(1rem,2.5vw,3.5rem)]">
     <div
-      class="overflow-hidden rounded-full border border-black/8 bg-stone-50 p-4 shadow-[0_18px_50px_rgba(15,23,42,0.06)] md:p-5">
+      class="md:overflow-hidden md:rounded-full md:border md:border-black/8 md:bg-stone-50 md:p-5 md:shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
       <div
         class="relative inline-flex flex-wrap gap-3"
         data-productions-filters>
         <span
           data-filter-indicator
           aria-hidden="true"
-          class="pointer-events-none absolute left-0 top-0 rounded-full bg-stone-900 shadow-[0_12px_30px_rgba(15,23,42,0.18)] transition-[transform,width,height] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]">
+          class="pointer-events-none absolute top-0 left-0 rounded-full bg-stone-900 shadow-[0_12px_30px_rgba(15,23,42,0.18)] transition-[transform,width,height] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]">
         </span>
         <button
           type="button"
@@ -34,8 +54,9 @@ const t = await useTranslations(currentLocale);
           data-filter="all"
           aria-pressed="true"
           class="production-filter-button relative z-10 rounded-full border border-stone-300 bg-transparent px-5 py-3 text-sm font-medium text-stone-700 transition-[color,border-color,transform] duration-300 hover:border-stone-900 hover:text-stone-950">
-          <span class="filter-button-label block transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]">
-            {t("productions.archive.all")}
+          <span
+            class="filter-button-label block transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]">
+            {archiveContent.allLabel}
           </span>
         </button>
         {
@@ -61,19 +82,17 @@ const t = await useTranslations(currentLocale);
           data-productions-grid
           class="grid grid-cols-1 gap-[clamp(1rem,2vw,2rem)] md:grid-cols-2 xl:grid-cols-3">
           {productions.map((production) => (
-            <ProductionCard production={production} />
+            <ProductionCard production={production} labels={cardLabels} />
           ))}
         </div>
       ) : (
         <div class="rounded-[2rem] border border-dashed border-stone-300 bg-white px-6 py-14 text-center shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
           <p class="text-xs font-semibold tracking-[0.24em] text-stone-500 uppercase">
-            {t("productions.archive.emptyLabel")}
+            {archiveContent.emptyLabel}
           </p>
-          <h3 class="text-h5 mt-3 text-inherit">
-            {t("productions.archive.emptyTitle")}
-          </h3>
+          <h3 class="text-h5 mt-3 text-inherit">{archiveContent.emptyTitle}</h3>
           <p class="mx-auto mt-4 max-w-2xl text-sm leading-7 text-stone-600 md:text-base">
-            {t("productions.archive.emptyDescription")}
+            {archiveContent.emptyDescription}
           </p>
           {import.meta.env.DEV && !isStrapiConfigured && (
             <p class="mx-auto mt-4 max-w-2xl text-sm leading-7 text-stone-500">
@@ -90,14 +109,14 @@ const t = await useTranslations(currentLocale);
       class="rounded-[2rem] border border-dashed border-stone-300 bg-white px-6 py-14 text-center shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
       <p
         class="text-xs font-semibold tracking-[0.24em] text-stone-500 uppercase">
-        {t("productions.archive.emptyFilterLabel")}
+        {archiveContent.emptyFilterLabel}
       </p>
       <h3 class="text-h5 mt-3 text-inherit">
-        {t("productions.archive.emptyFilterTitle")}
+        {archiveContent.emptyFilterTitle}
       </h3>
       <p
         class="mx-auto mt-4 max-w-2xl text-sm leading-7 text-stone-600 md:text-base">
-        {t("productions.archive.emptyFilterDescription")}
+        {archiveContent.emptyFilterDescription}
       </p>
     </div>
   </div>

@@ -1,17 +1,21 @@
 ---
 import Base from "@/layouts/Base.astro";
-import ProductionsArchive from "@/components/productions/ProductionsArchive.astro";
+import ProductionsPage from "@/components/productions/ProductionsPage.astro";
+import { getEntryCTM } from "@/lib/contentParser.astro";
 import { getAllProductions } from "@/lib/strapi/productions";
-import { useTranslations } from "@/lib/utils/i18nUtils";
+import type { ProductionsPageContent } from "@/types/productions-page";
 
 const productions = await getAllProductions("it");
-const t = await useTranslations("it");
+const contentEntry = await getEntryCTM("sections", "productions-page", "it");
+const content = contentEntry?.data as ProductionsPageContent;
 ---
 
 <Base
-  title={t("productions.meta.indexTitle")}
-  description={t("productions.meta.indexDescription")}
-  metaTitle={t("productions.meta.indexMetaTitle")}
-  metaDescription={t("productions.meta.indexMetaDescription")}>
-  <ProductionsArchive productions={productions} />
+  title={content.title}
+  description={content.description}
+  forceBlueHeader={true}
+  overlayHeader={true}
+  metaTitle={content.metaTitle}
+  metaDescription={content.metaDescription}>
+  <ProductionsPage productions={productions} content={content} />
 </Base>

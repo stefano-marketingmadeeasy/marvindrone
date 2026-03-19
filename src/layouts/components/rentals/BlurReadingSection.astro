@@ -8,12 +8,17 @@ interface Action {
 
 interface Props {
   action?: Action;
-  align?: "left" | "right";
+  align?: "left" | "right" | "center";
   animated?: boolean;
   body: string;
+  bodyProgressOffset?: string;
+  bodyRangeMultiplier?: string;
   note?: string;
   textStagger?: string;
   title: string;
+  titleProgressOffset?: string;
+  titleRangeMultiplier?: string;
+  viewportAnchor?: string;
   width?: "default" | "narrow";
 }
 
@@ -22,17 +27,25 @@ const {
   align = "left",
   animated = true,
   body,
+  bodyProgressOffset = "0.34",
+  bodyRangeMultiplier = "2.15",
   note,
   textStagger = "0.032",
   title,
+  titleProgressOffset = "0",
+  titleRangeMultiplier = "7.5",
+  viewportAnchor = "0.62",
   width = "default",
 } = Astro.props;
 
 const wrapperClasses =
   align === "right"
     ? "ml-auto items-end text-right"
-    : "mr-auto items-start text-left";
-const textBlockClasses = align === "right" ? "ml-auto" : "";
+    : align === "center"
+      ? "mx-auto items-center text-center"
+      : "mr-auto items-start text-left";
+const textBlockClasses =
+  align === "right" ? "ml-auto" : align === "center" ? "mx-auto" : "";
 const wrapperWidthClass = width === "narrow" ? "max-w-[768px]" : "max-w-5xl";
 const bodyWidthClass = width === "narrow" ? "max-w-[768px]" : "max-w-4xl";
 const sectionSpacingClass = animated ? "py-12 md:py-[50svh]" : "py-12 md:py-24";
@@ -42,7 +55,12 @@ const paragraphHtml = note ? `${body} ${note}` : body;
 <section
   class:list={["bg-white", sectionSpacingClass]}
   data-blur-reading-section
-  data-animated={animated ? "true" : "false"}>
+  data-animated={animated ? "true" : "false"}
+  data-body-progress-offset={bodyProgressOffset}
+  data-body-range-multiplier={bodyRangeMultiplier}
+  data-title-progress-offset={titleProgressOffset}
+  data-title-range-multiplier={titleRangeMultiplier}
+  data-viewport-anchor={viewportAnchor}>
   {
     animated ? (
       <div class="container">
@@ -63,41 +81,38 @@ const paragraphHtml = note ? `${body} ${note}` : body;
               data-blur="10"
               data-stagger={textStagger}
               set:html={paragraphHtml}
-              class="w-full leading-[2.0] tracking-[-0.05em] text-stone-600 md:text-4xl lg:text-2xl xl:text-3xl xs:text-xl" />
+              class="xs:text-xl w-full leading-[2.0] tracking-[-0.05em] text-stone-600 md:text-4xl lg:text-2xl xl:text-3xl"
+            />
           </div>
 
-          {
-            action && (
-              <div class={`pt-3 ${align === "right" ? "ml-auto" : ""}`}>
-                <a
-                  href={action.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="inline-flex items-center gap-3 rounded-full bg-stone-950 px-6 py-3.5 text-sm font-medium text-white transition hover:bg-stone-800 md:text-base">
-                  {
-                    action.iconSrc && (
-                      <img
-                        src={action.iconSrc}
-                        alt={action.iconAlt || ""}
-                        width="18"
-                        height="18"
-                        class="size-[18px] brightness-0 invert"
-                      />
-                    )
-                  }
-                  <span>{action.label}</span>
-                </a>
-              </div>
-            )
-          }
+          {action && (
+            <div class={`pt-3 ${align === "right" ? "ml-auto" : ""}`}>
+              <a
+                href={action.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-3 rounded-full bg-stone-950 px-6 py-3.5 text-sm font-medium text-white transition hover:bg-stone-800 md:text-base">
+                {action.iconSrc && (
+                  <img
+                    src={action.iconSrc}
+                    alt={action.iconAlt || ""}
+                    width="18"
+                    height="18"
+                    class="size-[18px] brightness-0 invert"
+                  />
+                )}
+                <span>{action.label}</span>
+              </a>
+            </div>
+          )}
         </div>
       </div>
     ) : (
       <div class="container">
-        <div class={`flex w-full ${wrapperWidthClass} flex-col gap-6 md:gap-10 ${wrapperClasses}`}>
+        <div
+          class={`flex w-full ${wrapperWidthClass} flex-col gap-6 md:gap-10 ${wrapperClasses}`}>
           <div class={`w-full ${wrapperWidthClass} ${textBlockClasses}`}>
-            <h2
-              class="text-4xl leading-[0.98] font-semibold tracking-[-0.03em] text-stone-950 md:text-5xl xl:text-[3.2rem]">
+            <h2 class="text-4xl leading-[0.98] font-semibold tracking-[-0.03em] text-stone-950 md:text-5xl xl:text-[3.2rem]">
               {title}
             </h2>
           </div>
@@ -109,30 +124,26 @@ const paragraphHtml = note ? `${body} ${note}` : body;
             />
           </div>
 
-          {
-            action && (
-              <div class={`pt-3 ${align === "right" ? "ml-auto" : ""}`}>
-                <a
-                  href={action.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="inline-flex items-center gap-3 rounded-full bg-stone-950 px-6 py-3.5 text-sm font-medium text-white transition hover:bg-stone-800 md:text-base">
-                  {
-                    action.iconSrc && (
-                      <img
-                        src={action.iconSrc}
-                        alt={action.iconAlt || ""}
-                        width="18"
-                        height="18"
-                        class="size-[18px] brightness-0 invert"
-                      />
-                    )
-                  }
-                  <span>{action.label}</span>
-                </a>
-              </div>
-            )
-          }
+          {action && (
+            <div class={`pt-3 ${align === "right" ? "ml-auto" : ""}`}>
+              <a
+                href={action.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-3 rounded-full bg-stone-950 px-6 py-3.5 text-sm font-medium text-white transition hover:bg-stone-800 md:text-base">
+                {action.iconSrc && (
+                  <img
+                    src={action.iconSrc}
+                    alt={action.iconAlt || ""}
+                    width="18"
+                    height="18"
+                    class="size-[18px] brightness-0 invert"
+                  />
+                )}
+                <span>{action.label}</span>
+              </a>
+            </div>
+          )}
         </div>
       </div>
     )
@@ -145,6 +156,7 @@ const paragraphHtml = note ? `${body} ${note}` : body;
     progressOffset: number;
     rangeMultiplier: number;
     target: HTMLElement;
+    viewportAnchor: number;
     words: HTMLElement[];
     stagger: number;
   };
@@ -190,20 +202,28 @@ const paragraphHtml = note ? `${body} ${note}` : body;
 
       const clone = elementNode.cloneNode(false) as HTMLElement;
       Array.from(elementNode.childNodes).forEach((child) => {
-        processNode(child).forEach((processedChild) => clone.appendChild(processedChild));
+        processNode(child).forEach((processedChild) =>
+          clone.appendChild(processedChild),
+        );
       });
       return [clone];
     };
 
     element.innerHTML = "";
     Array.from(template.content.childNodes).forEach((child) => {
-      processNode(child).forEach((processedChild) => element.appendChild(processedChild));
+      processNode(child).forEach((processedChild) =>
+        element.appendChild(processedChild),
+      );
     });
 
     return words;
   };
 
-  const setWordState = (word: HTMLElement, progress: number, blurAmount: number) => {
+  const setWordState = (
+    word: HTMLElement,
+    progress: number,
+    blurAmount: number,
+  ) => {
     const eased = easeOutPower3(progress);
     word.style.opacity = String(eased);
     word.style.filter = `blur(${(1 - eased) * blurAmount}px)`;
@@ -212,7 +232,7 @@ const paragraphHtml = note ? `${body} ${note}` : body;
 
   const updateEntry = (entry: BlurEntry) => {
     const rect = entry.target.getBoundingClientRect();
-    const viewportCenter = window.innerHeight * 0.62;
+    const viewportCenter = window.innerHeight * entry.viewportAnchor;
     const baseProgress = clamp(
       (viewportCenter - rect.top) /
         Math.max(rect.height * entry.rangeMultiplier, 1),
@@ -223,7 +243,8 @@ const paragraphHtml = note ? `${body} ${note}` : body;
     );
 
     const duration = 0.62;
-    const totalSpan = duration + entry.stagger * Math.max(entry.words.length - 1, 0);
+    const totalSpan =
+      duration + entry.stagger * Math.max(entry.words.length - 1, 0);
     const timelineProgress = shiftedProgress * totalSpan;
 
     entry.words.forEach((word, index) => {
@@ -246,15 +267,36 @@ const paragraphHtml = note ? `${body} ${note}` : body;
     );
 
     sections.forEach((section) => {
-      const paragraph = section.querySelector<HTMLElement>("[data-blur-reading-v4]");
-      const title = section.querySelector<HTMLElement>("[data-blur-reading-title]");
+      const paragraph = section.querySelector<HTMLElement>(
+        "[data-blur-reading-v4]",
+      );
+      const title = section.querySelector<HTMLElement>(
+        "[data-blur-reading-title]",
+      );
 
       if (!(paragraph instanceof HTMLElement)) return;
 
       const blur = Number.parseFloat(paragraph.dataset.blur || "10");
       const stagger = Number.parseFloat(paragraph.dataset.stagger || "0.05");
+      const viewportAnchor = Number.parseFloat(
+        section.dataset.viewportAnchor || "0.62",
+      );
+      const titleProgressOffset = Number.parseFloat(
+        section.dataset.titleProgressOffset || "0",
+      );
+      const titleRangeMultiplier = Number.parseFloat(
+        section.dataset.titleRangeMultiplier || "7.5",
+      );
+      const bodyProgressOffset = Number.parseFloat(
+        section.dataset.bodyProgressOffset || "0.34",
+      );
+      const bodyRangeMultiplier = Number.parseFloat(
+        section.dataset.bodyRangeMultiplier || "2.15",
+      );
       const titleWords =
-        title instanceof HTMLElement ? splitWords(title, "blur-title-word-v4") : [];
+        title instanceof HTMLElement
+          ? splitWords(title, "blur-title-word-v4")
+          : [];
       const bodyWords = splitWords(paragraph, "blur-word-v4");
 
       if (title instanceof HTMLElement && titleWords.length) {
@@ -262,8 +304,9 @@ const paragraphHtml = note ? `${body} ${note}` : body;
           target: title,
           words: titleWords,
           blur,
-          progressOffset: 0,
-          rangeMultiplier: 7.5,
+          progressOffset: titleProgressOffset,
+          rangeMultiplier: titleRangeMultiplier,
+          viewportAnchor,
           stagger,
         });
       }
@@ -273,8 +316,9 @@ const paragraphHtml = note ? `${body} ${note}` : body;
           target: paragraph,
           words: bodyWords,
           blur,
-          progressOffset: 0.34,
-          rangeMultiplier: 2.15,
+          progressOffset: bodyProgressOffset,
+          rangeMultiplier: bodyRangeMultiplier,
+          viewportAnchor,
           stagger,
         });
       }
