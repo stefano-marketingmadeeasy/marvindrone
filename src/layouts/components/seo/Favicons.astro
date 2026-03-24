@@ -1,5 +1,6 @@
 ---
 import config from ".astro/config.generated.json" with { type: "json" };
+import faviconSvgUrl from "@/assets/images/logos/favicon.svg?url";
 
 let faviconPath = "/images/favicons";
 
@@ -30,7 +31,7 @@ const favicons = [
   {
     rel: "icon",
     type: "image/svg+xml",
-    href: `${faviconPath}/favicon.svg`,
+    href: faviconSvgUrl,
   },
   {
     rel: "shortcut icon",
