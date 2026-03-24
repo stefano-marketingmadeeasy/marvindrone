@@ -87,7 +87,7 @@ const cardLabels = content?.card;
         cta?.href && cta?.label && (
           <a
             href={cta.href}
-            class="relative z-10 ml-auto inline-flex items-center gap-2.5 rounded-full border border-stone-900 bg-stone-900 px-6 py-3.5 text-base font-semibold text-white transition-[color,border-color,background-color,transform] duration-300 hover:bg-white hover:text-stone-950 md:px-7 md:py-4 md:text-lg">
+            class="relative z-10 ml-auto hidden items-center gap-2.5 rounded-full border border-stone-900 bg-stone-900 px-6 py-3.5 text-base font-semibold text-white transition-[color,border-color,background-color,transform] duration-300 hover:bg-white hover:text-stone-950 md:inline-flex md:px-7 md:py-4 md:text-lg">
             <span class="block">{cta.label}</span>
             <ArrowRight size={18} stroke-width={2.2} class="shrink-0" />
           </a>
@@ -174,6 +174,19 @@ const cardLabels = content?.card;
             class="inline-flex size-12 items-center justify-center rounded-full border border-stone-300 bg-white text-stone-900 transition hover:border-stone-900 hover:bg-stone-950 hover:text-white disabled:pointer-events-none disabled:opacity-35">
             <ArrowRight size={18} stroke-width={2} />
           </button>
+        </div>
+      )
+    }
+
+    {
+      isCarouselVariant && cta?.href && cta?.label && productions.length > 0 && (
+        <div class="flex justify-center md:hidden">
+          <a
+            href={cta.href}
+            class="inline-flex items-center gap-2.5 rounded-full border border-stone-900 bg-stone-900 px-6 py-3.5 text-base font-semibold text-white transition-[color,border-color,background-color,transform] duration-300 hover:bg-white hover:text-stone-950">
+            <span class="block">{cta.label}</span>
+            <ArrowRight size={18} stroke-width={2.2} class="shrink-0" />
+          </a>
         </div>
       )
     }
