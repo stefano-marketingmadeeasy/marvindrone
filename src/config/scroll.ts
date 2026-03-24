@@ -1,15 +1,12 @@
 export const scrollConfig = {
   lenis: {
     disableOnMobile: true,
-    mobileBreakpoint: 768,
-    duration: 1.15,
-    wheelMultiplier: 1.50,
-    touchMultiplier: 1.1,
-    smoothWheel: true,
-    syncTouch: false,
-    gestureOrientation: "vertical" as const,
-    infinite: false,
-    generalDecelerationPower: 3,
+    mobileMaxWidth: 1023,
+    duration: 1.2,
+    wheelMultiplier: 3,
+    touchMultiplier: 1.15,
+    syncTouch: true,
+    syncTouchLerp: 0.08,
   },
   heroArrow: {
     target: "#home-sub-hero",

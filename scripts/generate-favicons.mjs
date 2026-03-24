@@ -5,7 +5,10 @@ import {
   loadAndConvertToSvg,
 } from "@realfavicongenerator/image-adapter-node";
 import faviconGenerator from "@realfavicongenerator/generate-favicon";
-import config from "../.astro/config.generated.json" assert { type: "json" };
+
+const config = JSON.parse(
+  fs.readFileSync(new URL("../.astro/config.generated.json", import.meta.url), "utf8"),
+);
 
 // Constants
 const FAVICON_DIR = "./public/images/favicons/";
@@ -30,6 +33,7 @@ async function generateFavicons() {
     const faviconImagePath = faviconImage.startsWith("/")
       ? path.join("./src/assets", faviconImage)
       : path.join("./src/assets/", faviconImage);
+    const originalSvg = fs.readFileSync(faviconImagePath);
 
     // Ensure favicon directory exists
     ensureDirectoryExists(FAVICON_DIR);
@@ -86,7 +90,10 @@ async function generateFavicons() {
     // Save files to the favicon directory
     Object.entries(files).forEach(([fileName, fileContents]) => {
       const filePath = path.join(FAVICON_DIR, fileName);
-      fs.writeFileSync(filePath, fileContents);
+      fs.writeFileSync(
+        filePath,
+        fileName === "favicon.svg" ? originalSvg : fileContents,
+      );
       console.log(`Saved: ${filePath}`);
     });
 

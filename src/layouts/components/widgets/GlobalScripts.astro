@@ -4,8 +4,8 @@
 
 <script>
   // @ts-nocheck
-  import Lenis from "lenis";
   import { easeOutPower, scrollConfig } from "@/config/scroll";
+  import { initLenisSmoothScroll } from "@/plugins/lenis-smooth-scroll";
 
   const bootstrap = async () => {
     const lenis = initLenis();
@@ -43,42 +43,9 @@
   }
 
   function initLenis() {
-    if (!shouldEnableLenis()) {
-      window.__lenis = null;
-      return null;
-    }
-
-    const {
-      disableOnMobile,
-      mobileBreakpoint,
-      generalDecelerationPower,
-      ...lenisOptions
-    } = scrollConfig.lenis;
-
-    const lenis = new Lenis({
-      ...lenisOptions,
-      easing: easeOutPower(generalDecelerationPower),
-    });
-
-    let rafId = 0;
-
-    function raf(time: number) {
-      lenis.raf(time);
-      rafId = window.requestAnimationFrame(raf);
-    }
-
-    rafId = window.requestAnimationFrame(raf);
-
+    const lenis = initLenisSmoothScroll(scrollConfig.lenis);
     window.__lenis = lenis;
-    window.__lenisRafId = rafId;
-
     return lenis;
-  }
-
-  function shouldEnableLenis() {
-    if (!scrollConfig.lenis.disableOnMobile) return true;
-
-    return window.innerWidth >= scrollConfig.lenis.mobileBreakpoint;
   }
 
   function initScrollButtons(lenis) {
