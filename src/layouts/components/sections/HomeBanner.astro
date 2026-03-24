@@ -7,6 +7,7 @@ import { getEntryCTM } from "@/lib/contentParser.astro";
 import CustomButton from "../CustomButton.astro";
 import type { TypeOf } from "astro:schema";
 import type { sharedButtonTag } from "@/content.config";
+import { getServicesWhatsappUrl } from "@/lib/utils/whatsapp";
 
 type SliderItem = {
   title: string;
@@ -44,9 +45,17 @@ let actualContent = overrideObjects(
 ) as HomeBannerSectionType;
 
 const slide = actualContent?.mainBlock?.slides?.[0];
+const currentLocale = Astro.currentLocale || "it";
 const heroTransitionTitle = actualContent?.transitionTitle || "";
 const heroTransitionParagraphOne = actualContent?.transitionParagraphOne || "";
 const heroTransitionParagraphTwo = actualContent?.transitionParagraphTwo || "";
+const heroPrimaryButton =
+  slide?.button?.enable && slide.button.icon?.includes("whatsapp")
+    ? {
+        ...slide.button,
+        url: getServicesWhatsappUrl(currentLocale),
+      }
+    : slide?.button;
 const primaryScrollSteps = Math.max(actualContent?.scrollSteps ?? 5, 1);
 const secondaryScrollSteps = Math.max(actualContent?.secondaryScrollSteps ?? 3, 1);
 const tertiaryScrollSteps = Math.max(actualContent?.tertiaryScrollSteps ?? 3, 1);
@@ -54,6 +63,7 @@ const heroIntroSteps = 2;
 const heroGapSteps = 2;
 const heroSecondaryGapSteps = 2;
 const heroOutroSteps = 2;
+const mobileBreakpoint = 767;
 const heroTotalSteps =
   heroIntroSteps +
   primaryScrollSteps +
@@ -67,7 +77,7 @@ const heroTotalSteps =
 <section
   class:list={[
     "group relative z-20 w-screen overflow-clip bg-[#05070d] pt-0!",
-    "min-h-[calc(100svh+(var(--hero-scroll-total-steps)*var(--hero-scroll-step-size)))]",
+    "min-h-[100svh] md:min-h-[calc(100svh+(var(--hero-scroll-total-steps)*var(--hero-scroll-step-size)))]",
     "[--hero-bg-blur:0px] [--hero-bg-scale:1.02]",
     "[--hero-primary-opacity:1] [--hero-primary-scale:1] [--hero-primary-y:0px]",
     "[--hero-secondary-opacity:0] [--hero-secondary-scale:0.985] [--hero-secondary-y:20px]",
@@ -79,17 +89,17 @@ const heroTotalSteps =
     "--hero-scroll-total-steps": String(heroTotalSteps),
   }}
   data-home-banner>
-  <div class="sticky top-0 h-[100svh] w-screen min-w-[100vw] overflow-hidden bg-[#05070d]">
+  <div class="h-[100svh] w-screen min-w-[100vw] overflow-hidden bg-[#05070d] md:sticky md:top-0">
     {
       slide && (
-        <div class="absolute inset-0 -z-10 overflow-hidden">
+        <div class="absolute inset-0 z-0 overflow-hidden">
           <div
-            class="absolute inset-[-4rem] overflow-hidden bg-[#05070d] [filter:blur(var(--hero-bg-blur))] will-change-[filter] motion-reduce:filter-none"
+            class="absolute inset-0 overflow-hidden bg-[#05070d] [filter:blur(var(--hero-bg-blur))] will-change-[filter] motion-reduce:filter-none md:inset-[-4rem]"
             data-hero-parallax-layer>
             <OptimizedImage
               src={slide.backgroundImage}
               alt="Banner Image"
-              class="block h-[calc(100svh+8rem)] min-h-[calc(100svh+8rem)] w-[calc(100vw+8rem)] min-w-[calc(100vw+8rem)] object-cover object-center [transform:scale(var(--hero-bg-scale))] [transform-origin:center] will-change-transform motion-reduce:transform-none"
+              class="block h-full min-h-full w-full min-w-full object-cover object-[58%_center] [transform:scale(var(--hero-bg-scale))] [transform-origin:center] will-change-transform motion-reduce:transform-none md:h-[calc(100svh+8rem)] md:min-h-[calc(100svh+8rem)] md:w-[calc(100vw+8rem)] md:min-w-[calc(100vw+8rem)] md:object-center"
               sizes="(max-width: 640px) 200vw, (min-width: 1320px) 1320w, 100vw"
               data-content={slide.backgroundImage}
             />
@@ -98,8 +108,8 @@ const heroTotalSteps =
       )
     }
 
-    <div class="container">
-      <div class="relative z-30 flex min-h-[70vh] items-center justify-center py-32 md:min-h-[82vh] md:py-40 lg:min-h-[100svh]">
+    <div class="container flex h-full items-center">
+      <div class="relative z-30 flex min-h-[100svh] w-full items-center justify-center py-20 md:min-h-[82vh] md:py-40 lg:min-h-[100svh]">
         {
           slide && (
             <div
@@ -113,24 +123,24 @@ const heroTotalSteps =
                 data-hero-primary-content>
                 {slide.title && (
                   <h1
-                    class="mb-6 !text-7xl text-inherit md:text-5xl/tight"
+                    class="mb-6 !text-4xl/tight text-inherit sm:!text-5xl/tight lg:!text-7xl"
                     set:html={markdownify(slide.title)}
                   />
                 )}
                 {slide.description && (
                   <div class="overflow-hidden">
                     <p
-                      class="mx-auto max-w-2xl text-2xl opacity-90"
+                      class="mx-auto max-w-2xl text-lg opacity-90 sm:text-xl md:text-2xl"
                       set:html={markdownify(slide.description)}
                     />
                   </div>
                 )}
-                {(slide.button?.enable || slide.secondaryButton?.enable) && (
+                {(heroPrimaryButton?.enable || slide.secondaryButton?.enable) && (
                   <div class="mt-10 flex flex-wrap justify-center gap-5">
-                    {slide.button?.enable && (
+                    {heroPrimaryButton?.enable && (
                       <CustomButton
                         size="md"
-                        {...slide.button}
+                        {...heroPrimaryButton}
                       />
                     )}
                     {slide.secondaryButton?.enable && (
@@ -148,6 +158,9 @@ const heroTotalSteps =
       </div>
     </div>
 
+    <div
+      class="hero-mobile-overlay pointer-events-none absolute inset-0 z-10 bg-[linear-gradient(180deg,rgba(6,10,18,0.08)_0%,rgba(6,10,18,0.24)_52%,rgba(6,10,18,0.66)_100%)] md:bg-[linear-gradient(180deg,rgba(6,10,18,0.08)_0%,rgba(6,10,18,0.24)_52%,rgba(6,10,18,0.66)_100%)]"
+    ></div>
     <div
       aria-hidden="true"
       class="pointer-events-none absolute inset-0 z-30 grid place-items-center px-6 text-center text-white group-data-[secondary-active=true]:pointer-events-auto md:px-10">
@@ -200,6 +213,7 @@ const heroTotalSteps =
     primaryScrollSteps,
     secondaryScrollSteps,
     tertiaryScrollSteps,
+    mobileBreakpoint,
   }}>
   const heroBanner = document.querySelector("[data-home-banner]");
 
@@ -209,6 +223,7 @@ const heroTotalSteps =
     const reducedMotionQuery = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     );
+    const mobileQuery = window.matchMedia(`(max-width: ${mobileBreakpoint}px)`);
     let rafId = 0;
 
     const normalizeRange = (value, start, end) => {
@@ -221,7 +236,7 @@ const heroTotalSteps =
     const updateParallax = () => {
       rafId = 0;
 
-      if (reducedMotionQuery.matches) {
+      if (reducedMotionQuery.matches || mobileQuery.matches) {
         heroBanner.style.setProperty("--hero-bg-blur", "0px");
         heroBanner.style.setProperty("--hero-bg-scale", "1.02");
         heroBanner.style.setProperty("--hero-primary-opacity", "1");
@@ -319,5 +334,35 @@ const heroTotalSteps =
     if (typeof reducedMotionQuery.addEventListener === "function") {
       reducedMotionQuery.addEventListener("change", requestParallaxUpdate);
     }
+
+    if (typeof mobileQuery.addEventListener === "function") {
+      mobileQuery.addEventListener("change", requestParallaxUpdate);
+    }
   }
 </script>
+
+<style>
+  @media (max-width: 767px) {
+    [data-home-banner] [data-hero-parallax-layer] {
+      filter: none !important;
+      background: transparent !important;
+    }
+
+    [data-home-banner] [data-hero-parallax-layer] img {
+      filter: brightness(1.42) contrast(1.05);
+    }
+
+    [data-home-banner] .hero-mobile-overlay {
+      background: linear-gradient(
+        180deg,
+        rgba(6, 10, 18, 0.1) 0%,
+        rgba(6, 10, 18, 0.16) 46%,
+        rgba(6, 10, 18, 0.32) 100%
+      ) !important;
+    }
+
+    [data-home-banner] .container {
+      min-height: 100svh;
+    }
+  }
+</style>

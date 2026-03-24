@@ -92,9 +92,13 @@
     @apply border-border-light hs-dropdown-open:opacity-100 absolute top-[calc(100%+0.5rem)] right-0 min-w-32 rounded-md border bg-white p-1 opacity-0 transition-[opacity,margin];
 
     li a {
-      @apply text-text-default hover:bg-primary/10 hover:text-primary block rounded-lg bg-white px-3 py-1.5 text-center transition;
+      @apply text-text-default hover:bg-primary/10 hover:text-primary flex items-center justify-center gap-2 rounded-lg bg-white px-3 py-1.5 text-center transition;
     }
   }
+}
+
+.language-switcher-flag {
+  @apply inline-flex items-center justify-center text-[1.1em] leading-none;
 }
 
 .header-dark .language-switcher {

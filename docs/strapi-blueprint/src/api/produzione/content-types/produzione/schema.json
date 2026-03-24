@@ -77,6 +77,11 @@
       "inversedBy": "produzioni",
       "required": true
     },
+    "casaProduzione": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::casa-produzione.casa-produzione"
+    },
     "heroImage": {
       "type": "media",
       "multiple": false,

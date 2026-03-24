@@ -94,7 +94,9 @@ const faqItems: FAQItem[] = content.faq.items.map((item, index) => ({
       <section class="bg-white pb-18 md:pb-24">
         <div class="mx-auto mb-8 w-full max-w-[1480px] px-[clamp(1rem,2.5vw,3.5rem)] md:mb-10">
           <div class="w-full space-y-3">
-            <h2 class="w-full text-center lg:text-4xl xl:text-5xl sm:text-3xl xs:text-xl leading-[1.5] font-semibold text-stone-950">
+            <h2
+              data-rentals-catalog-heading
+              class="w-full text-center lg:text-4xl xl:text-5xl sm:text-3xl xs:text-xl leading-[1.5] font-semibold text-stone-950">
               {content.catalog.title}
             </h2>
           </div>
@@ -107,18 +109,25 @@ const faqItems: FAQItem[] = content.faq.items.map((item, index) => ({
       </section>
 
       <BlurReadingSection
+        align="center"
         title={content.conditions.title}
         body={content.conditions.body}
+        bodyProgressOffset="0"
         note={content.conditions.note}
+        spacing="compact"
+        titleProgressOffset="0"
+        viewportAnchor="1"
         width="default"
         textStagger="0.1"
       />
 
       <BlurReadingSection
-        align="right"
+        actionLayout="side"
+        align="left"
         title={content.contact.title}
         body={content.contact.body}
         note={content.contact.note}
+        spacing="defaultTopExpandedBottom"
         width="default"
         textStagger="0.1"
         action={{
@@ -132,11 +141,11 @@ const faqItems: FAQItem[] = content.faq.items.map((item, index) => ({
       <section class="bg-white py-18 md:py-24">
         <div class="container">
           <div class="mx-auto w-full max-w-[min(100%,84rem)]">
-            <div class="mx-auto max-w-3xl space-y-3 text-center">
+            <div class="mx-auto w-full space-y-3 text-center">
               <p class="text-xs font-semibold tracking-[0.28em] text-stone-500 uppercase">
                 {content.faq.eyebrow}
               </p>
-              <h2 class="text-[clamp(2rem,4vw,3.2rem)] leading-[0.98] font-semibold text-stone-950">
+              <h2 class="text-[clamp(2rem,4vw,3.2rem)] leading-[1.18] font-semibold text-stone-950">
                 {content.faq.title}
               </h2>
             </div>

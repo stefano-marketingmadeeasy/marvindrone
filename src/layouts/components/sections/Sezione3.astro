@@ -96,7 +96,7 @@ const iconMap: Record<FeatureIcon, string> = {
 
 {
   enable && (
-    <section id={id} class="relative overflow-hidden bg-[#0e1a24] py-16 sm:py-20">
+    <section id={id} class="relative overflow-hidden bg-black py-16 sm:py-20">
       <div class="pointer-events-none absolute inset-0">
         <div class="absolute -top-24 left-1/2 h-72 w-[48rem] -translate-x-1/2 rounded-full bg-white/5 blur-3xl"></div>
         <div class="absolute -right-40 -bottom-32 h-80 w-80 rounded-full bg-white/5 blur-3xl"></div>
@@ -202,5 +202,14 @@ const iconMap: Record<FeatureIcon, string> = {
     opacity: 1;
     transform: translate3d(0, 0, 0);
     filter: blur(0);
+  }
+
+  @media (max-width: 767px), (prefers-reduced-motion: reduce) {
+    .card-blur-reveal {
+      opacity: 1;
+      transform: none;
+      filter: none;
+      transition: none;
+    }
   }
 </style>

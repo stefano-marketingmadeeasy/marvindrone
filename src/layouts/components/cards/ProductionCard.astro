@@ -10,17 +10,21 @@ import StrapiImage from "@/components/productions/StrapiImage.astro";
 interface Props {
   production: Production;
   labels?: ProductionsCardContent;
+  variant?: "default" | "related";
 }
 
-const { production, labels } = Astro.props;
+const { production, labels, variant = "default" } = Astro.props;
 const currentLocale = Astro.currentLocale || "it";
 const href = getProductionPath(production, currentLocale);
 const t = await useTranslations(currentLocale);
 const coverImage =
   production.heroImage || production.poster || production.gallery[0];
-const shootingTypesLabel = production.shootingTypes.join(" / ");
+const productionTypeLabel =
+  production.category?.slug !== "produzioni"
+    ? production.category?.name?.trim()
+    : "";
 const cardShadow = "0 10px 30px rgba(15,23,42,0.04)";
-const cardShadowHover = "0 40px 50px rgba(15,23,42,0.28)";
+const cardShadowHover = "0 24px 36px rgba(15,23,42,0.18)";
 const cardLabels = labels || {
   open: t("productions.card.open"),
   noImage: t("productions.card.noImage"),
@@ -75,18 +79,28 @@ const cardLabels = labels || {
       <div
         class="flex w-full min-w-0 flex-col items-center justify-center text-center">
         <div
-          class="production-card-content w-full max-w-[82%] translate-y-0 space-y-4 transition duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] sm:max-w-[78%] lg:max-w-[74%]">
+          class:list={[
+            "production-card-content w-full translate-y-0 space-y-4 transition duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+            variant === "related"
+              ? "max-w-[96%] sm:max-w-[94%] lg:max-w-[92%]"
+              : "max-w-[90%] sm:max-w-[88%] lg:max-w-[84%]",
+          ]}>
           {
-            shootingTypesLabel && (
+            productionTypeLabel && (
               <div>
                 <span class="rounded-full border border-white/30 bg-black/45 px-3 py-1 text-[11px] font-medium tracking-[0.24em] text-white uppercase backdrop-blur">
-                  {shootingTypesLabel}
+                  {productionTypeLabel}
                 </span>
               </div>
             )
           }
           <h3
-            class="mx-auto max-w-[11ch] text-[clamp(1.5rem,2vw,2.8rem)] leading-[0.96] font-semibold break-words text-white sm:max-w-[12ch] lg:max-w-[13ch]"
+            class:list={[
+              "mx-auto font-semibold break-words text-white",
+              variant === "related"
+                ? "max-w-[22ch] text-[clamp(1.05rem,1.15vw,1.55rem)] leading-[1.1] sm:max-w-[24ch] lg:max-w-[26ch]"
+                : "max-w-[15ch] text-[clamp(1.3rem,1.7vw,2.25rem)] leading-[1.06] sm:max-w-[16ch] lg:max-w-[18ch]",
+            ]}
             set:html={markdownify(production.title)}
           />
         </div>
@@ -94,12 +108,21 @@ const cardLabels = labels || {
         <div
           class="pointer-events-none absolute inset-x-0 bottom-4 flex justify-center px-4 sm:bottom-6 sm:px-5 md:bottom-8 md:px-6">
           <span
-            class="production-card-open inline-flex translate-y-5 items-center gap-1 rounded-full border border-white/28 bg-white/12 px-3 py-2 text-[10px] font-semibold tracking-[0.12em] text-white uppercase opacity-0 backdrop-blur transition duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] sm:gap-1.5 sm:px-4 sm:py-2.5 sm:text-[11px] sm:tracking-[0.14em] md:gap-2 md:px-5 md:py-3 md:text-sm md:tracking-[0.18em]">
+            class:list={[
+              "production-card-open inline-flex translate-y-5 items-center rounded-full border border-white/28 bg-white/12 font-semibold text-white uppercase opacity-0 backdrop-blur transition duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+              variant === "related"
+                ? "gap-1 px-2.5 py-1.5 text-[9px] tracking-[0.1em] sm:gap-1.5 sm:px-3 sm:py-2 sm:text-[10px] sm:tracking-[0.12em] md:gap-1.5 md:px-4 md:py-2 md:text-[11px] md:tracking-[0.14em]"
+                : "gap-1 px-3 py-2 text-[10px] tracking-[0.12em] sm:gap-1.5 sm:px-4 sm:py-2.5 sm:text-[11px] sm:tracking-[0.14em] md:gap-2 md:px-5 md:py-3 md:text-sm md:tracking-[0.18em]",
+            ]}>
             {cardLabels.open}
             <ArrowUpRight
-              size={12}
+              size={variant === "related" ? 11 : 12}
               stroke-width={2}
-              class="size-3 sm:size-3.5 md:size-4"
+              class:list={[
+                variant === "related"
+                  ? "size-3 md:size-3.5"
+                  : "size-3 sm:size-3.5 md:size-4",
+              ]}
             />
           </span>
         </div>

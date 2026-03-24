@@ -20,9 +20,12 @@ const brandOptions = [
   { value: "all", label: archive.brandPlaceholder },
   ...filters.brands.map((brand) => ({ value: brand.slug, label: brand.name })),
 ];
-const usageOptions = [
-  { value: "all", label: archive.usagePlaceholder },
-  ...filters.usages.map((usage) => ({ value: usage.slug, label: usage.name })),
+const categoryOptions = [
+  { value: "all", label: archive.categoryPlaceholder },
+  ...filters.categories.map((category) => ({
+    value: category.slug,
+    label: category.name,
+  })),
 ];
 ---
 
@@ -96,23 +99,23 @@ const usageOptions = [
 
             <label class="grid gap-2">
               <span class="text-xs font-semibold tracking-[0.18em] text-stone-500 uppercase">
-                {archive.usageLabel}
+                {archive.categoryLabel}
               </span>
               <select
-                data-rental-filter-usage-mobile
+                data-rental-filter-category-mobile
                 class="min-h-[3.5rem] w-full rounded-[1.25rem] border border-stone-200 bg-stone-50 px-4 text-sm text-stone-900 outline-none transition duration-200 focus:border-stone-900 focus:bg-white md:hidden">
-                {usageOptions.map((option) => <option value={option.value}>{option.label}</option>)}
+                {categoryOptions.map((option) => <option value={option.value}>{option.label}</option>)}
               </select>
-              <div data-rental-dropdown data-filter-name="usage" class="relative hidden md:block">
-                <select data-rental-filter-usage hidden>
-                  {usageOptions.map((option) => <option value={option.value}>{option.label}</option>)}
+              <div data-rental-dropdown data-filter-name="category" class="relative hidden md:block">
+                <select data-rental-filter-category hidden>
+                  {categoryOptions.map((option) => <option value={option.value}>{option.label}</option>)}
                 </select>
                 <button
                   type="button"
                   data-rental-dropdown-trigger
-                  data-placeholder={archive.usagePlaceholder}
+                  data-placeholder={archive.categoryPlaceholder}
                   class="flex min-h-[3.5rem] w-full items-center justify-between gap-3 rounded-[1.25rem] border border-stone-200 bg-stone-50 px-4 text-left text-sm text-stone-900 outline-none transition duration-200 hover:border-stone-300 hover:bg-white focus:border-stone-900 focus:bg-white">
-                  <span data-rental-dropdown-label class="min-w-0 truncate">{archive.usagePlaceholder}</span>
+                  <span data-rental-dropdown-label class="min-w-0 truncate">{archive.categoryPlaceholder}</span>
                   <svg
                     aria-hidden="true"
                     viewBox="0 0 20 20"
@@ -132,7 +135,7 @@ const usageOptions = [
                   class="absolute left-0 right-0 top-[calc(100%+0.55rem)] z-30 overflow-hidden rounded-[1.35rem] border border-stone-200 bg-white p-2 shadow-[0_24px_60px_rgba(15,23,42,0.14)]">
                   <div class="max-h-72 overflow-y-auto">
                     {
-                      usageOptions.map((option) => (
+                      categoryOptions.map((option) => (
                         <button
                           type="button"
                           data-rental-dropdown-option
@@ -214,9 +217,11 @@ const usageOptions = [
 
   if (root) {
     const brandSelect = root.querySelector("[data-rental-filter-brand]");
-    const usageSelect = root.querySelector("[data-rental-filter-usage]");
+    const categorySelect = root.querySelector("[data-rental-filter-category]");
     const brandSelectMobile = root.querySelector("[data-rental-filter-brand-mobile]");
-    const usageSelectMobile = root.querySelector("[data-rental-filter-usage-mobile]");
+    const categorySelectMobile = root.querySelector(
+      "[data-rental-filter-category-mobile]",
+    );
     const dropdowns = Array.from(
       root.querySelectorAll("[data-rental-dropdown]"),
     );
@@ -242,6 +247,11 @@ const usageOptions = [
 
     const scrollToArchiveStart = () => {
       if (!(root instanceof HTMLElement)) return;
+      const headingTarget = document.querySelector(
+        "[data-rentals-catalog-heading]",
+      );
+      const scrollTarget =
+        headingTarget instanceof HTMLElement ? headingTarget : root;
       const headerOffset =
         Number.parseFloat(
           getComputedStyle(document.documentElement).getPropertyValue(
@@ -249,7 +259,10 @@ const usageOptions = [
           ),
         ) || 0;
       const targetY =
-        window.scrollY + root.getBoundingClientRect().top - headerOffset - 20;
+        window.scrollY +
+        scrollTarget.getBoundingClientRect().top -
+        headerOffset -
+        20;
       const nextY = Math.max(targetY, 0);
       const shouldJump = Math.abs(window.scrollY - nextY) > 8;
 
@@ -268,21 +281,21 @@ const usageOptions = [
         ? brandSelectMobile || brandSelect
         : brandSelect || brandSelectMobile;
 
-    const getActiveUsageSelect = () =>
+    const getActiveCategorySelect = () =>
       window.innerWidth < 768
-        ? usageSelectMobile || usageSelect
-        : usageSelect || usageSelectMobile;
+        ? categorySelectMobile || categorySelect
+        : categorySelect || categorySelectMobile;
 
-    const setAllSelectValues = (nextBrand, nextUsage) => {
+    const setAllSelectValues = (nextBrand, nextCategory) => {
       [brandSelect, brandSelectMobile].forEach((select) => {
         if (select instanceof HTMLSelectElement) {
           select.value = nextBrand;
         }
       });
 
-      [usageSelect, usageSelectMobile].forEach((select) => {
+      [categorySelect, categorySelectMobile].forEach((select) => {
         if (select instanceof HTMLSelectElement) {
-          select.value = nextUsage;
+          select.value = nextCategory;
         }
       });
     };
@@ -346,7 +359,7 @@ const usageOptions = [
       });
     };
 
-    const syncUrl = (activeBrand, activeUsage) => {
+    const syncUrl = (activeBrand, activeCategory) => {
       const url = new URL(window.location.href);
       if (activeBrand === "all") {
         url.searchParams.delete("brand");
@@ -354,10 +367,12 @@ const usageOptions = [
         url.searchParams.set("brand", activeBrand);
       }
 
-      if (activeUsage === "all") {
+      if (activeCategory === "all") {
+        url.searchParams.delete("category");
         url.searchParams.delete("use");
       } else {
-        url.searchParams.set("use", activeUsage);
+        url.searchParams.set("category", activeCategory);
+        url.searchParams.delete("use");
       }
 
       window.history.replaceState({}, "", url);
@@ -405,27 +420,27 @@ const usageOptions = [
 
     const applyFilters = ({ animate = true } = {}) => {
       const activeBrandSelect = getActiveBrandSelect();
-      const activeUsageSelect = getActiveUsageSelect();
-      if (!activeBrandSelect || !activeUsageSelect) return;
+      const activeCategorySelect = getActiveCategorySelect();
+      if (!activeBrandSelect || !activeCategorySelect) return;
 
       const activeBrand = activeBrandSelect.value || "all";
-      const activeUsage = activeUsageSelect.value || "all";
+      const activeCategory = activeCategorySelect.value || "all";
       const nextVisibleCards = cards.filter((card) => {
         const brand = card.dataset.brand || "";
-        const usages = (card.dataset.usages || "")
+        const categories = (card.dataset.categories || "")
           .split(",")
           .map((value) => value.trim())
           .filter(Boolean);
         const matchesBrand = activeBrand === "all" || brand === activeBrand;
-        const matchesUsage =
-          activeUsage === "all" || usages.includes(activeUsage);
+        const matchesCategory =
+          activeCategory === "all" || categories.includes(activeCategory);
 
-        return matchesBrand && matchesUsage;
+        return matchesBrand && matchesCategory;
       });
 
       const finalizeFilterChange = () => {
         updateResults(nextVisibleCards);
-        syncUrl(activeBrand, activeUsage);
+        syncUrl(activeBrand, activeCategory);
         animateResultsIn(nextVisibleCards);
       };
 
@@ -464,29 +479,29 @@ const usageOptions = [
 
     const applyInitialFilters = () => {
       const activeBrandSelect = getActiveBrandSelect();
-      const activeUsageSelect = getActiveUsageSelect();
-      if (!activeBrandSelect || !activeUsageSelect) return;
+      const activeCategorySelect = getActiveCategorySelect();
+      if (!activeBrandSelect || !activeCategorySelect) return;
 
       const search = new URLSearchParams(window.location.search);
       const brand = search.get("brand");
-      const usage = search.get("use");
+      const category = search.get("category") || search.get("use");
       const nextBrand =
         brand &&
         activeBrandSelect.querySelector(`option[value="${brand}"]`)
           ? brand
           : "all";
-      const nextUsage =
-        usage &&
-        activeUsageSelect.querySelector(`option[value="${usage}"]`)
-          ? usage
+      const nextCategory =
+        category &&
+        activeCategorySelect.querySelector(`option[value="${category}"]`)
+          ? category
           : "all";
 
-      setAllSelectValues(nextBrand, nextUsage);
+      setAllSelectValues(nextBrand, nextCategory);
 
       const brandDropdown = root.querySelector('[data-filter-name="brand"]');
-      const usageDropdown = root.querySelector('[data-filter-name="usage"]');
+      const categoryDropdown = root.querySelector('[data-filter-name="category"]');
       syncDropdownUi(brandDropdown, nextBrand);
-      syncDropdownUi(usageDropdown, nextUsage);
+      syncDropdownUi(categoryDropdown, nextCategory);
 
       applyFilters({ animate: false });
     };
@@ -549,23 +564,26 @@ const usageOptions = [
     const handleBrandChange = (event) => {
       const target = event.currentTarget;
       if (!(target instanceof HTMLSelectElement)) return;
-      setAllSelectValues(target.value || "all", getActiveUsageSelect()?.value || "all");
+      setAllSelectValues(
+        target.value || "all",
+        getActiveCategorySelect()?.value || "all",
+      );
       syncDropdownUi(root.querySelector('[data-filter-name="brand"]'), target.value || "all");
       applyFilters();
     };
 
-    const handleUsageChange = (event) => {
+    const handleCategoryChange = (event) => {
       const target = event.currentTarget;
       if (!(target instanceof HTMLSelectElement)) return;
       setAllSelectValues(getActiveBrandSelect()?.value || "all", target.value || "all");
-      syncDropdownUi(root.querySelector('[data-filter-name="usage"]'), target.value || "all");
+      syncDropdownUi(root.querySelector('[data-filter-name="category"]'), target.value || "all");
       applyFilters();
     };
 
     brandSelect?.addEventListener("change", handleBrandChange);
-    usageSelect?.addEventListener("change", handleUsageChange);
+    categorySelect?.addEventListener("change", handleCategoryChange);
     brandSelectMobile?.addEventListener("change", handleBrandChange);
-    usageSelectMobile?.addEventListener("change", handleUsageChange);
+    categorySelectMobile?.addEventListener("change", handleCategoryChange);
 
     dropdowns.forEach((dropdown) => {
       const parts = getDropdownParts(dropdown);
@@ -599,7 +617,7 @@ const usageOptions = [
     resetButton?.addEventListener("click", () => {
       setAllSelectValues("all", "all");
       syncDropdownUi(root.querySelector('[data-filter-name="brand"]'), "all");
-      syncDropdownUi(root.querySelector('[data-filter-name="usage"]'), "all");
+      syncDropdownUi(root.querySelector('[data-filter-name="category"]'), "all");
       dropdowns.forEach((dropdown) => closeDropdown(dropdown));
       applyFilters();
     });

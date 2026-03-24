@@ -28,13 +28,18 @@ export async function getStaticPaths() {
 const { production, relatedProductions } = Astro.props;
 const t = await useTranslations("it");
 const coverImage =
-  production.heroImage || production.poster || production.gallery[0];
+  production.seo.image ||
+  production.heroImage ||
+  production.poster ||
+  production.gallery[0];
 ---
 
 <Base
   title={production.title}
   description={production.excerpt || production.synopsis}
   image={coverImage?.url}
+  imageAlt={production.seo.altText || coverImage?.alt}
+  imageCaption={production.seo.caption || coverImage?.caption}
   forceBlueHeader={true}
   metaTitle={production.seo.metaTitle ||
     `${production.title} | ${t("productions.meta.singleSuffix")}`}

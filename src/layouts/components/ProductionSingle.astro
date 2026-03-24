@@ -1,5 +1,5 @@
 ---
-import { ArrowLeft, ArrowUpRight } from "@lucide/astro";
+import { ArrowLeft, ArrowRight, ArrowUpRight, X } from "@lucide/astro";
 import { getLocaleUrlCTM, useTranslations } from "@/lib/utils/i18nUtils";
 import { markdownify } from "@/lib/utils/textConverter";
 import type { Production } from "@/types/productions";
@@ -17,8 +17,8 @@ const currentLocale = Astro.currentLocale || "it";
 const t = await useTranslations(currentLocale);
 const heroImage =
   production.heroImage || production.poster || production.gallery[0];
-const productionsIndexUrl = getLocaleUrlCTM("/produzioni/", currentLocale);
-const relatedFilterUrl = `${productionsIndexUrl}?filter=${production.category.slug}`;
+const productionsIndexUrl = `${getLocaleUrlCTM("/produzioni/", currentLocale)}#productions-archive`;
+const relatedFilterUrl = `${getLocaleUrlCTM("/produzioni/", currentLocale)}?filter=${production.category.slug}#productions-archive`;
 const contactUrl = getLocaleUrlCTM("/contact/", currentLocale);
 
 const normalizeFactLabel = (value: string) =>
@@ -78,8 +78,8 @@ const introTitle =
     : `Aerial cinematography for ${production.category.name}${regionLabel ? ` in ${regionLabel}` : ""}`;
 const technicalTitle =
   currentLocale === "it"
-    ? "Scelte tecniche (perche questa configurazione)"
-    : "Technical choices (why this setup)";
+    ? "Scelte tecniche"
+    : "Technical choices";
 const videoTitle = currentLocale === "it" ? "Video" : "Video";
 const backstageTitle =
   currentLocale === "it" ? "Foto backstage" : "Backstage photos";
@@ -207,12 +207,6 @@ const videoEmbed = getVideoEmbed(production.videoUrl || production.trailerUrl);
               <ArrowLeft size={16} stroke-width={2} />
               {t("productions.detail.back")}
             </a>
-            <a
-              href={relatedFilterUrl}
-              class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-white transition hover:border-white hover:bg-white hover:text-stone-950">
-              {production.category.name}
-              <ArrowUpRight size={16} stroke-width={2} />
-            </a>
           </div>
 
           <div
@@ -229,7 +223,7 @@ const videoEmbed = getVideoEmbed(production.videoUrl || production.trailerUrl);
 
             <div class="space-y-3 text-center">
               <h1
-                class="mx-auto max-w-[12ch] text-[clamp(3.25rem,8vw,7rem)] leading-[0.92] font-semibold text-inherit"
+                class="mx-auto max-w-[18ch] text-[clamp(2.7rem,6vw,5.4rem)] leading-[0.96] font-semibold text-inherit"
                 set:html={markdownify(production.title)}
               />
             </div>
@@ -345,18 +339,79 @@ const videoEmbed = getVideoEmbed(production.videoUrl || production.trailerUrl);
             <section class="rounded-[2rem] border border-black/10 bg-white p-6 md:p-8">
               <h2 class="text-h4 text-inherit">{backstageTitle}</h2>
               <div class="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                {backstageImages.map((image) => (
-                  <div class="overflow-hidden rounded-[1.5rem] bg-stone-100">
+                {backstageImages.map((image, index) => (
+                  <button
+                    type="button"
+                    class="group relative overflow-hidden rounded-[1.5rem] bg-stone-100 text-left"
+                    data-backstage-trigger
+                    data-backstage-index={String(index)}
+                    data-backstage-url={image.url}
+                    data-backstage-alt={image.alt || production.title}
+                    aria-label={`${backstageTitle} ${index + 1}`}>
                     <StrapiImage
                       url={image.url}
                       alt={image.alt || production.title}
                       width={image.width}
                       height={image.height}
                       loading="lazy"
-                      class="aspect-[4/3] h-full w-full object-cover"
+                      class="aspect-[4/3] h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
                     />
-                  </div>
+                    <span class="pointer-events-none absolute inset-0 bg-black/0 transition duration-300 group-hover:bg-black/10" />
+                  </button>
                 ))}
+              </div>
+
+              <div
+                data-backstage-lightbox
+                hidden
+                class="fixed inset-0 z-[120] flex items-center justify-center bg-black/88 p-4 md:p-8"
+                role="dialog"
+                aria-modal="true"
+                aria-label={backstageTitle}>
+                <button
+                  type="button"
+                  class="absolute inset-0 h-full w-full"
+                  data-backstage-close
+                  aria-label="Close backstage gallery">
+                </button>
+
+                <div class="relative z-10 flex w-full max-w-7xl items-center justify-center gap-3 md:gap-6">
+                  <button
+                    type="button"
+                    class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition hover:bg-white hover:text-black md:h-14 md:w-14"
+                    data-backstage-prev
+                    aria-label="Previous backstage photo">
+                    <ArrowLeft size={20} stroke-width={2} />
+                  </button>
+
+                  <div class="relative flex min-w-0 flex-1 items-center justify-center">
+                    <img
+                      data-backstage-image
+                      src=""
+                      alt=""
+                      class="max-h-[82vh] w-auto max-w-full rounded-[1.5rem] object-contain"
+                    />
+                    <div class="pointer-events-none absolute right-3 bottom-3 rounded-full bg-black/55 px-3 py-1 text-xs font-medium tracking-[0.18em] text-white uppercase md:right-4 md:bottom-4">
+                      <span data-backstage-counter />
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition hover:bg-white hover:text-black md:h-14 md:w-14"
+                    data-backstage-next
+                    aria-label="Next backstage photo">
+                    <ArrowRight size={20} stroke-width={2} />
+                  </button>
+
+                  <button
+                    type="button"
+                    class="absolute top-0 right-0 inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition hover:bg-white hover:text-black md:h-12 md:w-12"
+                    data-backstage-close
+                    aria-label="Close backstage gallery">
+                    <X size={20} stroke-width={2} />
+                  </button>
+                </div>
               </div>
             </section>
           )
@@ -379,7 +434,7 @@ const videoEmbed = getVideoEmbed(production.videoUrl || production.trailerUrl);
             relatedProductions.length > 0 ? (
               <div class="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
                 {relatedProductions.map((item) => (
-                  <ProductionCard production={item} />
+                  <ProductionCard production={item} variant="related" />
                 ))}
               </div>
             ) : (
@@ -399,12 +454,12 @@ const videoEmbed = getVideoEmbed(production.videoUrl || production.trailerUrl);
             </div>
             <a
               href={contactUrl}
-              class="inline-flex items-center gap-3 rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#0e1a24] transition hover:bg-stone-100">
+              class="inline-flex items-center gap-3 rounded-full bg-white px-7 py-4 text-[clamp(1rem,1.4vw,1.35rem)] font-semibold text-[#0e1a24] transition hover:bg-stone-100 md:px-8 md:py-4.5">
               <img
                 src={whatsappIcon.src}
                 alt=""
                 aria-hidden="true"
-                class="h-5 w-5"
+                class="h-5 w-5 md:h-6 md:w-6"
               />
               {ctaLabel}
             </a>
@@ -427,6 +482,25 @@ const videoEmbed = getVideoEmbed(production.videoUrl || production.trailerUrl);
     const heroContent = document.querySelector(
       "[data-production-hero-content]",
     );
+    const backstageLightbox = document.querySelector("[data-backstage-lightbox]");
+    const backstageImage = backstageLightbox?.querySelector(
+      "[data-backstage-image]",
+    );
+    const backstageCounter = backstageLightbox?.querySelector(
+      "[data-backstage-counter]",
+    );
+    const backstagePrev = backstageLightbox?.querySelector(
+      "[data-backstage-prev]",
+    );
+    const backstageNext = backstageLightbox?.querySelector(
+      "[data-backstage-next]",
+    );
+    const backstageCloseButtons = Array.from(
+      document.querySelectorAll("[data-backstage-close]"),
+    );
+    const backstageTriggers = Array.from(
+      document.querySelectorAll("[data-backstage-trigger]"),
+    );
 
     if (!(root instanceof HTMLElement)) return;
     if (!(section instanceof HTMLElement)) return;
@@ -435,6 +509,11 @@ const videoEmbed = getVideoEmbed(production.videoUrl || production.trailerUrl);
     if (!(heroContent instanceof HTMLElement)) return;
 
     let ticking = false;
+    const backstageItems = backstageTriggers.map((trigger) => ({
+      url: trigger.getAttribute("data-backstage-url") || "",
+      alt: trigger.getAttribute("data-backstage-alt") || "",
+    }));
+    let activeBackstageIndex = 0;
 
     const syncHeaderOffset = () => {
       const headerHeight =
@@ -464,13 +543,89 @@ const videoEmbed = getVideoEmbed(production.videoUrl || production.trailerUrl);
       window.requestAnimationFrame(updateParallax);
     };
 
+    const renderBackstageImage = () => {
+      if (!(backstageImage instanceof HTMLImageElement)) return;
+      if (!(backstageCounter instanceof HTMLElement)) return;
+      if (backstageItems.length === 0) return;
+
+      const item = backstageItems[activeBackstageIndex];
+      if (!item) return;
+
+      backstageImage.src = item.url;
+      backstageImage.alt = item.alt;
+      backstageCounter.textContent = `${activeBackstageIndex + 1} / ${backstageItems.length}`;
+    };
+
+    const closeBackstageLightbox = () => {
+      if (!(backstageLightbox instanceof HTMLElement)) return;
+      backstageLightbox.hidden = true;
+      document.body.classList.remove("backstage-lightbox-open");
+    };
+
+    const openBackstageLightbox = (index) => {
+      if (!(backstageLightbox instanceof HTMLElement)) return;
+      if (backstageItems.length === 0) return;
+
+      activeBackstageIndex =
+        ((index % backstageItems.length) + backstageItems.length) %
+        backstageItems.length;
+      renderBackstageImage();
+      backstageLightbox.hidden = false;
+      document.body.classList.add("backstage-lightbox-open");
+    };
+
+    const stepBackstageLightbox = (direction) => {
+      if (backstageItems.length === 0) return;
+      openBackstageLightbox(activeBackstageIndex + direction);
+    };
+
     updateParallax();
     window.addEventListener("scroll", requestUpdate, { passive: true });
     window.addEventListener("resize", requestUpdate);
+
+    backstageTriggers.forEach((trigger, index) => {
+      trigger.addEventListener("click", () => {
+        openBackstageLightbox(index);
+      });
+    });
+
+    if (backstagePrev instanceof HTMLButtonElement) {
+      backstagePrev.addEventListener("click", (event) => {
+        event.stopPropagation();
+        stepBackstageLightbox(-1);
+      });
+    }
+
+    if (backstageNext instanceof HTMLButtonElement) {
+      backstageNext.addEventListener("click", (event) => {
+        event.stopPropagation();
+        stepBackstageLightbox(1);
+      });
+    }
+
+    backstageCloseButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        closeBackstageLightbox();
+      });
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (!(backstageLightbox instanceof HTMLElement) || backstageLightbox.hidden) {
+        return;
+      }
+
+      if (event.key === "Escape") closeBackstageLightbox();
+      if (event.key === "ArrowLeft") stepBackstageLightbox(-1);
+      if (event.key === "ArrowRight") stepBackstageLightbox(1);
+    });
   })();
 </script>
 
 <style>
+  body.backstage-lightbox-open {
+    overflow: hidden;
+  }
+
   [data-production-root] {
     --production-header-offset: 76px;
     margin-top: calc(var(--production-header-offset) * -1);

@@ -1,10 +1,10 @@
 {
   "main": [
     {
-      "enable": false,
+      "enable": true,
       "label": "facebook",
       "icon": "/images/icons/social/facebook.svg",
-      "url": "https://www.facebook.com/marvindrone"
+      "url": "https://www.facebook.com/MarvinDroneTM"
     },
     {
       "enable": false,
@@ -13,10 +13,10 @@
       "url": "https://twitter.com/marvindrone"
     },
     {
-      "enable": false,
+      "enable": true,
       "label": "instagram",
       "icon": "/images/icons/social/instagram.svg",
-      "url": "https://www.instagram.com/marvindrone"
+      "url": "https://www.instagram.com/marvindrone_tm"
     },
     {
       "enable": false,

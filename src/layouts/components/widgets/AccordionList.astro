@@ -30,21 +30,24 @@ const { content: list, ...rest } = Astro.props;
             ]}
             data-faq-accordion
             data-active={item.active ? "true" : "false"}
-            id={"faq-" + uniqueId}>
-            <button
-              aria-expanded={item.active ? "true" : "false"}
-              class="faq-accordion-toggle flex w-full items-center justify-between py-4 text-start text-lg text-stone-950"
-              data-faq-accordion-toggle
-              aria-controls={"faq-content-" + uniqueId}>
-              <span set:html={item.title} />
-              <span class="faq-accordion-icon transition duration-300">
-                <Icons icon="ChevronDown" class="text-stone-950 text-xl" />
-              </span>
-            </button>
+            id={"faq-item-" + uniqueId}>
+            <h3 class="m-0" id={"faq-heading-" + uniqueId}>
+              <button
+                id={"faq-button-" + uniqueId}
+                aria-expanded={item.active ? "true" : "false"}
+                class="faq-accordion-toggle flex w-full items-center justify-between py-4 text-start text-lg text-stone-950"
+                data-faq-accordion-toggle
+                aria-controls={"faq-content-" + uniqueId}>
+                <span set:html={item.title} />
+                <span class="faq-accordion-icon transition duration-300">
+                  <Icons icon="ChevronDown" class="text-xl text-stone-950" />
+                </span>
+              </button>
+            </h3>
             <div
               role="region"
               id={"faq-content-" + uniqueId}
-              aria-labelledby={"faq-" + uniqueId}
+              aria-labelledby={"faq-heading-" + uniqueId}
               data-faq-accordion-content
               class="faq-accordion-content overflow-hidden transition-[height] duration-300">
               <div class="prose-styles pb-4 text-stone-950">
@@ -68,14 +71,20 @@ const { content: list, ...rest } = Astro.props;
     );
 
     accordions.forEach((accordion) => {
-      if (!(accordion instanceof HTMLElement) || accordion.dataset.bound === "true") {
+      if (
+        !(accordion instanceof HTMLElement) ||
+        accordion.dataset.bound === "true"
+      ) {
         return;
       }
 
       const toggle = accordion.querySelector("[data-faq-accordion-toggle]");
       const content = accordion.querySelector("[data-faq-accordion-content]");
 
-      if (!(toggle instanceof HTMLButtonElement) || !(content instanceof HTMLElement)) {
+      if (
+        !(toggle instanceof HTMLButtonElement) ||
+        !(content instanceof HTMLElement)
+      ) {
         return;
       }
 
@@ -115,7 +124,9 @@ const { content: list, ...rest } = Astro.props;
         if (event.propertyName !== "height") return;
         const isOpen = toggle.getAttribute("aria-expanded") === "true";
         content.style.height = isOpen ? "auto" : "0px";
-        (window as Window & { AOS?: { refresh?: () => void } }).AOS?.refresh?.();
+        (
+          window as Window & { AOS?: { refresh?: () => void } }
+        ).AOS?.refresh?.();
       });
 
       accordion.dataset.bound = "true";
@@ -123,7 +134,9 @@ const { content: list, ...rest } = Astro.props;
   };
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initFaqAccordions, { once: true });
+    document.addEventListener("DOMContentLoaded", initFaqAccordions, {
+      once: true,
+    });
   } else {
     initFaqAccordions();
   }

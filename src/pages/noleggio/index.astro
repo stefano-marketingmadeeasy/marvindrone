@@ -8,6 +8,13 @@ import type { RentalsPageContent } from "@/types/rentals-page";
 const rentals = await getAllRentals("it");
 const contentEntry = await getEntryCTM("sections", "rentals-page", "it");
 const content = contentEntry?.data as RentalsPageContent;
+const structuredData = {
+  pageType: "FAQPage",
+  faqItems: content.faq.items.map((item) => ({
+    question: item.question,
+    answer: item.answer,
+  })),
+};
 ---
 
 <Base
@@ -16,6 +23,7 @@ const content = contentEntry?.data as RentalsPageContent;
   forceBlueHeader={true}
   overlayHeader={true}
   metaTitle={content.metaTitle}
-  metaDescription={content.metaDescription}>
+  metaDescription={content.metaDescription}
+  structuredData={structuredData}>
   <RentalsPage rentals={rentals} content={content} />
 </Base>

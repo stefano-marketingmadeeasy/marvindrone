@@ -1,5 +1,6 @@
 ---
 import ProductionCard from "@/components/cards/ProductionCard.astro";
+import { ArrowLeft, ArrowRight } from "@lucide/astro";
 import { getProductionFilters } from "@/lib/strapi/productions";
 import { strapiEnabled } from "@/lib/strapi/client";
 import { useTranslations } from "@/lib/utils/i18nUtils";
@@ -12,16 +13,23 @@ import type {
 interface Props {
   productions: Production[];
   content?: {
-    archive: ProductionsArchiveContent;
-    card: ProductionsCardContent;
+    archive?: ProductionsArchiveContent;
+    card?: ProductionsCardContent;
   };
+  anchorId?: string;
+  cta?: {
+    href: string;
+    label: string;
+  };
+  variant?: "grid" | "carousel";
 }
 
-const { productions, content } = Astro.props;
+const { productions, content, anchorId, cta, variant = "grid" } = Astro.props;
 const currentLocale = Astro.currentLocale || "it";
 const filters = await getProductionFilters(productions, currentLocale);
 const isStrapiConfigured = strapiEnabled();
 const t = await useTranslations(currentLocale);
+const isCarouselVariant = variant === "carousel";
 const archiveContent = content?.archive || {
   title: "",
   allLabel: t("productions.archive.all"),
@@ -35,54 +43,80 @@ const archiveContent = content?.archive || {
 const cardLabels = content?.card;
 ---
 
-<section class="relative overflow-hidden bg-white py-14 md:py-18">
+<section
+  id={anchorId}
+  class="relative overflow-visible bg-white py-14 md:py-18"
+  data-productions-archive-root
+  data-layout={variant}>
   <div
-    class="relative mx-auto w-full max-w-[1920px] space-y-8 px-[clamp(1rem,2.5vw,3.5rem)]">
+    class="relative mx-auto w-full max-w-[2080px] space-y-8 px-[clamp(1rem,2.5vw,3.5rem)]">
     <div
-      class="md:overflow-hidden md:rounded-full md:border md:border-black/8 md:bg-stone-50 md:p-5 md:shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
-      <div
-        class="relative inline-flex flex-wrap gap-3"
-        data-productions-filters>
+      class="relative flex w-full flex-wrap items-center gap-3"
+      data-productions-filters>
+      <span
+        data-filter-indicator
+        aria-hidden="true"
+        class="pointer-events-none absolute top-0 left-0 rounded-full bg-stone-900 shadow-[0_12px_30px_rgba(15,23,42,0.18)] transition-[transform,width,height] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]">
+      </span>
+      <button
+        type="button"
+        data-filter-button
+        data-filter="all"
+        aria-pressed="true"
+        class="production-filter-button relative z-10 rounded-full border border-stone-300 bg-transparent px-5 py-3 text-sm font-medium text-stone-700 transition-[color,border-color,transform] duration-300 hover:border-stone-900 hover:text-stone-950">
         <span
-          data-filter-indicator
-          aria-hidden="true"
-          class="pointer-events-none absolute top-0 left-0 rounded-full bg-stone-900 shadow-[0_12px_30px_rgba(15,23,42,0.18)] transition-[transform,width,height] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]">
+          class="filter-button-label block transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]">
+          {archiveContent.allLabel}
         </span>
-        <button
-          type="button"
-          data-filter-button
-          data-filter="all"
-          aria-pressed="true"
-          class="production-filter-button relative z-10 rounded-full border border-stone-300 bg-transparent px-5 py-3 text-sm font-medium text-stone-700 transition-[color,border-color,transform] duration-300 hover:border-stone-900 hover:text-stone-950">
-          <span
-            class="filter-button-label block transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]">
-            {archiveContent.allLabel}
-          </span>
-        </button>
-        {
-          filters.map((filter) => (
-            <button
-              type="button"
-              data-filter-button
-              data-filter={filter.slug}
-              aria-pressed="false"
-              class="production-filter-button relative z-10 rounded-full border border-stone-300 bg-transparent px-5 py-3 text-sm font-medium text-stone-700 transition-[color,border-color,transform] duration-300 hover:border-stone-900 hover:text-stone-950">
-              <span class="filter-button-label block transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]">
-                {filter.name}
-              </span>
-            </button>
-          ))
-        }
-      </div>
+      </button>
+      {
+        filters.map((filter) => (
+          <button
+            type="button"
+            data-filter-button
+            data-filter={filter.slug}
+            aria-pressed="false"
+            class="production-filter-button relative z-10 rounded-full border border-stone-300 bg-transparent px-5 py-3 text-sm font-medium text-stone-700 transition-[color,border-color,transform] duration-300 hover:border-stone-900 hover:text-stone-950">
+            <span class="filter-button-label block transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]">
+              {filter.name}
+            </span>
+          </button>
+        ))
+      }
+      {
+        cta?.href && cta?.label && (
+          <a
+            href={cta.href}
+            class="relative z-10 ml-auto inline-flex items-center gap-2.5 rounded-full border border-stone-900 bg-stone-900 px-6 py-3.5 text-base font-semibold text-white transition-[color,border-color,background-color,transform] duration-300 hover:bg-white hover:text-stone-950 md:px-7 md:py-4 md:text-lg">
+            <span class="block">{cta.label}</span>
+            <ArrowRight size={18} stroke-width={2.2} class="shrink-0" />
+          </a>
+        )
+      }
     </div>
 
     {
       productions.length > 0 ? (
         <div
           data-productions-grid
-          class="grid grid-cols-1 gap-[clamp(1rem,2vw,2rem)] md:grid-cols-2 xl:grid-cols-3">
+          data-layout={variant}
+          class:list={[
+            "gap-[clamp(1rem,2vw,2rem)]",
+            isCarouselVariant
+              ? "productions-carousel overflow-x-auto"
+              : "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3",
+          ]}>
           {productions.map((production) => (
-            <ProductionCard production={production} labels={cardLabels} />
+            <div
+              data-production-card-item
+              data-category={production.category.slug}
+              class:list={[
+                "h-full min-w-0",
+                isCarouselVariant &&
+                  "productions-carousel-item snap-start px-3 py-3 md:px-4 md:py-4",
+              ]}>
+              <ProductionCard production={production} labels={cardLabels} />
+            </div>
           ))}
         </div>
       ) : (
@@ -119,26 +153,65 @@ const cardLabels = content?.card;
         {archiveContent.emptyFilterDescription}
       </p>
     </div>
+
+    {
+      isCarouselVariant && productions.length > 0 && (
+        <div
+          data-productions-carousel-controls
+          hidden
+          class="relative -mt-12 flex items-center justify-center gap-3 md:-mt-14">
+          <button
+            type="button"
+            data-carousel-prev
+            aria-label="Scorri produzioni verso sinistra"
+            class="inline-flex size-12 items-center justify-center rounded-full border border-stone-300 bg-white text-stone-900 transition hover:border-stone-900 hover:bg-stone-950 hover:text-white disabled:pointer-events-none disabled:opacity-35">
+            <ArrowLeft size={18} stroke-width={2} />
+          </button>
+          <button
+            type="button"
+            data-carousel-next
+            aria-label="Scorri produzioni verso destra"
+            class="inline-flex size-12 items-center justify-center rounded-full border border-stone-300 bg-white text-stone-900 transition hover:border-stone-900 hover:bg-stone-950 hover:text-white disabled:pointer-events-none disabled:opacity-35">
+            <ArrowRight size={18} stroke-width={2} />
+          </button>
+        </div>
+      )
+    }
   </div>
 </section>
 
 <script is:inline>
-  const archive = document.querySelector("[data-productions-grid]");
-  const filterButtons = Array.from(
-    document.querySelectorAll("[data-filter-button]"),
+  const archiveRoots = Array.from(
+    document.querySelectorAll("[data-productions-archive-root]"),
   );
-  const filterIndicator = document.querySelector("[data-filter-indicator]");
-  const emptyState = document.querySelector("[data-productions-empty]");
 
-  if (archive && filterButtons.length > 0) {
+  archiveRoots.forEach((root) => {
+    const archive = root.querySelector("[data-productions-grid]");
+    const filterButtons = Array.from(
+      root.querySelectorAll("[data-filter-button]"),
+    );
+    const filterIndicator = root.querySelector("[data-filter-indicator]");
+    const emptyState = root.querySelector("[data-productions-empty]");
+    const carouselControls = root.querySelector(
+      "[data-productions-carousel-controls]",
+    );
+    const previousButton = root.querySelector("[data-carousel-prev]");
+    const nextButton = root.querySelector("[data-carousel-next]");
+    const isCarousel = root.dataset.layout === "carousel";
+
+    if (!(archive instanceof HTMLElement) || filterButtons.length === 0) return;
+
     const cards = Array.from(
-      archive.querySelectorAll("[data-production-card]"),
+      archive.querySelectorAll("[data-production-card-item]"),
     );
     let isAnimating = false;
     let hasAppliedInitialFilter = false;
 
+    const getVisibleCards = () =>
+      cards.filter((card) => !card.hasAttribute("hidden"));
+
     const updateIndicator = (activeButton) => {
-      if (!filterIndicator || !activeButton) return;
+      if (!(filterIndicator instanceof HTMLElement) || !activeButton) return;
 
       const filtersRect = activeButton.parentElement?.getBoundingClientRect();
       const buttonRect = activeButton.getBoundingClientRect();
@@ -184,6 +257,46 @@ const cardLabels = content?.card;
       updateIndicator(
         filterButtons.find((button) => button.dataset.filter === activeFilter),
       );
+    };
+
+    const updateCarouselControls = () => {
+      if (!isCarousel || !(carouselControls instanceof HTMLElement)) return;
+
+      const visibleCards = getVisibleCards();
+      const shouldShowControls =
+        visibleCards.length > 3 &&
+        archive.scrollWidth > archive.clientWidth + 8;
+
+      carouselControls.toggleAttribute("hidden", !shouldShowControls);
+      if (!shouldShowControls) return;
+
+      if (previousButton instanceof HTMLButtonElement) {
+        previousButton.disabled = archive.scrollLeft <= 8;
+      }
+
+      if (nextButton instanceof HTMLButtonElement) {
+        const maxScrollLeft = archive.scrollWidth - archive.clientWidth;
+        nextButton.disabled = archive.scrollLeft >= maxScrollLeft - 8;
+      }
+    };
+
+    const scrollCarousel = (direction) => {
+      if (!isCarousel) return;
+
+      const firstVisibleCard = getVisibleCards()[0];
+      if (!(firstVisibleCard instanceof HTMLElement)) return;
+
+      const cardWidth = firstVisibleCard.getBoundingClientRect().width;
+      const archiveStyles = window.getComputedStyle(archive);
+      const gapValue =
+        Number.parseFloat(
+          archiveStyles.columnGap || archiveStyles.gap || "0",
+        ) || 0;
+
+      archive.scrollBy({
+        left: direction * (cardWidth + gapValue),
+        behavior: "smooth",
+      });
     };
 
     const animateVisibleCards = (visibleCards) => {
@@ -239,9 +352,7 @@ const cardLabels = content?.card;
 
       isAnimating = true;
       const activeFilter = filter && filter !== "all" ? filter : "all";
-      const currentlyVisibleCards = cards.filter(
-        (card) => !card.hasAttribute("hidden"),
-      );
+      const currentlyVisibleCards = getVisibleCards();
 
       if (hasAppliedInitialFilter && currentlyVisibleCards.length > 0) {
         await animateOutCards(currentlyVisibleCards);
@@ -259,8 +370,12 @@ const cardLabels = content?.card;
         }
       });
 
-      if (emptyState) {
+      if (emptyState instanceof HTMLElement) {
         emptyState.toggleAttribute("hidden", visibleCardsCount !== 0);
+      }
+
+      if (isCarousel) {
+        archive.scrollTo({ left: 0, behavior: "auto" });
       }
 
       const url = new URL(window.location.href);
@@ -273,6 +388,7 @@ const cardLabels = content?.card;
 
       updateButtons(activeFilter);
       animateVisibleCards(nextVisibleCards);
+      updateCarouselControls();
       hasAppliedInitialFilter = true;
       isAnimating = false;
     };
@@ -283,31 +399,36 @@ const cardLabels = content?.card;
       });
     });
 
+    if (previousButton instanceof HTMLButtonElement) {
+      previousButton.addEventListener("click", () => scrollCarousel(-1));
+    }
+
+    if (nextButton instanceof HTMLButtonElement) {
+      nextButton.addEventListener("click", () => scrollCarousel(1));
+    }
+
+    if (isCarousel) {
+      archive.addEventListener("scroll", updateCarouselControls, {
+        passive: true,
+      });
+    }
+
     const initialFilter =
       new URLSearchParams(window.location.search).get("filter") || "all";
     applyFilter(initialFilter);
 
-    requestAnimationFrame(() => {
+    const syncActiveButton = () => {
       const activeButton = filterButtons.find(
         (button) => button.getAttribute("aria-pressed") === "true",
       );
       updateIndicator(activeButton);
-    });
+      updateCarouselControls();
+    };
 
-    window.addEventListener("resize", () => {
-      const activeButton = filterButtons.find(
-        (button) => button.getAttribute("aria-pressed") === "true",
-      );
-      updateIndicator(activeButton);
-    });
-
-    window.addEventListener("load", () => {
-      const activeButton = filterButtons.find(
-        (button) => button.getAttribute("aria-pressed") === "true",
-      );
-      updateIndicator(activeButton);
-    });
-  }
+    requestAnimationFrame(syncActiveButton);
+    window.addEventListener("resize", syncActiveButton);
+    window.addEventListener("load", syncActiveButton);
+  });
 </script>
 
 <style>
@@ -319,5 +440,44 @@ const cardLabels = content?.card;
   .production-filter-button[aria-pressed="false"] {
     color: rgb(87 83 78);
     border-color: rgb(214 211 209);
+  }
+
+  .productions-carousel {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(82vw, 82vw);
+    padding: 2.5rem 2rem 4.25rem;
+    scroll-snap-type: x mandatory;
+    scroll-padding-left: 0;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .productions-carousel::-webkit-scrollbar {
+    display: none;
+  }
+
+  .productions-carousel-item {
+    scroll-snap-align: start;
+  }
+
+  @media (min-width: 768px) {
+    .productions-carousel {
+      grid-auto-columns: calc((100% - clamp(1rem, 2vw, 2rem)) / 2);
+      padding: 2.75rem 2.25rem 4.5rem;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .productions-carousel {
+      grid-auto-columns: calc((100% - (clamp(1rem, 2vw, 2rem) * 2)) / 3);
+      padding: 3rem 2.5rem 4.75rem;
+    }
+  }
+
+  @media (max-width: 767px) {
+    [data-productions-carousel-controls] {
+      display: none;
+    }
   }
 </style>

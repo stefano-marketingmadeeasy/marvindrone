@@ -1,19 +1,17 @@
 ---
+import { CalendarDays, Clapperboard, Film, Megaphone, Tv } from "@lucide/astro";
+
 import { getEntryCTM } from "@/lib/contentParser.astro";
 import overrideObjects from "@/lib/utils/overrideObjects.ts";
-import Sezione1Parallax from "../../../components/parallax-cards/sezione1-parallax";
 
 type SectionCard = {
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
   icon: "cinema" | "serie-tv" | "documentari" | "adv" | "eventi";
 };
 
 type SectionType = {
   enable?: boolean;
-  title?: string;
-  paragraphOne?: string;
-  paragraphTwo?: string;
   cards?: SectionCard[];
 };
 
@@ -21,24 +19,244 @@ type Props = {
   content?: SectionType;
 };
 
-let defaultContent = (
+const defaultContent = (
   await getEntryCTM("sections", "sezione1", Astro.currentLocale)
 )?.data as SectionType;
 
-let actualContent = overrideObjects(
+const actualContent = overrideObjects(
   { ...defaultContent },
   Astro.props.content,
 ) as SectionType;
 
-let { enable = true, cards = [] } = actualContent;
+const visualMap = {
+  cinema: {
+    Icon: Film,
+    backgroundClass: "bg-[#000000]",
+    borderClass: "border-[#7F7F7F]",
+  },
+  "serie-tv": {
+    Icon: Tv,
+    backgroundClass: "bg-[#000000]",
+    borderClass: "border-[#7F7F7F]",
+  },
+  documentari: {
+    Icon: Clapperboard,
+    backgroundClass: "bg-[#000000]",
+    borderClass: "border-[#7F7F7F]",
+  },
+  adv: {
+    Icon: Megaphone,
+    backgroundClass: "bg-[#000000]",
+    borderClass: "border-[#7F7F7F]",
+  },
+  eventi: {
+    Icon: CalendarDays,
+    backgroundClass: "bg-[#000000]",
+    borderClass: "border-[#7F7F7F]",
+  },
+} as const;
+
+const desktopSectionInset = "0vh";
+const desktopCardShifts = [
+  "clamp(2rem, 2.2vw, 2.75rem)",
+  "clamp(5.75rem, 6vw, 7rem)",
+  "clamp(9.5rem, 9.8vw, 11.25rem)",
+  "clamp(13.25rem, 13.6vw, 15.5rem)",
+  "clamp(17rem, 17.4vw, 19.75rem)",
+];
+const desktopParallaxStartViewport = 1.35;
+const desktopParallaxEndViewport = 0.5;
+
+const { enable = true } = actualContent;
+
+const cards = (actualContent.cards ?? []).slice(0, 5);
+const renderedCards = cards.map((card, index) => ({
+  card,
+  visual: visualMap[card.icon],
+  desktopShift:
+    desktopCardShifts[index] ??
+    desktopCardShifts[desktopCardShifts.length - 1],
+}));
 ---
 
 {
   enable && (
-    <section class="bg-white">
-      <div class="py-10 sm:py-12 lg:py-16">
-        <Sezione1Parallax client:load cards={cards} />
+    <section
+      data-sezione1-parallax
+      class="relative overflow-clip bg-white text-[#222222]">
+      <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.98),rgba(255,255,255,0)_46%),repeating-linear-gradient(90deg,rgba(148,163,184,0)_0,rgba(148,163,184,0)_7%,rgba(148,163,184,0.08)_14%,rgba(148,163,184,0)_22%)] opacity-45 !mb-60"></div>
+      <div
+        data-sezione1-track
+        class="relative z-10 pb-18 lg:py-[var(--sezione1-section-inset)] lg:pb-[clamp(1.5rem,2.8vw,3rem)]"
+        style={`--sezione1-section-inset: ${desktopSectionInset};`}>
+        <div class="mx-auto w-[min(97vw,1720px)] px-2 pt-0 sm:px-3 lg:px-4">
+          <div
+            data-sezione1-row
+            class="grid grid-cols-1 gap-x-5 gap-y-10 sm:grid-cols-2 lg:grid-cols-5 lg:gap-x-[1.15vw] xl:gap-x-[1.25vw]">
+            {
+              renderedCards.map(({ card, visual, desktopShift }) => {
+                const CardIcon = visual.Icon;
+
+                return (
+                  <article
+                    data-sezione1-card
+                    class="mx-auto flex w-full max-w-[22rem] min-w-0 flex-col text-center lg:max-w-none"
+                    style={`--desktop-card-shift: ${desktopShift}; --card-progress: 0;`}>
+                    <div
+                      class:list={[
+                        "relative mb-5 flex min-h-[7rem] w-full items-center justify-center overflow-hidden rounded-[2rem] border-4 px-6 py-4 shadow-[0_4.5px_9px_rgba(27,27,27,0.02),0_9px_13.5px_rgba(27,27,27,0.03),0_13.5px_18px_rgba(27,27,27,0.04),0_18px_27px_rgba(27,27,27,0.04)] sm:aspect-square sm:min-h-0 sm:p-6",
+                        visual.backgroundClass,
+                        visual.borderClass,
+                      ]}>
+                      <div class="pointer-events-none absolute inset-x-5 top-4 h-12 rounded-full bg-white/12 blur-2xl"></div>
+                      <CardIcon class="relative text-white h-18 w-18 md:h-20 md:w-20 xl:h-[5.4rem] xl:w-[5.4rem]" stroke-width={2.35} />
+                    </div>
+
+                    <h3 class="font-secondary text-[clamp(1.75rem,1.7vw,2.35rem)] leading-none font-bold tracking-[-0.06em] text-[#222222]">
+                      {card.title}
+                    </h3>
+
+                    {card.description && (
+                      <p class="mx-auto mt-3 max-w-[28ch] text-balance text-[clamp(0.98rem,0.95vw,1.18rem)] leading-[1.55] text-[#5f5b57]">
+                        {card.description}
+                      </p>
+                    )}
+                  </article>
+                );
+              })
+            }
+          </div>
+        </div>
       </div>
     </section>
   )
 }
+
+<script
+  is:inline
+  define:vars={{
+    desktopParallaxStartViewport,
+    desktopParallaxEndViewport,
+  }}>
+  const section = document.querySelector("[data-sezione1-parallax]");
+  const track = section?.querySelector("[data-sezione1-track]");
+  const row = section?.querySelector("[data-sezione1-row]");
+  const cards = section
+    ? Array.from(section.querySelectorAll("[data-sezione1-card]"))
+    : [];
+
+  if (
+    section instanceof HTMLElement &&
+    track instanceof HTMLElement &&
+    row instanceof HTMLElement &&
+    !section.dataset.parallaxReady
+  ) {
+    section.dataset.parallaxReady = "true";
+
+    const desktopQuery = window.matchMedia("(min-width: 1024px)");
+    const reducedMotionQuery = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    );
+
+    const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
+    const setStatic = () => {
+      cards.forEach((card) => {
+        if (!(card instanceof HTMLElement)) return;
+        card.style.setProperty("--card-progress", "1");
+      });
+    };
+
+    const measureProgress = () => {
+      if (!desktopQuery.matches || reducedMotionQuery.matches) {
+        return 1;
+      }
+
+      const viewportHeight = window.innerHeight || 1;
+      const rowRect = row.getBoundingClientRect();
+      const rowCenter = rowRect.top + rowRect.height / 2;
+      const startY = viewportHeight * desktopParallaxStartViewport;
+      const endY = viewportHeight * desktopParallaxEndViewport;
+
+      return clamp(
+        (startY - rowCenter) / Math.max(startY - endY, 1),
+        0,
+        1
+      );
+    };
+
+    const applyProgress = (progress) => {
+      const progressValue = progress.toFixed(4);
+
+      cards.forEach((card) => {
+        if (!(card instanceof HTMLElement)) return;
+        card.style.setProperty("--card-progress", progressValue);
+      });
+    };
+
+    const updateCards = () => {
+      if (!desktopQuery.matches || reducedMotionQuery.matches) {
+        setStatic();
+        return;
+      }
+
+      applyProgress(measureProgress());
+    };
+
+    const frame = () => {
+      updateCards();
+      window.requestAnimationFrame(frame);
+    };
+
+    window.requestAnimationFrame(frame);
+    window.addEventListener("resize", updateCards);
+
+    if (typeof desktopQuery.addEventListener === "function") {
+      desktopQuery.addEventListener("change", updateCards);
+    }
+
+    if (typeof reducedMotionQuery.addEventListener === "function") {
+      reducedMotionQuery.addEventListener("change", updateCards);
+    }
+  }
+</script>
+
+<style>
+  @media (max-width: 767px) {
+    [data-sezione1-card] > div:first-child {
+      background: transparent !important;
+      border-color: transparent !important;
+      border-width: 0 !important;
+      box-shadow: none !important;
+    }
+
+    [data-sezione1-card] > div:first-child svg {
+      color: #000 !important;
+    }
+
+    [data-sezione1-card] > div:first-child > div {
+      display: none;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    [data-sezione1-card] {
+      backface-visibility: hidden;
+      transform-origin: center bottom;
+      transform: translate3d(
+        0,
+        calc(var(--desktop-card-shift, 0rem) * (1 - var(--card-progress, 0))),
+        0
+      );
+      will-change: transform;
+    }
+  }
+
+  @media (max-width: 1023px), (prefers-reduced-motion: reduce) {
+    [data-sezione1-card] {
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
+    }
+  }
+</style>

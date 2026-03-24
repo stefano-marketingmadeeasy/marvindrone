@@ -122,8 +122,16 @@ const normalizeRental = (entry: Record<string, any>): Rental | undefined => {
     normalizeTaxonomy(
       raw.brand || raw.marca || raw.manufacturer || raw.produttore,
     ) || { name: "", slug: "" };
-  const usages = normalizeTaxonomyList(
-    raw.usages ||
+  const categories = normalizeTaxonomyList(
+    raw.categories ||
+      raw.category ||
+      raw.categorie ||
+      raw.categoria ||
+      raw.Categories ||
+      raw.Category ||
+      raw.Categorie ||
+      raw.Categoria ||
+      raw.usages ||
       raw.usage ||
       raw.utilizzi ||
       raw.utilizzo ||
@@ -144,7 +152,7 @@ const normalizeRental = (entry: Record<string, any>): Rental | undefined => {
     id: raw.id || model,
     model,
     brand,
-    usages,
+    categories,
     description,
     image: normalizeAsset(
       raw.image ||
@@ -212,16 +220,16 @@ export const getAllRentals = async (locale = "it") => {
 
 export const getRentalFilters = (rentals: Rental[], locale = "it") => {
   const brands = new Map<string, RentalTaxonomy>();
-  const usages = new Map<string, RentalTaxonomy>();
+  const categories = new Map<string, RentalTaxonomy>();
 
   rentals.forEach((rental) => {
     if (rental.brand.slug) {
       brands.set(rental.brand.slug, rental.brand);
     }
 
-    rental.usages.forEach((usage) => {
-      if (usage.slug) {
-        usages.set(usage.slug, usage);
+    rental.categories.forEach((category) => {
+      if (category.slug) {
+        categories.set(category.slug, category);
       }
     });
   });
@@ -230,7 +238,7 @@ export const getRentalFilters = (rentals: Rental[], locale = "it") => {
     brands: Array.from(brands.values()).sort((left, right) =>
       sortTaxonomy(left, right, locale),
     ),
-    usages: Array.from(usages.values()).sort((left, right) =>
+    categories: Array.from(categories.values()).sort((left, right) =>
       sortTaxonomy(left, right, locale),
     ),
   };

@@ -7,3 +7,12 @@ export const getWhatsappUrl = (text: string) => {
 
   return `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
 };
+
+export const getServicesWhatsappUrl = (locale = "it") => {
+  const text =
+    locale === "it"
+      ? "Ciao, vorrei avere maggiori informazioni sui vostri servizi"
+      : "Hello, I would like more information about your services";
+
+  return getWhatsappUrl(text);
+};

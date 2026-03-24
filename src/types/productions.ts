@@ -9,9 +9,19 @@ export type ProductionCategory = {
 export type ProductionAsset = {
   url: string;
   alt: string;
+  caption?: string;
   width?: number;
   height?: number;
   mime?: string;
+};
+
+export type ProductionCompany = {
+  id?: number | string;
+  name: string;
+  slug: string;
+  logo?: ProductionAsset;
+  order?: number;
+  locale?: string;
 };
 
 export type ProductionFact = {
@@ -32,6 +42,9 @@ export type ProductionLink = {
 export type ProductionSeo = {
   metaTitle?: string;
   metaDescription?: string;
+  altText?: string;
+  caption?: string;
+  image?: ProductionAsset;
 };
 
 export type Production = {
@@ -52,7 +65,10 @@ export type Production = {
   city?: string;
   region?: string;
   country?: string;
+  director?: string;
+  directorOfPhotography?: string;
   productionCompany?: string;
+  productionCompanyEntry?: ProductionCompany;
   shootingTypes: string[];
   equipmentDescription?: string;
   equipmentUsed: string[];

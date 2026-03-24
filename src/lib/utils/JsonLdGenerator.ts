@@ -8,6 +8,7 @@ import { absoluteUrl } from "./absoluteUrl";
 import { getLocaleUrlCTM } from "@/lib/utils/i18nUtils";
 import trailingSlashChecker from "./trailingSlashChecker";
 import social from "@/config/social.json";
+import { plainify } from "./textConverter";
 
 // This component dynamically generates appropriate JSON-LD data based on the page type
 export type JSONLDProps = {
@@ -15,6 +16,8 @@ export type JSONLDProps = {
   title?: string; // Title of the page
   description?: string; // Description of the page
   image?: string; // Image URL for blog posts, case studies, or team members
+  imageAlt?: string; // Alternative text for the image
+  imageCaption?: string; // Caption for the image
   categories?: string[]; // Categories or tags for blog posts or case studies
   author?: string; // Author for blog posts or case studies
   pageType?: string; // Page type
@@ -28,7 +31,10 @@ export default function JsonLdGenerator(content: JSONLDProps, Astro: any) {
     title = "",
     description = "",
     image = "",
+    imageAlt = "",
+    imageCaption = "",
     pageType = "",
+    faqItems = [],
     lang,
     alternateLangs = [], // Array of alternate language URLs
     config,
@@ -39,16 +45,47 @@ export default function JsonLdGenerator(content: JSONLDProps, Astro: any) {
   }
 
   // Generate JSON-LD data dynamically based on page type
+  const imageValue =
+    image && (imageAlt || imageCaption)
+      ? {
+          "@type": "ImageObject",
+          url: image,
+          description: imageAlt || undefined,
+          caption: imageCaption || undefined,
+        }
+      : image;
+
   let jsonLdData: Record<string, any> = {
     "@context": "https://schema.org",
   };
 
   switch (pageType) {
+    case "FAQPage":
+      jsonLdData["@type"] = ["WebPage", "FAQPage"];
+      jsonLdData.name = title;
+      jsonLdData.description = description;
+      jsonLdData.image = imageValue;
+      jsonLdData.url = canonical;
+      jsonLdData.mainEntity = faqItems
+        .filter((item: any) => item?.question && item?.answer)
+        .map((item: any) => ({
+          "@type": "Question",
+          name: plainify(item.question),
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: plainify(item.answer),
+          },
+        }));
+
+      if (lang) {
+        jsonLdData.inLanguage = lang;
+      }
+      break;
     default:
       jsonLdData["@type"] = "WebPage";
       jsonLdData.name = title;
       jsonLdData.description = description;
-      jsonLdData.image = image;
+      jsonLdData.image = imageValue;
       jsonLdData.url = canonical;
 
       if (lang) {

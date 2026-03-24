@@ -1,5 +1,7 @@
 ---
 import config from ".astro/config.generated.json" with { type: "json" };
+import socialData from "@/config/social.json" with { type: "json" };
+import Social from "@/layouts/components/social/Social.astro";
 import { getLocaleUrlCTM, useTranslations } from "@/lib/utils/i18nUtils";
 import { filteredEnabled } from "@/lib/utils/filteredEnabled";
 import FooterLogo from "@/assets/images/logos/logo_marvindrone.com.svg";
@@ -24,8 +26,8 @@ const legalLinks: Array<NavigationLink & { url: string }> = Array.isArray(
         item.enable && Boolean(item.url),
     )
   : [];
-const footerLinks = [...mainLinks, ...legalLinks];
 const currentYear = new Date().getFullYear();
+const socialLinks = socialData.main.filter((social) => social.enable);
 const copyrightText =
   Astro.currentLocale === "en"
     ? `All rights reserved.`
@@ -49,9 +51,9 @@ const copyrightText =
 
     <nav aria-label="Footer" class="flex justify-center">
       <ul
-        class="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-center text-sm text-white/88 md:gap-x-10 md:text-base">
+        class="flex flex-nowrap items-center justify-center gap-x-3 gap-y-3 text-center text-[0.7rem] text-white/88 sm:gap-x-4 sm:text-xs md:gap-x-8 md:text-base">
         {
-          footerLinks.map((menu) => (
+          [...mainLinks, ...legalLinks].map((menu) => (
             <li>
               <a
                 class="text-white/88! transition hover:text-white!"
@@ -67,6 +69,20 @@ const copyrightText =
         }
       </ul>
     </nav>
+
+    {
+      socialLinks.length > 0 && (
+        <div class="mt-8 flex justify-center">
+          <Social
+            class="justify-center gap-3"
+            layout="dark"
+            linkType="follow"
+            list={socialLinks}
+            size="sm"
+          />
+        </div>
+      )
+    }
 
     <div class="mt-8 border-t border-white/20 pt-6">
       <p class="text-center text-sm text-white/70 md:text-base">

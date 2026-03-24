@@ -15,6 +15,7 @@ let {
   metaDescription,
   disableTagline,
   image = config.opengraph.image,
+  imageAlt,
   twitter = config.opengraph.twitter,
   twitterCard = config.opengraph.twitterCard,
   ogType = config.opengraph.ogType,
@@ -51,6 +52,11 @@ if (!disableTagline) {
     Standard Open Graph
 --------------------------->{
   image && <meta property="og:image" content={absoluteUrl(image, Astro)} />
+}
+{
+  imageAlt && (
+    <meta property="og:image:alt" content={removeWhitespace(imageAlt)} />
+  )
 }
 {title && <meta property="og:title" content={removeWhitespace(title)} />}
 {
@@ -92,3 +98,8 @@ if (!disableTagline) {
 }
 {twitterCard && <meta name="twitter:card" content={twitterCard} />}
 {image && <meta name="twitter:image" content={absoluteUrl(image, Astro)} />}
+{
+  imageAlt && (
+    <meta name="twitter:image:alt" content={removeWhitespace(imageAlt)} />
+  )
+}

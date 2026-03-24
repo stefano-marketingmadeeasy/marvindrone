@@ -4,6 +4,7 @@ import type {
   Production,
   ProductionAsset,
   ProductionCategory,
+  ProductionCompany,
   ProductionCreditGroup,
   ProductionFact,
   ProductionLink,
@@ -17,12 +18,34 @@ import {
 
 const PRODUCTIONS_ENDPOINT =
   import.meta.env.STRAPI_PRODUCTIONS_ENDPOINT?.trim() || "produzioni";
+const PRODUCTION_COMPANIES_ENDPOINT =
+  import.meta.env.STRAPI_PRODUCTION_COMPANIES_ENDPOINT?.trim() ||
+  "case-produzione";
 
 const pickFirstString = (source: Record<string, any>, keys: string[]) => {
   for (const key of keys) {
     const value = source[key];
     if (typeof value === "string" && value.trim()) {
       return value.trim();
+    }
+  }
+
+  return "";
+};
+
+const pickFirstScalarAsString = (
+  source: Record<string, any>,
+  keys: string[],
+) => {
+  for (const key of keys) {
+    const value = source[key];
+
+    if (typeof value === "string" && value.trim()) {
+      return value.trim();
+    }
+
+    if (typeof value === "number" && Number.isFinite(value)) {
+      return String(value);
     }
   }
 
@@ -114,6 +137,7 @@ const normalizeAsset = (value: unknown): ProductionAsset | undefined => {
     alt:
       pickFirstString(record, ["alternativeText", "alt", "caption", "name"]) ||
       "Produzione",
+    caption: pickFirstString(record, ["caption", "name"]) || undefined,
     width: typeof record.width === "number" ? record.width : undefined,
     height: typeof record.height === "number" ? record.height : undefined,
     mime: pickFirstString(record, ["mime"]),
@@ -162,6 +186,46 @@ const normalizeCategory = (raw: Record<string, any>): ProductionCategory => {
   };
 };
 
+const normalizeProductionCompany = (
+  value: unknown,
+  fallback = "",
+): ProductionCompany | undefined => {
+  if (!value) {
+    return fallback
+      ? {
+          name: fallback,
+          slug: slugifyyy(fallback),
+        }
+      : undefined;
+  }
+
+  if (typeof value === "string") {
+    const name = value.trim();
+    if (!name) return undefined;
+
+    return {
+      name,
+      slug: slugifyyy(name),
+    };
+  }
+
+  const record = unwrapStrapiEntity<Record<string, any>>(value);
+  const name =
+    pickFirstString(record, ["name", "nome", "title", "titolo", "label"]) ||
+    fallback;
+
+  if (!name) return undefined;
+
+  return {
+    id: record.id,
+    name,
+    slug: pickFirstString(record, ["slug"]) || slugifyyy(name),
+    logo: normalizeAsset(record.logo),
+    order: normalizeInteger(record.order || record.sortOrder),
+    locale: pickFirstString(record, ["locale"]) || undefined,
+  };
+};
+
 
 const normalizeFacts = (raw: Record<string, any>) => {
   const customFacts = pickFirstArray(raw, [
@@ -191,7 +255,7 @@ const normalizeFacts = (raw: Record<string, any>) => {
 
   const derivedFacts: ProductionFact[] = [];
   const year =
-    pickFirstString(raw, ["year", "anno"]) ||
+    pickFirstScalarAsString(raw, ["year", "anno"]) ||
     formatDateYear(
       pickFirstString(raw, ["releaseDate", "release_date", "dataUscita"]),
     );
@@ -210,10 +274,18 @@ const normalizeFacts = (raw: Record<string, any>) => {
     "piattaforma",
     "distributor",
   ]);
-  const productionCompany = pickFirstString(raw, [
-    "productionCompany",
-    "casaProduzione",
+  const director = pickFirstString(raw, ["Regista", "regista", "director"]);
+  const directorOfPhotography = pickFirstString(raw, [
+    "DirettoreFotografia",
+    "direttoreFotografia",
+    "directorOfPhotography",
   ]);
+  const productionCompanyEntry = normalizeProductionCompany(
+    raw.casaProduzione || raw.productionCompany,
+  );
+  const productionCompany =
+    productionCompanyEntry?.name ||
+    pickFirstString(raw, ["productionCompany", "casaProduzione"]);
   const shootingTypes = normalizeTextList(
     raw.shootingTypes || raw.tipologiaRiprese,
   );
@@ -226,6 +298,13 @@ const normalizeFacts = (raw: Record<string, any>) => {
   if (status) derivedFacts.push({ label: "Stato", value: status });
   if (genre) derivedFacts.push({ label: "Genere", value: genre });
   if (location) derivedFacts.push({ label: "Location", value: location });
+  if (director) derivedFacts.push({ label: "Regista", value: director });
+  if (directorOfPhotography) {
+    derivedFacts.push({
+      label: "Direttore della fotografia",
+      value: directorOfPhotography,
+    });
+  }
   if (productionCompany) {
     derivedFacts.push({ label: "Casa di produzione", value: productionCompany });
   }
@@ -307,7 +386,8 @@ const normalizeProduction = (
     "dataUscita",
   ]);
   const year =
-    pickFirstString(raw, ["year", "anno"]) || formatDateYear(releaseDate);
+    pickFirstScalarAsString(raw, ["year", "anno"]) ||
+    formatDateYear(releaseDate);
   const description =
     pickFirstString(raw, [
       "descrizione",
@@ -330,8 +410,21 @@ const normalizeProduction = (
   const city = pickFirstString(raw, ["city", "citta"]) || undefined;
   const region = pickFirstString(raw, ["region", "regione"]) || undefined;
   const country = pickFirstString(raw, ["country", "paese"]) || undefined;
+  const productionCompanyEntry = normalizeProductionCompany(
+    raw.casaProduzione || raw.productionCompany,
+  );
+  const director =
+    pickFirstString(raw, ["Regista", "regista", "director"]) || undefined;
+  const directorOfPhotography =
+    pickFirstString(raw, [
+      "DirettoreFotografia",
+      "direttoreFotografia",
+      "directorOfPhotography",
+    ]) || undefined;
   const productionCompany =
-    pickFirstString(raw, ["productionCompany", "casaProduzione"]) || undefined;
+    productionCompanyEntry?.name ||
+    pickFirstString(raw, ["productionCompany", "casaProduzione"]) ||
+    undefined;
   const shootingTypes = normalizeTextList(
     raw.shootingTypes || raw.tipologiaRiprese,
   );
@@ -339,6 +432,35 @@ const normalizeProduction = (
     raw.equipmentUsed || raw.attrezzaturaUtilizzata,
   );
   const seoRecord = unwrapStrapiEntity<Record<string, any>>(raw.seo);
+  const seoMetaTitle =
+    pickFirstString(raw, ["MetaTitle", "metaTitle"]) ||
+    pickFirstString(seoRecord, ["metaTitle", "title", "titolo"]) ||
+    undefined;
+  const seoMetaDescription =
+    pickFirstString(raw, ["MetaDescription", "metaDescription"]) ||
+    pickFirstString(seoRecord, [
+      "metaDescription",
+      "description",
+      "descrizione",
+    ]) ||
+    undefined;
+  const seoAltText =
+    pickFirstString(raw, ["AltText", "altText"]) ||
+    pickFirstString(seoRecord, ["altText", "alternativeText", "alt"]) ||
+    heroImage?.alt ||
+    undefined;
+  const seoCaption =
+    pickFirstString(raw, ["Caption", "caption"]) ||
+    pickFirstString(seoRecord, ["caption"]) ||
+    heroImage?.caption ||
+    undefined;
+  const seoImage = heroImage
+    ? {
+        ...heroImage,
+        alt: seoAltText || heroImage.alt,
+        caption: seoCaption || heroImage.caption,
+      }
+    : undefined;
 
   return {
     id: raw.id || title,
@@ -373,7 +495,10 @@ const normalizeProduction = (
     city,
     region,
     country,
+    director,
+    directorOfPhotography,
     productionCompany,
+    productionCompanyEntry,
     shootingTypes,
     equipmentDescription:
       pickFirstString(raw, [
@@ -401,15 +526,11 @@ const normalizeProduction = (
       pickFirstString(raw, ["videoUrl", "video", "trailerUrl", "trailer"]) ||
       undefined,
     seo: {
-      metaTitle:
-        pickFirstString(seoRecord, ["metaTitle", "title", "titolo"]) ||
-        undefined,
-      metaDescription:
-        pickFirstString(seoRecord, [
-          "metaDescription",
-          "description",
-          "descrizione",
-        ]) || undefined,
+      metaTitle: seoMetaTitle,
+      metaDescription: seoMetaDescription,
+      altText: seoAltText,
+      caption: seoCaption,
+      image: seoImage,
     },
   };
 };
@@ -449,6 +570,7 @@ export const getAllProductions = async (locale = "it") => {
       "populate[manifesto][populate]": "*",
       "populate[fotoBackstage][populate]": "*",
       "populate[tipologia_produzione][populate]": "*",
+      "populate[casaProduzione][populate]": "*",
       locale,
     },
   );
@@ -504,3 +626,40 @@ export const getProductionPath = (
     `/produzioni/${production.category.slug}/${production.slug}/`,
     locale,
   );
+
+const sortProductionCompanies = (
+  left: ProductionCompany,
+  right: ProductionCompany,
+  locale = "it",
+) => {
+  const leftOrder = left.order ?? Number.MAX_SAFE_INTEGER;
+  const rightOrder = right.order ?? Number.MAX_SAFE_INTEGER;
+
+  if (leftOrder !== rightOrder) {
+    return leftOrder - rightOrder;
+  }
+
+  return left.name.localeCompare(right.name, locale);
+};
+
+export const getProductionCompanyLogos = async (locale = "it") => {
+  const entries = await getStrapiCollection<Record<string, any>>(
+    PRODUCTION_COMPANIES_ENDPOINT,
+    {
+      "populate[logo][populate]": "*",
+      locale,
+    },
+  );
+
+  const companies = entries
+    .map((entry) => normalizeProductionCompany(entry))
+    .filter(Boolean) as ProductionCompany[];
+
+  return companies
+    .sort((left, right) => sortProductionCompanies(left, right, locale))
+    .filter((company) => company.logo?.url)
+    .map((company) => ({
+      src: company.logo!.url,
+      alt: company.name,
+    }));
+};

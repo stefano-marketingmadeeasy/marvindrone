@@ -19,13 +19,13 @@
   "footerMenu": [
     {
       "enable": true,
-      "name": "Terms and conditions",
-      "url": "/terms-conditions/"
+      "name": "Privacy policy",
+      "url": "/privacy-policy/"
     },
     {
       "enable": true,
-      "name": "Privacy policy",
-      "url": "/privacy-policy/"
+      "name": "Cookie policy",
+      "url": "/cookie-policy/"
     }
   ],
   "footerMenuQuickLink": [

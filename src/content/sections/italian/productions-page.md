@@ -9,7 +9,7 @@ hero:
 subhero:
   paragraphs:
     - "Nel corso degli anni Marvin Drone ha realizzato riprese aeree professionali per produzioni cinematografiche, televisive e pubblicitarie, lavorando su set strutturati in Italia e all’estero."
-    - "Questa sezione raccoglie progetti reali: per ogni produzione trovi contesto operativo, tipologie di ripresa, configurazioni tecniche e location coinvolte."
+    - "Questa sezione raccoglie progetti reali: per ogni produzione trovi contesto operativo, tipologie di ripresa, configurazioni tecniche e location."
     - "Se cerchi un partner tecnico per integrare le riprese aeree nel piano di produzione, puoi partire da qui per valutare lavori affini al tuo progetto."
   ctaLabel: "Contattaci"
   ctaMessage: "Ciao, vorrei valutare una collaborazione per riprese aeree integrate in una produzione."

@@ -73,18 +73,21 @@ if (disabled) {
             rel="noopener noreferrer nofollow"
             class:list={[
               "group relative flex items-center justify-center transition duration-300",
-              linkType === "follow" ? "bg-theme-dark/5" : "bg-primary/5",
+              {
+                "bg-theme-dark/5": linkType === "follow" && layout !== "dark",
+                "bg-primary/5": linkType === "share" && layout !== "dark",
+              },
               layout === "minimal"
                 ? "text-dark hover:scale-110"
-                : "text-primary h-12 w-12",
+                : "h-12 w-12",
+              {
+                "text-primary": layout !== "dark" && layout !== "minimal",
+                "text-white hover:opacity-70": layout === "dark",
+              },
               { "h-9 w-9": size === "sm" },
               {
                 "text-primary hover:bg-primary rounded-full":
                   layout === "modern",
-              },
-              {
-                "via-theme-dark bg-linear-to-b from-white/2.5 to-transparent":
-                  layout === "dark",
               },
             ]}>
             <span class="sr-only">{social.label}</span>
@@ -99,8 +102,7 @@ if (disabled) {
                     "text-primary group-hover:text-white": layout === "modern",
                   },
                   {
-                    "group-hover:text-primary h-6 w-6 text-white":
-                      layout === "dark",
+                    "h-6 w-6 text-white": layout === "dark",
                   },
                 ]}
                 alt={social.label}

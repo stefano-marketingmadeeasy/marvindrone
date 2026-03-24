@@ -18,7 +18,7 @@ export type Rental = {
   id: number | string;
   model: string;
   brand: RentalTaxonomy;
-  usages: RentalTaxonomy[];
+  categories: RentalTaxonomy[];
   description?: string;
   image?: RentalAsset;
   order?: number;

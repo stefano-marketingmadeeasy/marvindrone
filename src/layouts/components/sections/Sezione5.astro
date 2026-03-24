@@ -1,0 +1,194 @@
+---
+import type { Section } from "@/types";
+import { getEntryCTM } from "@/lib/contentParser.astro";
+import { getAllProductions } from "@/lib/strapi/productions";
+import overrideObjects from "@/lib/utils/overrideObjects.ts";
+import { getLocaleUrlCTM } from "@/lib/utils/i18nUtils.ts";
+import { markdownify } from "@/lib/utils/textConverter";
+import ProductionsArchive from "@/components/productions/ProductionsArchive.astro";
+import type {
+  ProductionsArchiveContent,
+  ProductionsCardContent,
+} from "@/types/productions-page";
+
+type Sezione5Type = Section & {
+  id?: string;
+  intro?: {
+    title: string;
+    body: string;
+  };
+  ctaLabel?: string;
+  archive?: ProductionsArchiveContent;
+  card?: ProductionsCardContent;
+};
+
+type Props = {
+  content?: Sezione5Type;
+};
+
+const defaultContent = (
+  await getEntryCTM("sections", "sezione5", Astro.currentLocale)
+)?.data as Sezione5Type;
+
+const actualContent = overrideObjects(
+  { ...defaultContent },
+  Astro.props.content,
+) as Sezione5Type;
+
+const {
+  enable = true,
+  id = "sezione5",
+  intro,
+  ctaLabel,
+  archive,
+  card,
+} = actualContent;
+const productions = enable
+  ? await getAllProductions(Astro.currentLocale || "it")
+  : [];
+const archiveContent =
+  archive || card
+    ? {
+        archive,
+        card,
+      }
+    : undefined;
+const introParagraphs =
+  intro?.body
+    ?.split(/<br\s*\/?><br\s*\/?>/gi)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean) || [];
+---
+
+{
+  enable && (
+    <section id={id} class="">
+      <div class="relative overflow-visible">
+        <div aria-hidden="true" class="pointer-events-none absolute inset-0" />
+
+        <div class="relative">
+          <div class="container">
+            <div class="mx-auto shrink-0 text-center text-black">
+              {intro?.title && (
+                <h2
+                  class="text-h2 text-black"
+                  set:html={markdownify(intro.title)}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div class="relative rounded-t-[2rem] bg-white text-stone-950">
+          <ProductionsArchive
+            productions={productions}
+            content={archiveContent}
+            cta={
+              ctaLabel
+                ? {
+                    href: getLocaleUrlCTM("/produzioni/", Astro.currentLocale),
+                    label: ctaLabel,
+                  }
+                : undefined
+            }
+            variant="carousel"
+          />
+
+          {introParagraphs.length > 0 && (
+            <div
+              class="mx-auto w-full max-w-[1920px] px-[clamp(1rem,2.5vw,3.5rem)] pb-14 md:pb-18"
+              data-sezione5-sequence>
+              <div class="mx-auto max-w-4xl space-y-8 text-center text-base leading-8 text-stone-700 md:space-y-10 md:text-lg">
+                {introParagraphs.map((paragraph, index) => (
+                  <div
+                    data-sezione5-paragraph
+                    data-delay={String(420 + index * 220)}
+                    set:html={markdownify(paragraph)}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<script is:inline>
+  (() => {
+    const sequences = Array.from(
+      document.querySelectorAll("[data-sezione5-sequence]"),
+    );
+
+    if (!sequences.length) return;
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    const revealSequence = (sequence) => {
+      const paragraphs = Array.from(
+        sequence.querySelectorAll("[data-sezione5-paragraph]"),
+      );
+
+      paragraphs.forEach((paragraph) => {
+        const delay = Number.parseInt(paragraph.dataset.delay || "0", 10) || 0;
+        window.setTimeout(() => {
+          paragraph.classList.add("is-visible");
+        }, delay);
+      });
+    };
+
+    if (reducedMotion.matches) {
+      sequences.forEach((sequence) => {
+        sequence
+          .querySelectorAll("[data-sezione5-paragraph]")
+          .forEach((paragraph) => paragraph.classList.add("is-visible"));
+      });
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          revealSequence(entry.target);
+          observer.unobserve(entry.target);
+        });
+      },
+      {
+        threshold: 0.2,
+        rootMargin: "0px 0px -10% 0px",
+      },
+    );
+
+    sequences.forEach((sequence) => observer.observe(sequence));
+  })();
+</script>
+
+<style>
+  [data-sezione5-paragraph] {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+    filter: blur(6px);
+    transition:
+      opacity 700ms ease,
+      transform 700ms ease,
+      filter 700ms ease;
+    will-change: opacity, transform, filter;
+  }
+
+  [data-sezione5-paragraph].is-visible {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    filter: blur(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-sezione5-paragraph] {
+      opacity: 1;
+      transform: none;
+      filter: none;
+      transition: none;
+    }
+  }
+</style>

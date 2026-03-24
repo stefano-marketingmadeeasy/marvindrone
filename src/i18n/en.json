@@ -91,15 +91,15 @@
     "archive": {
       "brandLabel": "Brand",
       "brandPlaceholder": "All brands",
-      "usageLabel": "Usage",
-      "usagePlaceholder": "All usage types",
+      "categoryLabel": "Category",
+      "categoryPlaceholder": "All categories",
       "resetFilters": "Reset filters",
       "emptyLabel": "No content available",
       "emptyTitle": "The rental archive is empty",
       "emptyDescription": "Connect Strapi and publish at least one rental item to populate this page.",
       "emptyFilterLabel": "No results",
       "emptyFilterTitle": "There are no items for these filters",
-      "emptyFilterDescription": "Try another brand or usage, or reset the filters."
+      "emptyFilterDescription": "Try another brand or category, or reset the filters."
     },
     "conditions": {
       "eyebrow": "Conditions",
@@ -118,7 +118,7 @@
       "cta": "Ask on WhatsApp",
       "noImage": "No image",
       "brandFallback": "Brand not specified",
-      "usageFallback": "Usage not specified"
+      "categoryFallback": "Category not specified"
     },
     "faq": {
       "eyebrow": "FAQ",
@@ -166,7 +166,7 @@
       "indexTitle": "Rental",
       "indexDescription": "Professional film equipment rental page with catalogue filters, operating conditions, FAQ and direct WhatsApp contact.",
       "indexMetaTitle": "Rental | marvindrone.com",
-      "indexMetaDescription": "Explore professional film equipment available for rental on marvindrone.com, with filters by brand and usage and direct contact for availability."
+      "indexMetaDescription": "Explore professional film equipment available for rental on marvindrone.com, with filters by brand and category and direct contact for availability."
     }
   }
 }

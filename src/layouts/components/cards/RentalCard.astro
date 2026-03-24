@@ -20,7 +20,7 @@ const brandLabel = rental.brand.name || labels.brandFallback;
 <article
   data-rental-card
   data-brand={rental.brand.slug}
-  data-usages={rental.usages.map((usage) => usage.slug).join(",")}
+  data-categories={rental.categories.map((category) => category.slug).join(",")}
   class="overflow-hidden rounded-[2rem] border border-stone-200 bg-white shadow-[0_20px_50px_rgba(15,23,42,0.05)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(15,23,42,0.08)]">
   <div class="grid min-w-0 grid-cols-1 md:grid-cols-[minmax(220px,280px)_1fr]">
     <div class="relative min-h-[220px] overflow-hidden bg-stone-100">
@@ -64,15 +64,15 @@ const brandLabel = rental.brand.name || labels.brandFallback;
 
         <div class="flex flex-wrap gap-2">
           {
-            rental.usages.length > 0 ? (
-              rental.usages.map((usage) => (
+            rental.categories.length > 0 ? (
+              rental.categories.map((category) => (
                 <span class="rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5 text-xs font-medium text-stone-700">
-                  {usage.name}
+                  {category.name}
                 </span>
               ))
             ) : (
               <span class="rounded-full border border-dashed border-stone-300 bg-stone-50 px-3 py-1.5 text-xs font-medium text-stone-500">
-                {labels.usageFallback}
+                {labels.categoryFallback}
               </span>
             )
           }

@@ -88,21 +88,21 @@ const whatsappUrl = getWhatsappUrl(content.subhero.ctaMessage);
       class="bg-body relative z-20 mt-0 rounded-t-[2.5rem] pt-10 md:-mt-[7svh] md:pt-14">
       <section class="bg-white pb-14 md:pb-18">
         <div class="container">
-          <div class="mx-auto max-w-5xl py-2 text-center md:py-4">
+          <div class="mx-auto max-w-10xl py-2 text-center md:py-4">
             <p
-              class="mx-auto max-w-4xl text-[clamp(1.55rem,3.2vw,2.8rem)] leading-[1.50] font-semibold tracking-[-0.035em] text-stone-950">
+              class="mx-auto max-w-10xl text-[clamp(1.55rem,3.2vw,2.8rem)] leading-[1.50] font-semibold tracking-[-0.035em] text-stone-950">
               {content.subhero.paragraphs[0]}
             </p>
 
             <p
-              class="mx-auto mt-6 max-w-3xl text-base leading-8 text-stone-600 md:mt-7 md:text-lg md:leading-8">
+              class="mx-auto mt-6 max-w-10xl text-base leading-8 text-stone-600 md:mt-7 md:text-lg md:leading-8">
               {content.subhero.paragraphs[1]}
             </p>
 
             <div class="mx-auto mt-8 h-px w-16 bg-stone-200"></div>
 
             <p
-              class="mx-auto mt-8 max-w-2xl text-sm leading-7 text-stone-500 md:text-base md:leading-8">
+              class="mx-auto mt-8 max-w-10xl text-sm leading-7 text-stone-500 md:text-base md:leading-8">
               {content.subhero.paragraphs[2]}
             </p>
 
@@ -139,21 +139,25 @@ const whatsappUrl = getWhatsappUrl(content.subhero.ctaMessage);
       </section>
 
       <ProductionsArchive
+        anchorId="productions-archive"
         productions={productions}
         content={{ archive: content.archive, card: content.card }}
       />
 
       <BlurReadingSection
+        align="center"
         title={content.editorial.title}
         body={content.editorial.body}
-        bodyProgressOffset="0.58"
+        bodyProgressOffset="0"
+        titleProgressOffset="0"
         titleRangeMultiplier="4.8"
-        viewportAnchor="0.72"
+        viewportAnchor="0.99"
+        spacing="compact"
         width="default"
         textStagger="0.1"
       />
 
-      <section class="bg-stone-950 py-18 text-white md:py-24">
+      <section class="bg-stone-950 py-18 text-white md:py-24 xl:mt-30">
         <div class="container">
           <div
             class="grid gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-16">
@@ -193,10 +197,16 @@ const whatsappUrl = getWhatsappUrl(content.subhero.ctaMessage);
         </div>
       </section>
 
+      <br/><br/><br/>
+
       <BlurReadingSection
         align="center"
         title={content.operations.title}
         body={content.operations.body}
+        bodyProgressOffset="0"
+        titleProgressOffset="0"
+        viewportAnchor="0.99"
+        spacing="compact"
         width="default"
         textStagger="0.1"
       />

@@ -91,15 +91,15 @@
     "archive": {
       "brandLabel": "Marca",
       "brandPlaceholder": "Tutte le marche",
-      "usageLabel": "Utilizzo",
-      "usagePlaceholder": "Tutti gli utilizzi",
+      "categoryLabel": "Categoria",
+      "categoryPlaceholder": "Tutte le categorie",
       "resetFilters": "Reimposta filtri",
       "emptyLabel": "Nessun contenuto disponibile",
       "emptyTitle": "L'archivio noleggio e vuoto",
       "emptyDescription": "Collega Strapi e pubblica almeno un elemento di noleggio per popolare questa pagina.",
       "emptyFilterLabel": "Nessun risultato",
       "emptyFilterTitle": "Non ci sono elementi per questi filtri",
-      "emptyFilterDescription": "Prova a cambiare marca o utilizzo, oppure reimposta i filtri."
+      "emptyFilterDescription": "Prova a cambiare marca o categoria, oppure reimposta i filtri."
     },
     "conditions": {
       "eyebrow": "Condizioni",
@@ -118,7 +118,7 @@
       "cta": "Chiedi info su WhatsApp",
       "noImage": "Nessuna immagine",
       "brandFallback": "Marca non specificata",
-      "usageFallback": "Utilizzo da definire"
+      "categoryFallback": "Categoria da definire"
     },
     "faq": {
       "eyebrow": "FAQ",
@@ -164,9 +164,9 @@
     },
     "meta": {
       "indexTitle": "Noleggio",
-      "indexDescription": "Noleggio attrezzatura cinematografica professionale con catalogo filtrabile per marca e utilizzo, condizioni operative e contatto diretto su WhatsApp.",
+      "indexDescription": "Noleggio attrezzatura cinematografica professionale con catalogo filtrabile per marca e categoria, condizioni operative e contatto diretto su WhatsApp.",
       "indexMetaTitle": "Noleggio | marvindrone.com",
-      "indexMetaDescription": "Esplora l'attrezzatura cinematografica disponibile per il noleggio su marvindrone.com, con filtri per marca e utilizzo e contatto diretto per disponibilita."
+      "indexMetaDescription": "Esplora l'attrezzatura cinematografica disponibile per il noleggio su marvindrone.com, con filtri per marca e categoria e contatto diretto per disponibilita."
     }
   }
 }

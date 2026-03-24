@@ -1,49 +1,30 @@
 ---
 import type { Section } from "@/types";
 import { getEntryCTM } from "@/lib/contentParser.astro";
+import { getProductionCompanyLogos } from "@/lib/strapi/productions";
 import overrideObjects from "@/lib/utils/overrideObjects.ts";
 import { markdownify } from "@/lib/utils/textConverter";
-import OptimizedImage from "@/components/utilities/OptimizedImage.astro";
 import Marquee from "@/components/widgets/Marquee.astro";
+import StrapiImage from "@/components/productions/StrapiImage.astro";
 
 type MarqueeConfig = {
   duration?: string;
   pauseOnHover?: boolean;
 };
 
+type LogoItem = {
+  src: string;
+  alt: string;
+};
+
 type Sezione4Type = Section & {
   id?: string;
   marquee?: MarqueeConfig;
-  logos?: string[];
+  logos?: LogoItem[];
 };
 
 type Props = {
   content?: Sezione4Type;
-};
-
-const discoveredLogos = Object.keys(
-  import.meta.glob(
-    "/src/assets/images/loghi-case-di-produzione/*.{png,jpg,jpeg,webp,avif,svg}",
-  ),
-)
-  .sort((a, b) => a.localeCompare(b))
-  .map((path) => path.replace("/src/assets/images", "/images"));
-
-const normalizeLogoLabel = (logoPath: string) => {
-  const fileName = logoPath.split("/").pop() ?? "Logo";
-  const decodedName = (() => {
-    try {
-      return decodeURIComponent(fileName);
-    } catch {
-      return fileName;
-    }
-  })();
-
-  return decodedName
-    .replace(/\.[a-zA-Z0-9]+$/, "")
-    .replace(/[-_]+/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
 };
 
 let defaultContent = (
@@ -55,17 +36,21 @@ let actualContent = overrideObjects(
   Astro.props.content,
 ) as Sezione4Type;
 
+const strapiLogos = actualContent.enable !== false
+  ? await getProductionCompanyLogos(Astro.currentLocale || "it")
+  : [];
+
 let {
   enable = true,
   id = "sezione4",
   title,
   description,
   marquee,
-  logos = discoveredLogos,
+  logos = strapiLogos,
 } = actualContent;
 
 // Default duration is deliberately long for a calm, premium, half-speed motion.
-const marqueeDuration = marquee?.duration ?? "84s";
+const marqueeDuration = marquee?.duration ?? "72s";
 const marqueePauseOnHover = marquee?.pauseOnHover ?? true;
 ---
 
@@ -88,14 +73,14 @@ const marqueePauseOnHover = marquee?.pauseOnHover ?? true;
         <div class="mx-auto max-w-3xl text-center">
           {title && (
             <h2
-              class="text-2xl font-semibold tracking-tight text-[#0e1a24] sm:text-3xl md:text-4xl"
+              class="text-2xl font-semibold tracking-tight text-black sm:text-3xl md:text-4xl"
               set:html={markdownify(title)}
             />
           )}
 
           {description && (
             <div
-              class="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-slate-600 sm:mt-6 sm:text-base"
+              class="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-black sm:mt-6 sm:text-base"
               set:html={markdownify(description, true)}
             />
           )}
@@ -114,31 +99,31 @@ const marqueePauseOnHover = marquee?.pauseOnHover ?? true;
               marqueeDuration={marqueeDuration}
               marqueePauseOnHover={marqueePauseOnHover}
             >
-              {logos.map((logoPath) => (
+              {logos.map((logo) => (
                 <div class="min-w-(--marquee-element-width-responsive) px-3 md:min-w-(--marquee-element-width)">
-                  <div class="flex h-28 w-full items-center justify-center border border-slate-200 bg-white/80 px-6">
-                    <OptimizedImage
-                      src={logoPath}
-                      alt={normalizeLogoLabel(logoPath)}
+                  <div class="flex h-28 w-full items-center justify-center px-6">
+                    <StrapiImage
+                      url={logo.src}
+                      alt={logo.alt}
                       class="max-h-16 w-auto max-w-[11rem] object-contain"
                       loading="lazy"
                     />
                   </div>
                 </div>
               ))}
-              {logos.map((logoPath) => (
+              {logos.map((logo) => (
                 <div
                   class="min-w-(--marquee-element-width-responsive) px-3 md:min-w-(--marquee-element-width)"
                   aria-hidden="true"
                 >
-                  <div class="flex h-28 w-full items-center justify-center border border-slate-200 bg-white/80 px-6">
-                    <OptimizedImage
-                      src={logoPath}
-                      alt={normalizeLogoLabel(logoPath)}
+                  <div class="flex h-28 w-full items-center justify-center px-6">
+                    <StrapiImage
+                      url={logo.src}
+                      alt={logo.alt}
                       class="max-h-16 w-auto max-w-[11rem] object-contain"
                       loading="lazy"
                     />
-                    <span class="sr-only">{normalizeLogoLabel(logoPath)}</span>
+                    <span class="sr-only">{logo.alt}</span>
                   </div>
                 </div>
               ))}
@@ -158,5 +143,12 @@ const marqueePauseOnHover = marquee?.pauseOnHover ?? true;
 
   :global(.sezione4-reveal.aos-animate) {
     filter: blur(0);
+  }
+
+  @media (max-width: 767px), (prefers-reduced-motion: reduce) {
+    :global(.sezione4-reveal) {
+      filter: none;
+      transition: none;
+    }
   }
 </style>

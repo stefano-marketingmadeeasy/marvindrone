@@ -21,6 +21,7 @@ const logoColor = "#000000";
 const subHeroFadeDelay = "0.25s";
 const droneStartOffsetY = 200;
 const droneEndOffsetY = -250;
+const mobileBreakpoint = 767;
 ---
 
 {
@@ -84,7 +85,9 @@ const droneEndOffsetY = -250;
   )
 }
 
-<script is:inline define:vars={{ droneStartOffsetY, droneEndOffsetY }}>
+<script
+  is:inline
+  define:vars={{ droneStartOffsetY, droneEndOffsetY, mobileBreakpoint }}>
   const section = document.querySelector("#home-sub-hero");
   const parallaxScene = document.querySelector("[data-subhero-parallax-scene]");
 
@@ -118,6 +121,7 @@ const droneEndOffsetY = -250;
     const reducedMotionQuery = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     );
+    const mobileQuery = window.matchMedia(`(max-width: ${mobileBreakpoint}px)`);
     let rafId = 0;
 
     const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
@@ -125,10 +129,10 @@ const droneEndOffsetY = -250;
     const updateParallax = () => {
       rafId = 0;
 
-      if (reducedMotionQuery.matches) {
+      if (reducedMotionQuery.matches || mobileQuery.matches) {
         section.style.setProperty("--subhero-bg-y", "0px");
-        section.style.setProperty("--subhero-bg-scale", "1.06");
-        section.style.setProperty("--subhero-drone-y", `${droneStartOffsetY}px`);
+        section.style.setProperty("--subhero-bg-scale", "1");
+        section.style.setProperty("--subhero-drone-y", "0px");
         return;
       }
 
@@ -168,6 +172,10 @@ const droneEndOffsetY = -250;
 
     if (typeof reducedMotionQuery.addEventListener === "function") {
       reducedMotionQuery.addEventListener("change", requestParallaxUpdate);
+    }
+
+    if (typeof mobileQuery.addEventListener === "function") {
+      mobileQuery.addEventListener("change", requestParallaxUpdate);
     }
   }
 </script>

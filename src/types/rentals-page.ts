@@ -25,8 +25,8 @@ export interface RentalsPageContent {
   archive: {
     brandLabel: string;
     brandPlaceholder: string;
-    usageLabel: string;
-    usagePlaceholder: string;
+    categoryLabel: string;
+    categoryPlaceholder: string;
     resetFilters: string;
     emptyLabel: string;
     emptyTitle: string;
@@ -52,7 +52,7 @@ export interface RentalsPageContent {
     cta: string;
     noImage: string;
     brandFallback: string;
-    usageFallback: string;
+    categoryFallback: string;
   };
   faq: {
     eyebrow: string;

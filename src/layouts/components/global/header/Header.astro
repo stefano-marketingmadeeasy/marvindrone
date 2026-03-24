@@ -4,6 +4,8 @@ import config from ".astro/config.generated.json" assert { type: "json" };
 import LanguageSwitcher from "@/layouts/components/global/header/LanguageSwitcher.astro";
 import NavMenuItem from "@/layouts/components/global/header/MenuItem.astro";
 import NavToggleBtn from "@/layouts/components/global/header/NavToggleBtn.astro";
+import Social from "@/layouts/components/social/Social.astro";
+import socialData from "@/config/social.json" with { type: "json" };
 import type { NavigationLink } from "@/types";
 import { getLocaleUrlCTM, useTranslations } from "@/lib/utils/i18nUtils.ts";
 import { filteredEnabled } from "@/lib/utils/filteredEnabled";
@@ -11,6 +13,7 @@ import { filteredEnabled } from "@/lib/utils/filteredEnabled";
 const t = await useTranslations(Astro.currentLocale as string);
 let main = t("main") as NavigationLink[];
 main = filteredEnabled(main);
+const socialLinks = socialData.main.filter((social) => social.enable);
 
 const currentPath = Astro.url.pathname.replace(/\/+$/, "") || "/";
 const homePath =
@@ -50,12 +53,36 @@ const { stickyHeader } = config.settings;
           <li class="max-lg:px-4 max-lg:py-2 lg:hidden" role="menuitem">
             <LanguageSwitcher />
           </li>
+          {
+            socialLinks.length > 0 && (
+              <li class="px-4 py-3 lg:hidden" role="menuitem">
+                <Social
+                  class="gap-4"
+                  layout="dark"
+                  linkType="follow"
+                  list={socialLinks}
+                  size="sm"
+                />
+              </li>
+            )
+          }
         </ul>
       </div>
 
       <div
         class="hidden gap-3.5 max-lg:me-4 max-lg:ml-auto lg:flex lg:items-center">
         <LanguageSwitcher />
+        {
+          socialLinks.length > 0 && (
+            <Social
+              class="gap-2"
+              layout="dark"
+              linkType="follow"
+              list={socialLinks}
+              size="sm"
+            />
+          )
+        }
       </div>
       <NavToggleBtn isDarkHeader={isDarkHeader} />
     </div>

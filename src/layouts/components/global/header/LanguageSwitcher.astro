@@ -31,6 +31,16 @@ const languages = supportedLanguages
 if (languages.length === 0) {
   return;
 }
+
+const localeMeta: Record<string, { flag: string; shortLabel: string }> = {
+  it: { flag: "🇮🇹", shortLabel: "IT" },
+  en: { flag: "🇺🇸", shortLabel: "EN" },
+};
+
+const currentLocaleMeta = localeMeta[currentLocale] ?? {
+  flag: currentLocale.toUpperCase(),
+  shortLabel: currentLocale.toUpperCase(),
+};
 ---
 
 <div
@@ -41,25 +51,10 @@ if (languages.length === 0) {
     class="language-switcher-button hs-dropdown-toggle"
     aria-expanded="false"
     aria-label={t("navigation.languageSwitcherLabel")}>
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      data-icon
-      class="w-4">
-      <path d="m5 8 6 6"></path><path d="m4 14 6-6 2-3"></path><path
-        d="M2 5h12">
-      </path><path d="M7 2h1"></path><path d="m22 22-5-10-5 10"></path><path
-        d="M14 18h6">
-      </path>
-    </svg>
-    <span class="text uppercase">{currentLocale}</span>
+    <span class="language-switcher-flag" aria-hidden="true">
+      {currentLocaleMeta.flag}
+    </span>
+    <span class="text uppercase">{currentLocaleMeta.shortLabel}</span>
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="24"
@@ -81,7 +76,16 @@ if (languages.length === 0) {
     {
       languages.map((language) => (
         <li>
-          <a href={language.href}>{language.languageName}</a>
+          <a href={language.href}>
+            <span class="language-switcher-flag" aria-hidden="true">
+              {(localeMeta[language.languageCode] ?? {
+                flag: language.languageCode.toUpperCase(),
+              }).flag}
+            </span>
+            <span>{(localeMeta[language.languageCode] ?? {
+              shortLabel: language.languageCode.toUpperCase(),
+            }).shortLabel}</span>
+          </a>
         </li>
       ))
     }
