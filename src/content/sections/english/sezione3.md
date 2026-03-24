@@ -1,14 +1,14 @@
 ---
 enable: true
 id: "compliance"
-badge: "OPERATIVITÀ AERONAUTICA"
-title: "Piloti certificati ENAC e operatività conforme normativa EASA"
+badge: "AERONAUTICAL OPERATIONS"
+title: "ENAC-certified pilots and EASA-compliant operations"
 description: |
-  Le operazioni sono affidate a piloti certificati secondo normativa europea EASA, con
-  abilitazioni riconosciute a livello nazionale e internazionale. Marvin Drone opera nel
-  rispetto delle disposizioni ENAC per il territorio italiano, gestendo direttamente le
-  procedure autorizzative richieste in base allo scenario operativo.
-planningIntro: "La pianificazione operativa comprende"
+  Operations are handled by pilots certified under European EASA regulations, with
+  qualifications recognized nationally and internationally. Marvin Drone operates in
+  compliance with ENAC requirements for Italian territory, directly managing the
+  authorization procedures required by each operating scenario.
+planningIntro: "Operational planning includes"
 animation:
   baseDelay: 0
   stepDelay: 180
@@ -16,20 +16,20 @@ animation:
   blur: 14
   easing: "ease-out-cubic"
 outro: |
-  Questo approccio consente alla produzione di concentrarsi sugli aspetti creativi, affidando
-  la gestione aeronautica a una struttura operativa certificata e conforme.
+  This approach allows production teams to focus on the creative side while entrusting
+  aeronautical management to a certified and compliant operating structure.
 
 features:
-  - title: "Valutazione preventiva del rischio"
-    description: "Analisi dello scenario operativo e delle condizioni ambientali prima di ogni missione."
+  - title: "Preliminary risk assessment"
+    description: "Analysis of the operating scenario and environmental conditions before each mission."
     icon: "risk"
-  - title: "Coordinamento con autorità competenti"
-    description: "Gestione delle comunicazioni con enti e autorità quando richiesto dallo scenario operativo."
+  - title: "Coordination with relevant authorities"
+    description: "Management of communications with agencies and authorities when required by the operating scenario."
     icon: "authority"
-  - title: "Gestione della documentazione tecnica"
-    description: "Preparazione e gestione della documentazione aeronautica necessaria alle operazioni."
+  - title: "Technical documentation management"
+    description: "Preparation and management of the aeronautical documentation required for operations."
     icon: "documentation"
-  - title: "Copertura assicurativa professionale"
-    description: "Assicurazione conforme alle normative aeronautiche europee e alle esigenze di produzione."
+  - title: "Professional insurance coverage"
+    description: "Insurance compliant with European aeronautical regulations and production requirements."
     icon: "insurance"
 ---

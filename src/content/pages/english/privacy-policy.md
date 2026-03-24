@@ -78,16 +78,16 @@ Our Website may contain links to third-party websites. We are not responsible fo
 
 Our Website is not intended for individuals under the age of 13. We do not knowingly collect personal information from children under 13. If you believe we have collected such information, please contact us immediately.
 
-### Changes to This privacy policy
+### Changes to This Privacy Policy
 
 We may update this Privacy policy from time to time. Any changes will be posted on this page with an updated "Effective Date." We encourage you to review this Privacy policy periodically.
 
-### Contattaci
+### Contact Us
 
 If you have any questions or concerns about this Privacy policy, please contact us at:
 
 marvindrone.com
 Email: privacy@marvindrone.com
-Address: Via MarvinDrone 123, Citta demo, 00100, Italia
+Address: Via MarvinDrone 123, Demo City, 00100, Italy
 
-Grazie per la fiducia accordata a marvindrone.com per i tuoi dati personali!
+Thank you for trusting marvindrone.com with your personal data.

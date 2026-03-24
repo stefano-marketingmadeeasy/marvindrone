@@ -5,8 +5,9 @@ import { getEntryCTM } from "@/lib/contentParser.astro";
 import { getAllRentals } from "@/lib/strapi/rentals";
 import type { RentalsPageContent } from "@/types/rentals-page";
 
-const rentals = await getAllRentals("it");
-const contentEntry = await getEntryCTM("sections", "rentals-page", "it");
+const currentLocale = Astro.currentLocale || "it";
+const rentals = await getAllRentals(currentLocale);
+const contentEntry = await getEntryCTM("sections", "rentals-page", currentLocale);
 const content = contentEntry?.data as RentalsPageContent;
 const structuredData = {
   pageType: "FAQPage",

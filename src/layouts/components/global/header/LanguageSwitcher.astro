@@ -8,9 +8,12 @@ import trailingSlashChecker from "@/lib/utils/trailingSlashChecker";
 
 const currentLocale = Astro.currentLocale || "it";
 const t = await useTranslations(currentLocale);
+const localeUrls = Astro.props.localeUrls as Record<string, string> | undefined;
 const languages = supportedLanguages
   .map((language) => {
-    const href = getLocaleUrlCTM(Astro.url.pathname, language.languageCode);
+    const href =
+      localeUrls?.[language.languageCode] ||
+      getLocaleUrlCTM(Astro.url.pathname, language.languageCode);
 
     if (href === trailingSlashChecker(Astro.url.pathname)) {
       return null;

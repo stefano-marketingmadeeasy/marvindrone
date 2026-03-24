@@ -1,25 +1,25 @@
 ---
 enable: true # Control the visibility of this section across all pages where it is used
-scrollSteps: 5 # Quanti step di scroll deve durare il primo blocco testo della hero
-secondaryScrollSteps: 3 # Quanti step di scroll deve durare il secondo blocco testo della hero
-tertiaryScrollSteps: 3 # Quanti step di scroll deve durare il terzo blocco testo della hero
-transitionTitle: "Riprese aeree professionali per cinema, serie TV, ADV ed eventi"
-transitionParagraphOne: "Marvin Drone realizza riprese aeree con drone per produzioni strutturate, operando come partner tecnico su set professionali dal 2014."
-transitionParagraphTwo: "Con base operativa a Palermo in Sicilia, è attiva su produzioni in tutta Italia e all’estero, integrando le riprese con drone nel workflow di regia, direzione della fotografia e produzione."
+scrollSteps: 5 # Number of scroll steps for the first hero text block
+secondaryScrollSteps: 3 # Number of scroll steps for the second hero text block
+tertiaryScrollSteps: 3 # Number of scroll steps for the third hero text block
+transitionTitle: "Professional aerial cinematography for film, TV series, advertising and events"
+transitionParagraphOne: "Marvin Drone delivers professional drone cinematography for structured productions, operating as a technical partner on professional sets since 2014."
+transitionParagraphTwo: "Based in Palermo, Sicily, it supports productions across Italy and abroad, integrating drone shooting into the workflow of directing, cinematography and production."
 
 mainBlock:
   disableSlider: true # if this is true then slider will be disabled and only first slide from below will be shown
 
   slides:
-    - title: "Riprese aeree cinematografiche con drone INGLESE"
-      description: "Cinema · Serie TV · ADV · Eventi"
+    - title: "Cinematic drone filming"
+      description: "Film · TV Series · Advertising · Events"
       backgroundImage: "/images/hero.avif"
       entranceDelay: "500ms"
       entranceDuration: "2000ms"
 
       button:
         enable: true
-        label: "Contattaci"
+        label: "Contact us"
         url: "/contact"
         rel: ""
         target: ""
@@ -32,7 +32,7 @@ mainBlock:
         
       secondaryButton:
         enable: true
-        label: "Guarda le produzioni"
+        label: "View our productions"
         url: "/contact"
         rel: ""
         target: ""

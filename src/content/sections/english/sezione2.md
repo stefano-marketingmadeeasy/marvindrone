@@ -1,52 +1,52 @@
 ---
 enable: true # Control the visibility of this section across all pages where it is used
-title: "Parco droni e configurazioni operative"
+title: "Drone fleet and operating configurations"
 description: |
-  Ogni progetto richiede un equilibrio tra qualità d’immagine, sicurezza operativa, tempi
-  di produzione e costi. Per garantire risultati coerenti con la fotografia e con il piano di
-  ripresa, Marvin Drone impiega un parco droni professionale adatto a lavorazioni
-  differenti: dalla cinematografia ad alta risoluzione alle sequenze dinamiche, fino agli
-  scenari con esigenze tecniche specifiche.
+  Every project requires a balance between image quality, operational safety, production
+  timing and budget. To deliver results consistent with the cinematography and shooting
+  plan, Marvin Drone operates a professional drone fleet suited to different production
+  needs: from high-resolution cinematography to dynamic sequences and scenarios with
+  specific technical requirements.
 bgPatternImage: "/images/line-pattern.svg"
 
 list:
-  - title: "DJI Inspire 3 – cinema drone full-frame"
+  - title: "DJI Inspire 3 - full-frame cinema drone"
     description: |
-      La piattaforma Inspire 3 integra una camera Zenmuse X9-8K Air con sensore full-frame e supporto per registrazioni in 8.1K CinemaDNG a 25 fps o 8K ProRes RAW fino a 75 fps, con ampia gamma dinamica e precisione cromatica utili per produzioni filmiche di alto livello. Oﬀre supporto a RTK, controllo dual-operator e trasmissione video cinema-grade.
+      The Inspire 3 platform features a Zenmuse X9-8K Air camera with a full-frame sensor and support for 8.1K CinemaDNG recording at 25 fps or 8K ProRes RAW up to 75 fps, offering the dynamic range and color accuracy required for high-end film productions. It also supports RTK, dual-operator control and cinema-grade video transmission.
     images:
       src:
         - "/images/sezione2/inspire3.avif"
       background: "/images/sezione2/bg.svg"
-      alt: "DJI Inspire 3 – cinema drone full-frame"
+      alt: "DJI Inspire 3 - full-frame cinema drone"
     number: "01"
 
-  - title: "DJI Mavic 4 – versatilità professionale"
+  - title: "DJI Mavic 4 - professional versatility"
     description: |
-     Il Mavic 4 integra un sensore Hasselblad di elevata risoluzione e riprese fino a 6K/60 fps, con prestazioni stabili e qualità di immagine adatta a spot ADV, documentari e produzioni rapide in contesti complessi.
+      The Mavic 4 integrates a high-resolution Hasselblad sensor and recording up to 6K/60 fps, delivering stable performance and image quality suited to commercials, documentaries and fast-turnaround productions in complex environments.
     images:
       src:
         - "/images/sezione2/mavic4pro.avif"
       background: "/images/sezione2/bg.svg"
-      alt: "DJI Mavic 4 – versatilità professionale"
+      alt: "DJI Mavic 4 - professional versatility"
     number: "02"
 
-  - title: "Drone FPV – dinamica di movimento"
+  - title: "FPV drone - dynamic movement"
     description: |
-      Configurazioni FPV dedicate permettono movimenti ravvicinati, continui e dinamici, ideali per sequenze d’azione, tracciamenti di movimento o piani immersivi, con pilotaggio calibrato su esigenze di scena e sicurezza operativa.
+      Dedicated FPV configurations enable close, continuous and dynamic movement, ideal for action sequences, motion tracking and immersive shots, with piloting calibrated to the needs of the scene and operational safety.
     images:
       src:
         - "/images/sezione2/avata2.png"
       background: "/images/sezione2/bg.svg"
-      alt: "Drone FPV – dinamica di movimento"
+      alt: "FPV drone - dynamic movement"
     number: "03"
 
-  - title: "Drone con sistema di illuminazione"
+  - title: "Drone with lighting system"
     description: |
-      Soluzioni con sistemi di illuminazione integrata consentono di impiegare il drone come fonte luminosa mobile per richieste specifiche, ad esempio simulazioni di luce naturale in notturna o controluce di precisione.
+      Solutions with integrated lighting systems allow the drone to be used as a mobile light source for specific production needs, such as simulating natural light at night or creating precise backlighting.
     images:
       src:
         - "/images/sezione2/drone_illuminazione.avif"
       background: "/images/sezione2/bg.svg"
-      alt: "Drone con sistema di illuminazione"
+      alt: "Drone with lighting system"
     number: "04"
 ---

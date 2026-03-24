@@ -17,6 +17,7 @@ let {
   disableTagline,
   author = config.seo.author,
   robots = config.seo.robots,
+  localeUrls,
 } = Astro.props;
 
 title = plainify(metaTitle ? metaTitle : title ? title : config.site.title);
@@ -38,12 +39,16 @@ description = plainify(
       : config.site.description,
 );
 
-canonical = getLocaleUrlCTM(
-  new URL(Astro.url.href, Astro.site).href,
-  Astro.currentLocale,
-);
+canonical =
+  localeUrls?.[Astro.currentLocale || "it"] ||
+  getLocaleUrlCTM(new URL(Astro.url.href, Astro.site).href, Astro.currentLocale);
 
-const alternateTags = getAlternateLocaleLinks(Astro.url.pathname);
+const alternateTags = localeUrls
+  ? Object.entries(localeUrls).map(([hreflang, href]) => ({
+      hreflang,
+      href: String(href),
+    }))
+  : getAlternateLocaleLinks(Astro.url.pathname);
 ---
 
 {title && <title>{removeWhitespace(title)}</title>}

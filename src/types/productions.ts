@@ -24,6 +24,12 @@ export type ProductionCompany = {
   locale?: string;
 };
 
+export type ProductionLocalization = {
+  locale: string;
+  slug: string;
+  categorySlug: string;
+};
+
 export type ProductionFact = {
   label: string;
   value: string;
@@ -49,9 +55,11 @@ export type ProductionSeo = {
 
 export type Production = {
   id: number | string;
+  locale?: string;
   title: string;
   slug: string;
   category: ProductionCategory;
+  localizations?: ProductionLocalization[];
   excerpt?: string;
   description?: string;
   synopsis?: string;

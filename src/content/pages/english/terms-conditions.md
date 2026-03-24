@@ -1,5 +1,5 @@
 ---
-title: "Termini e condizioni"
+title: "Terms and Conditions"
 metaDescription: "This is a example description"
 draft: false
 ---
@@ -57,13 +57,13 @@ These Terms are governed by and construed in accordance with the laws of the Sta
 
 We reserve the right to update or modify these Terms at any time without prior notice. Any changes will be effective immediately upon posting on this page. Your continued use of the Website constitutes acceptance of the revised Terms.
 
-### Contattaci
+### Contact Us
 
 If you have any questions or concerns about these Terms, please contact us at:
 
 marvindrone.com
 
 Email: <support@marvindrone.com>  
-Address: Via MarvinDrone 123, Citta demo, 00100, Italia
+Address: Via MarvinDrone 123, Demo City, 00100, Italy
 
-Grazie per aver scelto marvindrone.com!
+Thank you for choosing marvindrone.com.

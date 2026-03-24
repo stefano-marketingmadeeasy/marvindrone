@@ -22,4 +22,5 @@ export type Rental = {
   description?: string;
   image?: RentalAsset;
   order?: number;
+  locale?: string;
 };

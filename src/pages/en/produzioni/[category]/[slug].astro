@@ -1,7 +1,10 @@
 ---
 import Base from "@/layouts/Base.astro";
 import ProductionSingle from "@/components/ProductionSingle.astro";
-import { getAllProductions } from "@/lib/strapi/productions";
+import {
+  getAllProductions,
+  getProductionLocaleUrls,
+} from "@/lib/strapi/productions";
 import { useTranslations } from "@/lib/utils/i18nUtils";
 
 export async function getStaticPaths() {
@@ -32,6 +35,7 @@ const coverImage =
   production.heroImage ||
   production.poster ||
   production.gallery[0];
+const localeUrls = getProductionLocaleUrls(production);
 ---
 
 <Base
@@ -46,7 +50,8 @@ const coverImage =
   metaDescription={production.seo.metaDescription ||
     production.excerpt ||
     production.synopsis ||
-    t("productions.meta.singleFallbackDescription")}>
+    t("productions.meta.singleFallbackDescription")}
+  localeUrls={localeUrls}>
   <ProductionSingle
     production={production}
     relatedProductions={relatedProductions}

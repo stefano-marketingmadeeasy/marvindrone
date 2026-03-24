@@ -35,6 +35,26 @@ const normalizeInteger = (value: unknown) => {
   return undefined;
 };
 
+const pickLocalizedEntity = (
+  value: unknown,
+  locale = "it",
+): Record<string, any> | undefined => {
+  const record = unwrapStrapiEntity<Record<string, any>>(value);
+
+  if (Object.keys(record).length === 0) return undefined;
+
+  const recordLocale = pickFirstString(record, ["locale"]);
+  if (!recordLocale || recordLocale === locale) {
+    return record;
+  }
+
+  const matchingLocalization = unwrapStrapiArray<Record<string, any>>(
+    record.localizations,
+  ).find((entry) => pickFirstString(entry, ["locale"]) === locale);
+
+  return matchingLocalization || record;
+};
+
 const normalizeAsset = (value: unknown): RentalAsset | undefined => {
   const record = unwrapStrapiEntity<Record<string, any>>(value);
   const url = toStrapiAbsoluteUrl(record.url);
@@ -55,6 +75,7 @@ const normalizeAsset = (value: unknown): RentalAsset | undefined => {
 const normalizeTaxonomy = (
   value: unknown,
   fallback = "",
+  locale = "it",
 ): RentalTaxonomy | undefined => {
   if (!value) {
     return fallback
@@ -72,7 +93,8 @@ const normalizeTaxonomy = (
     };
   }
 
-  const record = unwrapStrapiEntity<Record<string, any>>(value);
+  const record = pickLocalizedEntity(value, locale);
+  if (!record) return undefined;
   const name =
     pickFirstString(record, ["name", "nome", "title", "titolo", "label"]) ||
     fallback;
@@ -88,24 +110,27 @@ const normalizeTaxonomy = (
   };
 };
 
-const normalizeTaxonomyList = (value: unknown) => {
+const normalizeTaxonomyList = (value: unknown, locale = "it") => {
   if (!value) return [] as RentalTaxonomy[];
 
   if (typeof value === "string") {
     return value
       .split(/[\n,;|]+/)
-      .map((item) => normalizeTaxonomy(item))
+      .map((item) => normalizeTaxonomy(item, "", locale))
       .filter(Boolean) as RentalTaxonomy[];
   }
 
   const values = Array.isArray(value) ? value : unwrapStrapiArray(value);
 
   return values
-    .map((item) => normalizeTaxonomy(item))
+    .map((item) => normalizeTaxonomy(item, "", locale))
     .filter(Boolean) as RentalTaxonomy[];
 };
 
-const normalizeRental = (entry: Record<string, any>): Rental | undefined => {
+const normalizeRental = (
+  entry: Record<string, any>,
+  locale = "it",
+): Rental | undefined => {
   const raw = unwrapStrapiEntity<Record<string, any>>(entry);
   const model = pickFirstString(raw, [
     "model",
@@ -121,6 +146,8 @@ const normalizeRental = (entry: Record<string, any>): Rental | undefined => {
   const brand =
     normalizeTaxonomy(
       raw.brand || raw.marca || raw.manufacturer || raw.produttore,
+      "",
+      locale,
     ) || { name: "", slug: "" };
   const categories = normalizeTaxonomyList(
     raw.categories ||
@@ -137,6 +164,7 @@ const normalizeRental = (entry: Record<string, any>): Rental | undefined => {
       raw.utilizzo ||
       raw.uses ||
       raw.use,
+    locale,
   );
   const description =
     pickFirstString(raw, [
@@ -163,6 +191,7 @@ const normalizeRental = (entry: Record<string, any>): Rental | undefined => {
         raw.foto,
     ),
     order: normalizeInteger(raw.order || raw.sortOrder),
+    locale: pickFirstString(raw, ["locale"]) || locale,
   };
 };
 
@@ -207,13 +236,15 @@ export const getAllRentals = async (locale = "it") => {
   const entries = await getStrapiCollection<Record<string, any>>(
     RENTALS_ENDPOINT,
     {
+      // Keep the rentals query compatible with Strapi i18n setups that already
+      // localize relations on the server side when `locale` is provided.
       populate: "*",
       locale,
     },
   );
 
   return entries
-    .map((entry) => normalizeRental(entry))
+    .map((entry) => normalizeRental(entry, locale))
     .filter(isRental)
     .sort((left, right) => sortRentals(left, right, locale));
 };

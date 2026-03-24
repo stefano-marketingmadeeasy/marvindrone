@@ -1,5 +1,5 @@
 ---
-title: "Carriere in marvindrone.com"
+title: "Careers at marvindrone.com"
 metaDescription: "This is a example description"
 hasCustomLineAnimationBg: true
 draft: false
@@ -12,7 +12,7 @@ intro:
   description: "Are you a problem-solver with a strategic mind? Do you thrive in a collaborative environment? If so, a career at marvindrone.com could be the perfect fit. We offer challenging projects, opportunities for professional growth, and a competitive benefits package."
   button:
     enable: true
-    label: "Vedi tutte le posizioni"
+    label: "View all openings"
     url: "/career/#current-openings"
     rel: ""
     target: ""
@@ -26,7 +26,7 @@ applyBlock:
   note: "* By applying for this job listing, you agree to our Data [Privacy policy](/contact/) for recruitment and job applications."
   button:
     enable: true
-    label: "Candidati ora in marvindrone.com"
+    label: "Apply now at marvindrone.com"
     url: "" # url will come from every job post .md file
     rel: ""
     target: ""

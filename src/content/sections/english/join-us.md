@@ -6,7 +6,7 @@ description: "Be a part of something bigger than yourself. We're revolutionizing
 
 button:
   enable: true
-  label: "Vedi tutte le posizioni"
+  label: "View all openings"
   url: "/career/#current-openings"
   rel: ""
   target: ""

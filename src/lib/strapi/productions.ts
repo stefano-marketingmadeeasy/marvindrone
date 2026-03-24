@@ -5,6 +5,7 @@ import type {
   ProductionAsset,
   ProductionCategory,
   ProductionCompany,
+  ProductionLocalization,
   ProductionCreditGroup,
   ProductionFact,
   ProductionLink,
@@ -223,6 +224,23 @@ const normalizeProductionCompany = (
     logo: normalizeAsset(record.logo),
     order: normalizeInteger(record.order || record.sortOrder),
     locale: pickFirstString(record, ["locale"]) || undefined,
+  };
+};
+
+const normalizeProductionLocalization = (
+  value: unknown,
+): ProductionLocalization | undefined => {
+  const record = unwrapStrapiEntity<Record<string, any>>(value);
+  const locale = pickFirstString(record, ["locale"]);
+  const title = pickFirstString(record, ["title", "titolo", "name", "nome"]);
+  const slug = pickFirstString(record, ["slug"]) || (title ? slugifyyy(title) : "");
+
+  if (!locale || !slug) return undefined;
+
+  return {
+    locale,
+    slug,
+    categorySlug: normalizeCategory(record).slug,
   };
 };
 
@@ -464,12 +482,16 @@ const normalizeProduction = (
 
   return {
     id: raw.id || title,
+    locale: pickFirstString(raw, ["locale"]) || undefined,
     title,
     slug:
       pickFirstString(raw, ["slug"]) ||
       slugifyyy(title) ||
       `produzione-${raw.id}`,
     category: normalizeCategory(raw),
+    localizations: pickFirstArray(raw, ["localizations"])
+      .map((item) => normalizeProductionLocalization(item))
+      .filter(Boolean) as ProductionLocalization[],
     excerpt: description,
     description,
     synopsis:
@@ -571,6 +593,7 @@ export const getAllProductions = async (locale = "it") => {
       "populate[fotoBackstage][populate]": "*",
       "populate[tipologia_produzione][populate]": "*",
       "populate[casaProduzione][populate]": "*",
+      "populate[localizations][populate]": "*",
       locale,
     },
   );
@@ -626,6 +649,48 @@ export const getProductionPath = (
     `/produzioni/${production.category.slug}/${production.slug}/`,
     locale,
   );
+
+export const getLocalizedProductionPath = (
+  production: Production,
+  locale = "it",
+) => {
+  if (production.locale === locale) {
+    return getProductionPath(production, locale);
+  }
+
+  const localizedTarget = production.localizations?.find(
+    (item) => item.locale === locale,
+  );
+
+  if (!localizedTarget) {
+    return getProductionPath(production, locale);
+  }
+
+  return getLocaleUrlCTM(
+    `/produzioni/${localizedTarget.categorySlug}/${localizedTarget.slug}/`,
+    locale,
+  );
+};
+
+export const getProductionLocaleUrls = (production: Production) => {
+  const localeUrls: Record<string, string> = {};
+
+  if (production.locale) {
+    localeUrls[production.locale] = getProductionPath(
+      production,
+      production.locale,
+    );
+  }
+
+  (production.localizations || []).forEach((localization) => {
+    localeUrls[localization.locale] = getLocaleUrlCTM(
+      `/produzioni/${localization.categorySlug}/${localization.slug}/`,
+      localization.locale,
+    );
+  });
+
+  return localeUrls;
+};
 
 const sortProductionCompanies = (
   left: ProductionCompany,

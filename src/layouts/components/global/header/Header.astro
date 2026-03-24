@@ -51,7 +51,7 @@ const { stickyHeader } = config.settings;
           class="navbar has-customized-scrollbar max-lg:transform-none! lg:static! lg:transform-none!">
           {main.map((menu) => <NavMenuItem menu={menu} />)}
           <li class="max-lg:px-4 max-lg:py-2 lg:hidden" role="menuitem">
-            <LanguageSwitcher />
+            <LanguageSwitcher localeUrls={Astro.props.localeUrls} />
           </li>
           {
             socialLinks.length > 0 && (
@@ -71,7 +71,7 @@ const { stickyHeader } = config.settings;
 
       <div
         class="hidden gap-3.5 max-lg:me-4 max-lg:ml-auto lg:flex lg:items-center">
-        <LanguageSwitcher />
+        <LanguageSwitcher localeUrls={Astro.props.localeUrls} />
         {
           socialLinks.length > 0 && (
             <Social

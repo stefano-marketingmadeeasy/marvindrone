@@ -1,8 +1,8 @@
 ---
 enable: true # Control the visibility of this section across all pages where it is used
-title: "Contattaci per maggiori informazioni"
+title: "Contact us for more information"
 description: "Whether you're seeking expert assistance, our dedicated team is prepared to support you every step of the way."
-subtitle: "Contatti"
+subtitle: "Contacts"
 
 contactList:
   enable: true
@@ -30,7 +30,7 @@ social:
 
 # Check config.toml file for form action related settings
 form:
-  emailSubject: "Nuovo invio modulo dal sito marvindrone.com" # Customized email subject (applicable when anyone submit form, form submission may receive by email depend on provider)
+  emailSubject: "New form submission from marvindrone.com" # Customized email subject (applicable when anyone submit form, form submission may receive by email depend on provider)
   submitButton:
     label: "Submit Your Response"
     showIcon: "true"
@@ -47,8 +47,8 @@ form:
       halfWidth: true
       defaultValue: ""
     - label: ""
-      placeholder: "Indirizzo email"
-      name: "Indirizzo email" # This is crucial. Its indicate under which name you want to receive this field data
+      placeholder: "Email Address"
+      name: "Email Address" # This is crucial. Its indicate under which name you want to receive this field data
       required: true
       type: "email"
       halfWidth: true
