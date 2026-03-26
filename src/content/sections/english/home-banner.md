@@ -33,7 +33,7 @@ mainBlock:
       secondaryButton:
         enable: true
         label: "View our productions"
-        url: "/contact"
+        url: "/en/produzioni"
         rel: ""
         target: ""
         showIcon: "true"

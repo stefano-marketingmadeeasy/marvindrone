@@ -8,34 +8,14 @@ import Sezione2 from "@/components/sections/Sezione2.astro";
 import Sezione3 from "@/components/sections/Sezione3.astro";
 import Sezione4 from "@/components/sections/Sezione4.astro";
 import Sezione5 from "@/components/sections/Sezione5.astro";
-import FaqSection from "@/components/sections/FaqSection.astro";
 
 const homepage = await getEntryCTM("homepage", "-index", Astro.currentLocale);
-const homeFaq = await getEntryCTM("sections", "home-faq", Astro.currentLocale);
-const faqItems =
-  homeFaq?.data?.list?.flatMap(
-    (category: { list?: { title?: string; content?: string }[] }) =>
-      category.list || [],
-  ) || [];
-const structuredData =
-  faqItems.length > 0
-    ? {
-        pageType: "FAQPage",
-        faqItems: faqItems.map(
-          (item: { title?: string; content?: string }) => ({
-            question: item.title || "",
-            answer: item.content || "",
-          }),
-        ),
-      }
-    : undefined;
 ---
 
 <Base
   {...homepage?.data}
   homepage={true}
-  class="overflow-x-clip"
-  structuredData={structuredData}>
+  class="overflow-x-clip">
   <HomeBanner />
   <SubHero />
 
@@ -44,5 +24,4 @@ const structuredData =
   <Sezione3 />
   <Sezione4 />
   <Sezione5 />
-  <FaqSection content={homeFaq?.data} />
 </Base>

@@ -112,13 +112,14 @@ const faqItems: FAQItem[] = content.faq.items.map((item, index) => ({
         align="center"
         title={content.conditions.title}
         body={content.conditions.body}
-        bodyProgressOffset="0"
+        bodyProgressOffset="0.62"
         note={content.conditions.note}
         spacing="compact"
         titleProgressOffset="0"
         viewportAnchor="1"
         width="default"
         textStagger="0.1"
+        sequential={true}
       />
 
       <BlurReadingSection
@@ -127,9 +128,12 @@ const faqItems: FAQItem[] = content.faq.items.map((item, index) => ({
         title={content.contact.title}
         body={content.contact.body}
         note={content.contact.note}
+        bodyProgressOffset="0.62"
+        titleProgressOffset="0"
         spacing="defaultTopExpandedBottom"
         width="default"
         textStagger="0.1"
+        sequential={true}
         action={{
           href: whatsappUrl,
           iconAlt: "",

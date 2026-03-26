@@ -60,8 +60,8 @@ const primaryScrollSteps = Math.max(actualContent?.scrollSteps ?? 5, 1);
 const secondaryScrollSteps = Math.max(actualContent?.secondaryScrollSteps ?? 3, 1);
 const tertiaryScrollSteps = Math.max(actualContent?.tertiaryScrollSteps ?? 3, 1);
 const heroIntroSteps = 2;
-const heroGapSteps = 2;
-const heroSecondaryGapSteps = 2;
+const heroGapSteps = 25;
+const heroSecondaryGapSteps = 25;
 const heroOutroSteps = 2;
 const mobileBreakpoint = 767;
 const heroTotalSteps =
@@ -225,15 +225,94 @@ const heroTotalSteps =
     );
     const mobileQuery = window.matchMedia(`(max-width: ${mobileBreakpoint}px)`);
     let rafId = 0;
+    let scrollDirty = false;
+
+    // Smoothed current values (lerped toward targets each frame)
+    const current = {
+      blur: 0,
+      bgScale: 1.02,
+      primaryOpacity: 1,
+      primaryScale: 1,
+      primaryY: 0,
+      secondaryOpacity: 0,
+      secondaryScale: 0.985,
+      secondaryY: 20,
+      tertiaryOpacity: 0,
+      tertiaryScale: 0.985,
+      tertiaryY: 20,
+      arrowOpacity: 1,
+    };
 
     const normalizeRange = (value, start, end) => {
       if (value <= start) return 0;
       if (value >= end) return 1;
-
       return (value - start) / (end - start);
     };
 
-    const updateParallax = () => {
+    // Smooth ease-in-out curve for more natural transitions
+    const easeInOut = (t) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+
+    const lerp = (a, b, t) => a + (b - a) * t;
+
+    // Lerp factor: higher = snappier, lower = more fluid lag
+    const LERP_FACTOR = 0.10;
+    const SETTLE_THRESHOLD = 0.0005;
+
+    const computeTargets = () => {
+      const rect = heroBanner.getBoundingClientRect();
+      const scrollRange = Math.max(heroBanner.offsetHeight - window.innerHeight, 1);
+      const distance = Math.min(Math.max(-rect.top, 0), scrollRange);
+      const progress = Math.min(distance / scrollRange, 1);
+
+      const progressSteps =
+        progress *
+        (heroIntroSteps +
+          primaryScrollSteps +
+          heroGapSteps +
+          secondaryScrollSteps +
+          heroSecondaryGapSteps +
+          tertiaryScrollSteps);
+
+      const bgZoomProgress = easeInOut(normalizeRange(
+        progressSteps,
+        0,
+        heroIntroSteps + primaryScrollSteps
+      ));
+
+      const secondaryStart = heroIntroSteps + primaryScrollSteps + heroGapSteps;
+      const secondaryEnd = secondaryStart + secondaryScrollSteps;
+      const tertiaryStart = secondaryEnd + heroSecondaryGapSteps;
+      const tertiaryEnd = tertiaryStart + tertiaryScrollSteps;
+
+      const primaryFadeRaw = normalizeRange(progressSteps, heroIntroSteps, heroIntroSteps + primaryScrollSteps);
+      const primaryFade = easeInOut(primaryFadeRaw);
+
+      const secondaryReveal = easeInOut(normalizeRange(progressSteps, secondaryStart, secondaryEnd));
+      // Secondary exits in the first half of the gap — reaches 0 well before tertiary starts
+      const secondaryExit = easeInOut(normalizeRange(progressSteps, secondaryEnd, secondaryEnd + heroSecondaryGapSteps * 0.5));
+      const secondaryVisibility = secondaryReveal * (1 - secondaryExit);
+
+      // Tertiary starts in the second half of the gap, giving a genuine dead zone
+      const tertiaryReveal = easeInOut(normalizeRange(progressSteps, secondaryEnd + heroSecondaryGapSteps * 0.5, tertiaryEnd));
+      const arrowFade = easeInOut(normalizeRange(progressSteps, 1, heroIntroSteps));
+
+      return {
+        blur: bgZoomProgress * 12,
+        bgScale: 1.02 + bgZoomProgress * 0.06,
+        primaryOpacity: 1 - primaryFade,
+        primaryScale: 1 - primaryFade * 0.035,
+        primaryY: primaryFade * -14,
+        secondaryOpacity: secondaryVisibility,
+        secondaryScale: 0.985 + secondaryVisibility * 0.015,
+        secondaryY: (1 - secondaryVisibility) * 16,
+        tertiaryOpacity: tertiaryReveal,
+        tertiaryScale: 0.985 + tertiaryReveal * 0.015,
+        tertiaryY: (1 - tertiaryReveal) * 16,
+        arrowOpacity: 1 - arrowFade,
+      };
+    };
+
+    const loop = () => {
       rafId = 0;
 
       if (reducedMotionQuery.matches || mobileQuery.matches) {
@@ -253,90 +332,59 @@ const heroTotalSteps =
         return;
       }
 
-      const rect = heroBanner.getBoundingClientRect();
-      const scrollRange = Math.max(heroBanner.offsetHeight - window.innerHeight, 1);
-      const distance = Math.min(Math.max(-rect.top, 0), scrollRange);
-      const progress = Math.min(distance / scrollRange, 1);
-      const blur = progress * 18;
-      const progressSteps =
-        progress *
-        (heroIntroSteps +
-          primaryScrollSteps +
-          heroGapSteps +
-          secondaryScrollSteps +
-          heroSecondaryGapSteps +
-          tertiaryScrollSteps);
-      const bgZoomProgress = normalizeRange(
-        progressSteps,
-        0,
-        heroIntroSteps + primaryScrollSteps
-      );
-      const bgScale = 1.02 + bgZoomProgress * 0.08;
-      const secondaryStart = heroIntroSteps + primaryScrollSteps + heroGapSteps;
-      const secondaryEnd = secondaryStart + secondaryScrollSteps;
-      const tertiaryStart = secondaryEnd + heroSecondaryGapSteps;
-      const tertiaryEnd = tertiaryStart + tertiaryScrollSteps;
-      const primaryFade = normalizeRange(
-        progressSteps,
-        heroIntroSteps,
-        heroIntroSteps + primaryScrollSteps
-      );
-      const secondaryReveal = normalizeRange(progressSteps, secondaryStart, secondaryEnd);
-      const secondaryExit = normalizeRange(progressSteps, secondaryEnd, tertiaryStart);
-      const secondaryVisibility = secondaryReveal * (1 - secondaryExit);
-      const tertiaryReveal = normalizeRange(progressSteps, tertiaryStart, tertiaryEnd);
-      const arrowFade = normalizeRange(progressSteps, 1, heroIntroSteps);
+      const target = computeTargets();
+      let settled = true;
 
-      heroBanner.style.setProperty("--hero-bg-blur", `${blur}px`);
-      heroBanner.style.setProperty("--hero-bg-scale", `${bgScale}`);
-      heroBanner.style.setProperty("--hero-primary-opacity", `${1 - primaryFade}`);
-      heroBanner.style.setProperty(
-        "--hero-primary-scale",
-        `${1 - primaryFade * 0.04}`
-      );
-      heroBanner.style.setProperty("--hero-primary-y", `${primaryFade * -18}px`);
-      heroBanner.style.setProperty(
-        "--hero-secondary-opacity",
-        `${secondaryVisibility}`
-      );
-      heroBanner.style.setProperty(
-        "--hero-secondary-scale",
-        `${0.985 + secondaryVisibility * 0.015}`
-      );
-      heroBanner.style.setProperty(
-        "--hero-secondary-y",
-        `${(1 - secondaryVisibility) * 20}px`
-      );
-      heroBanner.style.setProperty("--hero-tertiary-opacity", `${tertiaryReveal}`);
-      heroBanner.style.setProperty(
-        "--hero-tertiary-scale",
-        `${0.985 + tertiaryReveal * 0.015}`
-      );
-      heroBanner.style.setProperty(
-        "--hero-tertiary-y",
-        `${(1 - tertiaryReveal) * 20}px`
-      );
-      heroBanner.style.setProperty("--hero-arrow-opacity", `${1 - arrowFade}`);
+      for (const key in current) {
+        const prev = current[key];
+        // Use faster lerp when secondary opacity is exiting (target=0) to avoid bleed into tertiary
+        const factor = (key === "secondaryOpacity" || key === "secondaryScale" || key === "secondaryY") && target.secondaryOpacity < 0.05
+          ? 0.28
+          : LERP_FACTOR;
+        const next = lerp(prev, target[key], factor);
+        current[key] = next;
+        if (Math.abs(next - target[key]) > SETTLE_THRESHOLD) settled = false;
+      }
+
+      heroBanner.style.setProperty("--hero-bg-blur", `${current.blur}px`);
+      heroBanner.style.setProperty("--hero-bg-scale", `${current.bgScale}`);
+      heroBanner.style.setProperty("--hero-primary-opacity", `${current.primaryOpacity}`);
+      heroBanner.style.setProperty("--hero-primary-scale", `${current.primaryScale}`);
+      heroBanner.style.setProperty("--hero-primary-y", `${current.primaryY}px`);
+      heroBanner.style.setProperty("--hero-secondary-opacity", `${current.secondaryOpacity}`);
+      heroBanner.style.setProperty("--hero-secondary-scale", `${current.secondaryScale}`);
+      heroBanner.style.setProperty("--hero-secondary-y", `${current.secondaryY}px`);
+      heroBanner.style.setProperty("--hero-tertiary-opacity", `${current.tertiaryOpacity}`);
+      heroBanner.style.setProperty("--hero-tertiary-scale", `${current.tertiaryScale}`);
+      heroBanner.style.setProperty("--hero-tertiary-y", `${current.tertiaryY}px`);
+      heroBanner.style.setProperty("--hero-arrow-opacity", `${current.arrowOpacity}`);
+
       heroBanner.dataset.secondaryActive =
-        secondaryVisibility > 0.04 || tertiaryReveal > 0.04 ? "true" : "false";
+        current.secondaryOpacity > 0.04 || current.tertiaryOpacity > 0.04 ? "true" : "false";
+
+      // Keep loop alive until values settle
+      if (!settled) {
+        rafId = window.requestAnimationFrame(loop);
+      }
     };
 
-    const requestParallaxUpdate = () => {
+    const requestUpdate = () => {
+      scrollDirty = true;
       if (rafId) return;
-      rafId = window.requestAnimationFrame(updateParallax);
+      rafId = window.requestAnimationFrame(loop);
     };
 
-    requestParallaxUpdate();
+    requestUpdate();
 
-    window.addEventListener("scroll", requestParallaxUpdate, { passive: true });
-    window.addEventListener("resize", requestParallaxUpdate);
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate);
 
     if (typeof reducedMotionQuery.addEventListener === "function") {
-      reducedMotionQuery.addEventListener("change", requestParallaxUpdate);
+      reducedMotionQuery.addEventListener("change", requestUpdate);
     }
 
     if (typeof mobileQuery.addEventListener === "function") {
-      mobileQuery.addEventListener("change", requestParallaxUpdate);
+      mobileQuery.addEventListener("change", requestUpdate);
     }
   }
 </script>

@@ -38,36 +38,6 @@
       "enable": true,
       "name": "Noleggio",
       "url": "/noleggio/"
-    },
-    {
-      "enable": true,
-      "name": "Chi siamo",
-      "url": "/about/"
-    },
-    {
-      "enable": true,
-      "name": "Contattaci",
-      "url": "/contact/"
-    },
-    {
-      "enable": true,
-      "name": "Prezzi",
-      "url": "/pricing/"
-    },
-    {
-      "enable": true,
-      "name": "Testimonianze",
-      "url": "/"
-    },
-    {
-      "enable": true,
-      "name": "Team",
-      "url": "/team/"
-    },
-    {
-      "enable": true,
-      "name": "Servizi",
-      "url": "/services/"
     }
   ],
   "footerMenuResources": [
@@ -80,21 +50,6 @@
       "enable": true,
       "name": "Noleggio",
       "url": "/noleggio/"
-    },
-    {
-      "enable": true,
-      "name": "Blog",
-      "url": "/blog/"
-    },
-    {
-      "enable": true,
-      "name": "FAQ",
-      "url": "/faq/"
-    },
-    {
-      "enable": true,
-      "name": "Case study",
-      "url": "/case-studies/"
     }
   ],
   "footerMenuLegal": [

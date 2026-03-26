@@ -15,6 +15,7 @@ interface Props {
   bodyProgressOffset?: string;
   bodyRangeMultiplier?: string;
   note?: string;
+  sequential?: boolean;
   spacing?: "default" | "compact" | "expanded" | "defaultTopExpandedBottom";
   textStagger?: string;
   title: string;
@@ -33,6 +34,7 @@ const {
   bodyProgressOffset = "0.34",
   bodyRangeMultiplier = "2.15",
   note,
+  sequential = false,
   spacing = "default",
   textStagger = "0.032",
   title,
@@ -93,7 +95,8 @@ const paragraphHtml = note ? `${body} ${note}` : body;
   data-body-range-multiplier={bodyRangeMultiplier}
   data-title-progress-offset={titleProgressOffset}
   data-title-range-multiplier={titleRangeMultiplier}
-  data-viewport-anchor={viewportAnchor}>
+  data-viewport-anchor={viewportAnchor}
+  data-sequential={sequential ? "true" : undefined}>
   {
     animated ? (
       <div class="container">
@@ -199,6 +202,7 @@ const paragraphHtml = note ? `${body} ${note}` : body;
     progressOffset: number;
     rangeMultiplier: number;
     target: HTMLElement;
+    positionRef?: HTMLElement;
     viewportAnchor: number;
     words: HTMLElement[];
     stagger: number;
@@ -274,7 +278,7 @@ const paragraphHtml = note ? `${body} ${note}` : body;
   };
 
   const updateEntry = (entry: BlurEntry) => {
-    const rect = entry.target.getBoundingClientRect();
+    const rect = (entry.positionRef ?? entry.target).getBoundingClientRect();
     const viewportCenter = window.innerHeight * entry.viewportAnchor;
     const baseProgress = clamp(
       (viewportCenter - rect.top) /
@@ -336,6 +340,7 @@ const paragraphHtml = note ? `${body} ${note}` : body;
       const bodyRangeMultiplier = Number.parseFloat(
         section.dataset.bodyRangeMultiplier || "2.15",
       );
+      const isSequential = section.dataset.sequential === "true";
       const titleWords =
         title instanceof HTMLElement
           ? splitWords(title, "blur-title-word-v4")
@@ -357,10 +362,12 @@ const paragraphHtml = note ? `${body} ${note}` : body;
       if (bodyWords.length) {
         entries.push({
           target: paragraph,
+          positionRef:
+            isSequential && title instanceof HTMLElement ? title : undefined,
           words: bodyWords,
           blur,
           progressOffset: bodyProgressOffset,
-          rangeMultiplier: bodyRangeMultiplier,
+          rangeMultiplier: isSequential ? titleRangeMultiplier : bodyRangeMultiplier,
           viewportAnchor,
           stagger,
         });
