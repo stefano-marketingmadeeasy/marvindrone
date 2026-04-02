@@ -59,6 +59,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.5",
+    "@astrojs/cloudflare": "^12.6.7",
     "@astrojs/mdx": "4.3.9",
     "@astrojs/sitemap": "3.6.0",
     "@realfavicongenerator/generate-favicon": "^0.4.16",

@@ -1,5 +1,6 @@
 import mdx from "@astrojs/mdx";
 import react from "@astrojs/react";
+import cloudflare from "@astrojs/cloudflare";
 import remarkToc from "remark-toc";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
@@ -19,6 +20,8 @@ let {
 // https://astro.build/config
 export default defineConfig({
   site: config.site.baseUrl ? config.site.baseUrl : "http://examplesite.com",
+  output: "server",
+  adapter: cloudflare(),
   trailingSlash: config.site.trailingSlash ? "always" : "never",
   i18n: {
     locales: languages.map((language) => language.languageCode),

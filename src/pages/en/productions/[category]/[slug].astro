@@ -7,6 +7,8 @@ import {
 } from "@/lib/strapi/productions";
 import { useTranslations } from "@/lib/utils/i18nUtils";
 
+export const prerender = true;
+
 export async function getStaticPaths() {
   const productions = await getAllProductions("en");
 

@@ -4,6 +4,8 @@ import NewsSingle from "@/components/NewsSingle.astro";
 import { getAllNews, getNewsLocaleUrls } from "@/lib/strapi/news";
 import { useTranslations } from "@/lib/utils/i18nUtils";
 
+export const prerender = true;
+
 export async function getStaticPaths() {
   const articles = await getAllNews("it");
 
