@@ -33,7 +33,9 @@ export default defineConfig({
       prefixDefaultLocale: false,
     },
   },
-  integrations: [sitemapConfig.enable ? sitemap() : null, react(), AutoImport({
+  integrations: [sitemapConfig.enable ? sitemap() : null, react({
+    experimentalDisableStreaming: true,
+  }), AutoImport({
     imports: [
       "@/components/CustomButton.astro",
       "@/shortcodes/Accordion.astro",
