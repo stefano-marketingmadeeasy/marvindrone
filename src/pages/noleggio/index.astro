@@ -5,6 +5,8 @@ import { getEntryCTM } from "@/lib/contentParser.astro";
 import { getAllRentals } from "@/lib/strapi/rentals";
 import type { RentalsPageContent } from "@/types/rentals-page";
 
+export const prerender = true;
+
 const currentLocale = Astro.currentLocale || "it";
 const rentals = await getAllRentals(currentLocale);
 const contentEntry = await getEntryCTM("sections", "rentals-page", currentLocale);

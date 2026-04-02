@@ -10,6 +10,8 @@ import Sezione4 from "@/components/sections/Sezione4.astro";
 import Sezione5 from "@/components/sections/Sezione5.astro";
 import FaqSection from "@/components/sections/FaqSection.astro";
 
+export const prerender = true;
+
 const homepage = await getEntryCTM("homepage", "-index", Astro.currentLocale);
 const homeFaq = await getEntryCTM("sections", "home-faq", Astro.currentLocale);
 const faqItems =

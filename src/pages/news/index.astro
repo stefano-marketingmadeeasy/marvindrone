@@ -4,6 +4,8 @@ import NewsPage from "@/components/news/NewsPage.astro";
 import { getAllNews } from "@/lib/strapi/news";
 import { useTranslations } from "@/lib/utils/i18nUtils";
 
+export const prerender = true;
+
 const articles = await getAllNews("it");
 const t = await useTranslations("it");
 ---

@@ -5,6 +5,8 @@ import { getEntryCTM } from "@/lib/contentParser.astro";
 import { getAllProductions } from "@/lib/strapi/productions";
 import type { ProductionsPageContent } from "@/types/productions-page";
 
+export const prerender = true;
+
 const productions = await getAllProductions("it");
 const contentEntry = await getEntryCTM("sections", "productions-page", "it");
 const content = contentEntry?.data as ProductionsPageContent;
