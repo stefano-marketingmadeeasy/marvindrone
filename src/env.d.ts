@@ -6,6 +6,7 @@ interface ImportMetaEnv {
   readonly STRAPI_TOKEN?: string;
   readonly STRAPI_PRODUCTIONS_ENDPOINT?: string;
   readonly STRAPI_RENTALS_ENDPOINT?: string;
+  readonly STRAPI_DRONE_PARK_ENDPOINT?: string;
   readonly WHATSAPP_PHONE?: string;
 }
 

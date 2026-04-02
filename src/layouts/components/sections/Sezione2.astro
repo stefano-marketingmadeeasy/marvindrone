@@ -1,6 +1,7 @@
 ---
 import type { Section } from "@/types";
 import { getEntryCTM } from "@/lib/contentParser.astro";
+import { getAllDroneParkItems } from "@/lib/strapi/drone-park";
 import overrideObjects from "@/lib/utils/overrideObjects.ts";
 import OptimizedImage from "@/components/utilities/OptimizedImage.astro";
 import { markdownify } from "@/lib/utils/textConverter";
@@ -9,6 +10,8 @@ type ImageType = {
   src: string[];
   background: string;
   alt: string;
+  width?: number;
+  height?: number;
 };
 
 type ListType = {
@@ -42,12 +45,25 @@ let actualContent = overrideObjects(
 ) as sectionType;
 
 // Extracting required values from 'content' object
-let {
-  enable = true,
-  title,
-  description,
-  list,
-} = actualContent as sectionType;
+let { enable = true, title, description, list } = actualContent as sectionType;
+
+const currentLocale = Astro.currentLocale || "it";
+const droneParkItems = enable ? await getAllDroneParkItems(currentLocale) : [];
+const resolvedList =
+  droneParkItems.length > 0
+    ? droneParkItems.map((item, index) => ({
+        title: item.title,
+        description: item.description || "",
+        images: {
+          src: item.image?.url ? [item.image.url] : [],
+          background: "/images/sezione2/bg.svg",
+          alt: item.image?.alt || item.title,
+          width: item.image?.width,
+          height: item.image?.height,
+        },
+        number: String(index + 1).padStart(2, "0"),
+      }))
+    : list;
 ---
 
 {
@@ -62,7 +78,7 @@ let {
           )}
           {description && (
             <div
-              class="mx-auto mt-6 max-w-4xl text-balance text-base leading-8 text-text md:mt-8 md:text-lg"
+              class="text-text mx-auto mt-6 max-w-4xl text-base leading-8 text-balance md:mt-8 md:text-lg"
               set:html={markdownify(description, true)}
             />
           )}
@@ -71,13 +87,16 @@ let {
           class="mt-12 grid space-y-10 md:mt-16"
           data-aos="fade-up-sm"
           data-aos-delay="400">
-          {list.map((item, index) => (
+          {resolvedList.map((item, index) => (
             <div class="border-secondary grid gap-5 border border-black/10 bg-white md:min-h-111 lg:sticky lg:top-[calc(6vh+5rem)] lg:grid-cols-12">
               {/* Text Content */}
               {(title || item.description) && (
                 <div
                   class:list={[
-                    "px-8 py-10 md:flex md:flex-col md:justify-center md:px-16 md:py-16 lg:col-span-7",
+                    "px-8 py-10 md:flex md:flex-col md:justify-center md:px-16 md:py-16",
+                    item.images?.src?.length > 0
+                      ? "lg:col-span-7"
+                      : "lg:col-span-12",
                     { "order-1": index % 2 === 0 },
                     { "order-1 lg:order-2": index % 2 !== 0 },
                   ]}>
@@ -88,10 +107,7 @@ let {
                     />
                   )}
                   {item.title && (
-                    <h3
-                      class="text-h4 mb-8 text-black"
-                      set:html={item.title}
-                    />
+                    <h3 class="text-h4 mb-8 text-black" set:html={item.title} />
                   )}
                   {item.description && (
                     <div
@@ -103,28 +119,40 @@ let {
               )}
 
               {/* Images */}
-              <div
-                class:list={[
-                  "relative flex min-h-[260px] items-center justify-center overflow-hidden px-6 pb-6 lg:col-span-5 lg:min-h-full lg:px-10 lg:pb-0",
-                  // Right Side Images
-                  {
-                    "order-2": index % 2 === 0,
-                  },
-                  // Left Side Images
-                  {
-                    "order-2 lg:order-1": index % 2 !== 0,
-                  },
-                ]}>
-                {item.images &&
-                  item.images.src.map((image) => (
-                    <OptimizedImage
-                      class="relative mx-auto block h-auto max-h-[220px] w-full object-contain lg:absolute lg:inset-0 lg:h-full lg:max-h-none lg:w-full"
-                      src={image}
-                      height={444}
-                      alt={item.images.alt}
-                    />
-                  ))}
-              </div>
+              {item.images?.src?.length > 0 && (
+                <div
+                  class:list={[
+                    "relative flex min-h-[260px] items-center justify-center overflow-hidden px-6 pb-6 lg:col-span-5 lg:min-h-full lg:px-10 lg:pb-0",
+                    {
+                      "order-2": index % 2 === 0,
+                    },
+                    {
+                      "order-2 lg:order-1": index % 2 !== 0,
+                    },
+                  ]}>
+                  {item.images.src.map((image) =>
+                    image.startsWith("http://") ||
+                    image.startsWith("https://") ? (
+                      <img
+                        class="relative mx-auto block h-auto max-h-[220px] w-full object-contain lg:absolute lg:inset-0 lg:h-full lg:max-h-none lg:w-full"
+                        src={image}
+                        alt={item.images.alt}
+                        width={item.images.width}
+                        height={item.images.height}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    ) : (
+                      <OptimizedImage
+                        class="relative mx-auto block h-auto max-h-[220px] w-full object-contain lg:absolute lg:inset-0 lg:h-full lg:max-h-none lg:w-full"
+                        src={image}
+                        height={444}
+                        alt={item.images.alt}
+                      />
+                    ),
+                  )}
+                </div>
+              )}
             </div>
           ))}
         </div>

@@ -8,12 +8,22 @@
     {
       "enable": true,
       "name": "Productions",
-      "url": "/produzioni/"
+      "url": "/productions/"
+    },
+    {
+      "enable": true,
+      "name": "News",
+      "url": "/news/"
     },
     {
       "enable": true,
       "name": "Rental",
-      "url": "/noleggio/"
+      "url": "/rental/"
+    },
+    {
+      "enable": true,
+      "name": "Contact",
+      "url": "/contact/"
     }
   ],
   "footerMenu": [
@@ -32,24 +42,34 @@
     {
       "enable": true,
       "name": "Productions",
-      "url": "/produzioni/"
+      "url": "/productions/"
+    },
+    {
+      "enable": true,
+      "name": "News",
+      "url": "/news/"
     },
     {
       "enable": true,
       "name": "Rental",
-      "url": "/noleggio/"
+      "url": "/rental/"
     }
   ],
   "footerMenuResources": [
     {
       "enable": true,
       "name": "Productions",
-      "url": "/produzioni/"
+      "url": "/productions/"
+    },
+    {
+      "enable": true,
+      "name": "News",
+      "url": "/news/"
     },
     {
       "enable": true,
       "name": "Rental",
-      "url": "/noleggio/"
+      "url": "/rental/"
     }
   ],
   "footerMenuLegal": [

@@ -21,7 +21,7 @@ const homePath =
 const forceBlueHeader = Astro.props.forceBlueHeader === true;
 const forceOverlayHeader = Astro.props.overlayHeader === true;
 const isOverlayHeader = currentPath === homePath && !forceBlueHeader;
-const isDarkHeader = isOverlayHeader || forceBlueHeader;
+const isDarkHeader = true; // sempre nero; la home lo sovrascrive con header-home-top (trasparente)
 
 const { stickyHeader } = config.settings;
 ---

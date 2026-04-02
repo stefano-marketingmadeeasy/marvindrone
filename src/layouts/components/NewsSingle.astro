@@ -1,0 +1,206 @@
+---
+import { ArrowLeft } from "@lucide/astro";
+import { getLocaleUrlCTM, useTranslations } from "@/lib/utils/i18nUtils";
+import { markdownify } from "@/lib/utils/textConverter";
+import type { NewsArticle } from "@/types/news";
+import StrapiImage from "@/components/productions/StrapiImage.astro";
+import NewsCard from "@/components/cards/NewsCard.astro";
+
+interface Props {
+  article: NewsArticle;
+  relatedArticles?: NewsArticle[];
+}
+
+const { article, relatedArticles = [] } = Astro.props;
+const currentLocale = Astro.currentLocale || "it";
+const t = await useTranslations(currentLocale);
+const heroImage = article.heroImage || article.gallery[0];
+const newsIndexUrl = `${getLocaleUrlCTM("/news/", currentLocale)}#news-archive`;
+const relatedFilterUrl = `${getLocaleUrlCTM("/news/", currentLocale)}?filter=${article.category.slug}#news-archive`;
+const formatter = new Intl.DateTimeFormat(
+  currentLocale === "en" ? "en-US" : "it-IT",
+  {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  },
+);
+const publishedDate = article.publishedAt
+  ? formatter.format(new Date(article.publishedAt))
+  : "";
+const galleryImages = article.gallery.filter(
+  (image) => image.url !== heroImage?.url,
+);
+---
+
+<section class="pt-0! pb-16 md:pt-0! md:pb-24">
+  <div class="relative">
+    <div class="relative isolate overflow-hidden bg-stone-950 text-white">
+      {
+        heroImage ? (
+          <StrapiImage
+            url={heroImage.url}
+            alt={heroImage.alt || article.title}
+            width={heroImage.width}
+            height={heroImage.height}
+            loading="eager"
+            class="h-full min-h-[72svh] w-full object-cover"
+          />
+        ) : (
+          <div class="h-full min-h-[72svh] w-full bg-stone-950" />
+        )
+      }
+      <div
+        class="absolute inset-0 bg-[linear-gradient(180deg,rgba(12,10,9,0.14)_0%,rgba(12,10,9,0.34)_24%,rgba(12,10,9,0.72)_58%,rgba(12,10,9,0.98)_100%)]">
+      </div>
+      <div
+        class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.16),_transparent_30%)]">
+      </div>
+
+      <div class="absolute inset-x-0 bottom-0 z-10">
+        <div class="container pb-28 text-center md:pb-36">
+          <div class="flex flex-wrap items-center justify-center gap-4">
+            <a
+              href={newsIndexUrl}
+              class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-white transition hover:border-white hover:bg-white hover:text-stone-950">
+              <ArrowLeft size={16} stroke-width={2} />
+              {t("news.detail.back")}
+            </a>
+          </div>
+
+          <div
+            class="mx-auto mt-6 flex max-w-5xl flex-col items-center space-y-5">
+            <div class="flex flex-wrap justify-center gap-3">
+              <span
+                class="rounded-full border border-white/15 bg-black/20 px-4 py-1.5 text-sm text-white/85">
+                {article.category.name}
+              </span>
+              {
+                publishedDate && (
+                  <span class="rounded-full border border-white/15 bg-black/20 px-4 py-1.5 text-sm text-white/85">
+                    {publishedDate}
+                  </span>
+                )
+              }
+            </div>
+
+            <div class="space-y-4 text-center">
+              <h1
+                class="mx-auto max-w-[16ch] text-[clamp(2.7rem,6vw,5.2rem)] leading-[0.96] font-semibold text-inherit"
+                set:html={markdownify(article.title)}
+              />
+              {
+                article.excerpt && (
+                  <p class="mx-auto max-w-3xl text-base leading-8 text-white/80 md:text-lg md:leading-8">
+                    {article.excerpt}
+                  </p>
+                )
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="bg-body relative z-20 -mt-[5svh] rounded-t-[2.5rem] pt-10 md:-mt-[7svh] md:pt-14">
+      <div class="container space-y-10 md:space-y-12">
+        <div class="grid gap-8 xl:grid-cols-[minmax(0,1fr)_320px]">
+          <section
+            class="rounded-[2rem] border border-black/10 bg-white p-6 md:p-8">
+            <h2 class="text-h4 text-inherit">{t("news.detail.article")}</h2>
+            {
+              article.body ? (
+                <div
+                  class="prose-styles mt-5 max-w-none"
+                  set:html={markdownify(article.body, true)}
+                />
+              ) : article.excerpt ? (
+                <p class="mt-5 text-base leading-8 text-stone-700">
+                  {article.excerpt}
+                </p>
+              ) : null
+            }
+          </section>
+
+          <aside class="space-y-4">
+            <div
+              class="rounded-[2rem] border border-black/10 bg-white p-6 md:p-7">
+              <p
+                class="text-xs font-semibold tracking-[0.24em] text-stone-500 uppercase">
+                {t("news.detail.publishedOn")}
+              </p>
+              <p class="mt-3 text-lg leading-8 text-stone-900">
+                {publishedDate || "-"}
+              </p>
+            </div>
+
+            <div
+              class="rounded-[2rem] border border-black/10 bg-white p-6 md:p-7">
+              <p
+                class="text-xs font-semibold tracking-[0.24em] text-stone-500 uppercase">
+                {t("news.detail.category")}
+              </p>
+              <a
+                href={relatedFilterUrl}
+                class="mt-3 inline-flex rounded-full bg-stone-100 px-4 py-2 text-sm font-medium text-stone-900 transition hover:bg-stone-900 hover:text-white">
+                {article.category.name}
+              </a>
+            </div>
+          </aside>
+        </div>
+
+        {
+          galleryImages.length > 0 && (
+            <section class="rounded-[2rem] border border-black/10 bg-white p-6 md:p-8">
+              <h2 class="text-h4 text-inherit">{t("news.detail.gallery")}</h2>
+              <div class="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                {galleryImages.map((image) => (
+                  <div class="overflow-hidden rounded-[1.5rem] bg-stone-100">
+                    <StrapiImage
+                      url={image.url}
+                      alt={image.alt || article.title}
+                      width={image.width}
+                      height={image.height}
+                      loading="lazy"
+                      class="h-full min-h-[240px] w-full object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+            </section>
+          )
+        }
+
+        <section>
+          <div class="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p
+                class="text-xs font-semibold tracking-[0.28em] text-stone-500 uppercase">
+                {article.category.name}
+              </p>
+              <h2
+                class="mt-3 text-[clamp(2rem,4vw,3rem)] leading-[1.05] font-semibold text-stone-950">
+                {t("news.detail.related")}
+              </h2>
+            </div>
+          </div>
+
+          {
+            relatedArticles.length > 0 ? (
+              <div class="mt-6 grid gap-[clamp(1rem,2vw,2rem)] md:grid-cols-2 xl:grid-cols-3">
+                {relatedArticles.map((relatedArticle) => (
+                  <NewsCard article={relatedArticle} variant="related" />
+                ))}
+              </div>
+            ) : (
+              <div class="mt-6 rounded-[2rem] border border-dashed border-stone-300 bg-white px-6 py-10 text-center text-stone-600">
+                {t("news.detail.relatedEmpty")}
+              </div>
+            )
+          }
+        </section>
+      </div>
+    </div>
+  </div>
+</section>

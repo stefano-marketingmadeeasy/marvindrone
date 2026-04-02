@@ -1,0 +1,294 @@
+---
+import NewsCard from "@/components/cards/NewsCard.astro";
+import { getNewsFilters } from "@/lib/strapi/news";
+import { strapiEnabled } from "@/lib/strapi/client";
+import { useTranslations } from "@/lib/utils/i18nUtils";
+import type { NewsArticle } from "@/types/news";
+
+interface Props {
+  articles: NewsArticle[];
+  anchorId?: string;
+}
+
+const { articles, anchorId } = Astro.props;
+const currentLocale = Astro.currentLocale || "it";
+const filters = await getNewsFilters(articles, currentLocale);
+const isStrapiConfigured = strapiEnabled();
+const t = await useTranslations(currentLocale);
+---
+
+<section
+  id={anchorId}
+  class="relative overflow-visible bg-white py-14 md:py-18"
+  data-news-archive-root>
+  <div
+    class="relative mx-auto w-full max-w-[2080px] space-y-8 px-[clamp(1rem,2.5vw,3.5rem)]">
+    <div
+      class="relative flex w-full flex-wrap items-center gap-3"
+      data-news-filters>
+      <span
+        data-filter-indicator
+        aria-hidden="true"
+        class="pointer-events-none absolute top-0 left-0 rounded-full bg-stone-900 shadow-[0_12px_30px_rgba(15,23,42,0.18)] transition-[transform,width,height] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]">
+      </span>
+      <button
+        type="button"
+        data-filter-button
+        data-filter="all"
+        aria-pressed="true"
+        class="news-filter-button relative z-10 rounded-full border border-stone-300 bg-transparent px-5 py-3 text-sm font-medium text-stone-700 transition-[color,border-color,transform] duration-300 hover:border-stone-900 hover:text-stone-950">
+        <span
+          class="filter-button-label block transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]">
+          {t("news.archive.all")}
+        </span>
+      </button>
+      {
+        filters.map((filter) => (
+          <button
+            type="button"
+            data-filter-button
+            data-filter={filter.slug}
+            aria-pressed="false"
+            class="news-filter-button relative z-10 rounded-full border border-stone-300 bg-transparent px-5 py-3 text-sm font-medium text-stone-700 transition-[color,border-color,transform] duration-300 hover:border-stone-900 hover:text-stone-950">
+            <span class="filter-button-label block transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]">
+              {filter.name}
+            </span>
+          </button>
+        ))
+      }
+    </div>
+
+    {
+      articles.length > 0 ? (
+        <div
+          data-news-grid
+          class="grid grid-cols-1 gap-[clamp(1rem,2vw,2rem)] md:grid-cols-2 xl:grid-cols-3">
+          {articles.map((article) => (
+            <div
+              data-news-card-item
+              data-category={article.category.slug}
+              class="h-full">
+              <NewsCard article={article} />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div class="rounded-[2rem] border border-dashed border-stone-300 bg-white px-6 py-14 text-center shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
+          <p class="text-xs font-semibold tracking-[0.24em] text-stone-500 uppercase">
+            {t("news.archive.emptyLabel")}
+          </p>
+          <h3 class="text-h5 mt-3 text-inherit">
+            {t("news.archive.emptyTitle")}
+          </h3>
+          <p class="mx-auto mt-4 max-w-2xl text-sm leading-7 text-stone-600 md:text-base">
+            {t("news.archive.emptyDescription")}
+          </p>
+          {import.meta.env.DEV && !isStrapiConfigured && (
+            <p class="mx-auto mt-4 max-w-2xl text-sm leading-7 text-stone-500">
+              Variabile richiesta in sviluppo: <code>STRAPI_URL</code>.
+            </p>
+          )}
+        </div>
+      )
+    }
+
+    <div
+      data-news-empty
+      hidden
+      class="rounded-[2rem] border border-dashed border-stone-300 bg-white px-6 py-14 text-center shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
+      <p
+        class="text-xs font-semibold tracking-[0.24em] text-stone-500 uppercase">
+        {t("news.archive.emptyFilterLabel")}
+      </p>
+      <h3 class="text-h5 mt-3 text-inherit">
+        {t("news.archive.emptyFilterTitle")}
+      </h3>
+      <p
+        class="mx-auto mt-4 max-w-2xl text-sm leading-7 text-stone-600 md:text-base">
+        {t("news.archive.emptyFilterDescription")}
+      </p>
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  const archiveRoots = Array.from(
+    document.querySelectorAll("[data-news-archive-root]"),
+  );
+
+  archiveRoots.forEach((root) => {
+    const archive = root.querySelector("[data-news-grid]");
+    const filterButtons = Array.from(
+      root.querySelectorAll("[data-filter-button]"),
+    );
+    const filterIndicator = root.querySelector("[data-filter-indicator]");
+    const emptyState = root.querySelector("[data-news-empty]");
+
+    if (!(archive instanceof HTMLElement) || filterButtons.length === 0) return;
+
+    const cards = Array.from(archive.querySelectorAll("[data-news-card-item]"));
+    let isAnimating = false;
+    let hasAppliedInitialFilter = false;
+
+    const getVisibleCards = () =>
+      cards.filter((card) => !card.hasAttribute("hidden"));
+
+    const updateIndicator = (activeButton) => {
+      if (!(filterIndicator instanceof HTMLElement) || !activeButton) return;
+
+      const filtersRect = activeButton.parentElement?.getBoundingClientRect();
+      const buttonRect = activeButton.getBoundingClientRect();
+      if (!filtersRect) return;
+
+      const offsetLeft = buttonRect.left - filtersRect.left;
+      const offsetTop = buttonRect.top - filtersRect.top;
+
+      filterIndicator.style.width = `${buttonRect.width}px`;
+      filterIndicator.style.height = `${buttonRect.height}px`;
+      filterIndicator.style.transform = `translate3d(${offsetLeft}px, ${offsetTop}px, 0)`;
+    };
+
+    const updateButtons = (activeFilter) => {
+      filterButtons.forEach((button) => {
+        const isActive = button.dataset.filter === activeFilter;
+        const label = button.querySelector(".filter-button-label");
+        button.setAttribute("aria-pressed", String(isActive));
+        button.classList.toggle("border-stone-900", isActive);
+        button.classList.toggle("text-white", isActive);
+        button.classList.toggle("border-stone-300", !isActive);
+        button.classList.toggle("text-stone-700", !isActive);
+
+        if (label) {
+          label.animate(
+            [
+              { opacity: 0.55, transform: "translate3d(0, 0.45rem, 0)" },
+              { opacity: 1, transform: "translate3d(0, 0, 0)" },
+            ],
+            {
+              duration: 260,
+              easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+            },
+          );
+        }
+      });
+
+      updateIndicator(
+        filterButtons.find((button) => button.dataset.filter === activeFilter),
+      );
+    };
+
+    const animateVisibleCards = (visibleCards) => {
+      visibleCards.forEach((card, index) => {
+        card.animate(
+          [
+            { opacity: 0, transform: "translate3d(0, 22px, 0) scale(0.985)" },
+            { opacity: 1, transform: "translate3d(0, 0, 0) scale(1)" },
+          ],
+          {
+            duration: 420,
+            delay: index * 55,
+            easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+            fill: "both",
+          },
+        );
+      });
+    };
+
+    const animateOutCards = (visibleCards) =>
+      Promise.all(
+        visibleCards.map((card) =>
+          card
+            .animate(
+              [
+                { opacity: 1, transform: "translate3d(0, 0, 0) scale(1)" },
+                {
+                  opacity: 0,
+                  transform: "translate3d(0, -14px, 0) scale(0.985)",
+                },
+              ],
+              {
+                duration: 180,
+                easing: "ease-out",
+                fill: "forwards",
+              },
+            )
+            .finished.catch(() => undefined),
+        ),
+      );
+
+    const applyFilter = async (filter) => {
+      if (isAnimating) return;
+
+      isAnimating = true;
+      const activeFilter = filter && filter !== "all" ? filter : "all";
+      const currentlyVisibleCards = getVisibleCards();
+
+      if (hasAppliedInitialFilter && currentlyVisibleCards.length > 0) {
+        await animateOutCards(currentlyVisibleCards);
+      }
+
+      let visibleCardsCount = 0;
+      const nextVisibleCards = [];
+
+      cards.forEach((card) => {
+        const category = card.dataset.category || "";
+        const isVisible = activeFilter === "all" || category === activeFilter;
+        card.toggleAttribute("hidden", !isVisible);
+        if (isVisible) {
+          visibleCardsCount += 1;
+          nextVisibleCards.push(card);
+        }
+      });
+
+      if (emptyState instanceof HTMLElement) {
+        emptyState.toggleAttribute("hidden", visibleCardsCount !== 0);
+      }
+
+      const url = new URL(window.location.href);
+      if (activeFilter === "all") {
+        url.searchParams.delete("filter");
+      } else {
+        url.searchParams.set("filter", activeFilter);
+      }
+      window.history.replaceState({}, "", url);
+
+      updateButtons(activeFilter);
+      animateVisibleCards(nextVisibleCards);
+      hasAppliedInitialFilter = true;
+      isAnimating = false;
+    };
+
+    filterButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        applyFilter(button.dataset.filter || "all");
+      });
+    });
+
+    const initialFilter =
+      new URLSearchParams(window.location.search).get("filter") || "all";
+    applyFilter(initialFilter);
+
+    const syncActiveButton = () => {
+      const activeButton = filterButtons.find(
+        (button) => button.getAttribute("aria-pressed") === "true",
+      );
+      updateIndicator(activeButton);
+    };
+
+    requestAnimationFrame(syncActiveButton);
+    window.addEventListener("resize", syncActiveButton);
+    window.addEventListener("load", syncActiveButton);
+  });
+</script>
+
+<style>
+  .news-filter-button[aria-pressed="true"] {
+    color: white;
+    border-color: rgb(28 25 23);
+  }
+
+  .news-filter-button[aria-pressed="false"] {
+    color: rgb(87 83 78);
+    border-color: rgb(214 211 209);
+  }
+</style>

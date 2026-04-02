@@ -1,0 +1,174 @@
+---
+import { ArrowUpRight } from "@lucide/astro";
+import NewsArchive from "@/components/news/NewsArchive.astro";
+import StrapiImage from "@/components/productions/StrapiImage.astro";
+import heroFallbackImage from "@/assets/images/hero.avif";
+import { getNewsPath } from "@/lib/strapi/news";
+import { useTranslations } from "@/lib/utils/i18nUtils";
+import type { NewsArticle } from "@/types/news";
+
+interface Props {
+  articles: NewsArticle[];
+}
+
+const { articles } = Astro.props;
+const currentLocale = Astro.currentLocale || "it";
+const t = await useTranslations(currentLocale);
+const featuredArticle = articles[0];
+const featuredHref = featuredArticle
+  ? getNewsPath(featuredArticle, currentLocale)
+  : "";
+const heroImage = featuredArticle?.heroImage || featuredArticle?.gallery?.[0];
+const formatter = new Intl.DateTimeFormat(
+  currentLocale === "en" ? "en-US" : "it-IT",
+  {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  },
+);
+const featuredDate = featuredArticle?.publishedAt
+  ? formatter.format(new Date(featuredArticle.publishedAt))
+  : "";
+---
+
+<section class="pt-0! pb-18 md:pt-0! md:pb-24">
+  <div class="relative">
+    <div
+      class="relative isolate min-h-[88svh] overflow-hidden bg-stone-950 text-white">
+      <div class="absolute inset-0">
+        {
+          heroImage ? (
+            <StrapiImage
+              url={heroImage.url}
+              alt={heroImage.alt || t("news.page.title")}
+              width={heroImage.width}
+              height={heroImage.height}
+              loading="eager"
+              sizes="100vw"
+              class="h-full w-full object-cover"
+            />
+          ) : (
+            <img
+              src={heroFallbackImage.src}
+              alt={t("news.page.title")}
+              class="h-full w-full object-cover"
+              loading="eager"
+            />
+          )
+        }
+      </div>
+      <div
+        class="absolute inset-0 bg-[linear-gradient(180deg,rgba(8,10,15,0.24)_0%,rgba(8,10,15,0.5)_26%,rgba(8,10,15,0.76)_58%,rgba(8,10,15,0.96)_100%)]">
+      </div>
+      <div
+        class="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.14),_transparent_34%)]">
+      </div>
+
+      <div
+        class="relative z-10 container flex min-h-[88svh] items-center justify-center py-18 text-center md:py-24">
+        <div class="mx-auto max-w-5xl">
+          <p
+            class="text-xs font-semibold tracking-[0.32em] text-white/68 uppercase">
+            Marvin Drone
+          </p>
+          <h1
+            class="mt-5 text-[clamp(2.6rem,6vw,5.5rem)] leading-[0.96] font-semibold text-white">
+            {t("news.page.title")}
+          </h1>
+          <p
+            class="mx-auto mt-6 max-w-3xl text-base leading-8 text-white/78 md:text-lg md:leading-8">
+            {t("news.page.description")}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="bg-body relative z-20 -mt-[5svh] rounded-t-[2.5rem] pt-10 md:-mt-[7svh] md:pt-14">
+      {
+        featuredArticle && (
+          <section class="bg-white pb-8 md:pb-12">
+            <div class="container">
+              <div class="grid overflow-hidden rounded-[2rem] border border-black/10 bg-white lg:grid-cols-[minmax(0,0.95fr)_minmax(320px,0.85fr)]">
+                <div class="flex flex-col justify-between p-7 md:p-9 lg:p-11">
+                  <div>
+                    <p class="text-xs font-semibold tracking-[0.28em] text-stone-500 uppercase">
+                      {t("news.page.featuredLabel")}
+                    </p>
+                    <div class="mt-5 flex flex-wrap items-center gap-3">
+                      <span class="rounded-full bg-stone-100 px-3 py-1 text-[11px] font-medium tracking-[0.2em] text-stone-700 uppercase">
+                        {featuredArticle.category.name}
+                      </span>
+                      {featuredDate && (
+                        <span class="rounded-full border border-stone-200 px-3 py-1 text-[11px] font-medium tracking-[0.2em] text-stone-500 uppercase">
+                          {featuredDate}
+                        </span>
+                      )}
+                    </div>
+                    <h2 class="mt-5 max-w-[16ch] text-[clamp(2rem,4vw,3.25rem)] leading-[1.02] font-semibold text-stone-950">
+                      {featuredArticle.title}
+                    </h2>
+                    {featuredArticle.excerpt && (
+                      <p class="mt-5 max-w-2xl text-sm leading-7 text-stone-600 md:text-base md:leading-8">
+                        {featuredArticle.excerpt}
+                      </p>
+                    )}
+                  </div>
+
+                  <div class="mt-8">
+                    <a
+                      href={featuredHref}
+                      class="inline-flex items-center gap-2.5 rounded-full border border-stone-900 bg-stone-900 px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-white hover:text-stone-950 md:text-base">
+                      <span>{t("news.card.open")}</span>
+                      <ArrowUpRight
+                        size={18}
+                        stroke-width={2.2}
+                        class="shrink-0"
+                      />
+                    </a>
+                  </div>
+                </div>
+
+                <div class="relative min-h-[300px] bg-stone-100">
+                  {heroImage ? (
+                    <StrapiImage
+                      url={heroImage.url}
+                      alt={heroImage.alt || featuredArticle.title}
+                      width={heroImage.width}
+                      height={heroImage.height}
+                      loading="lazy"
+                      sizes="(min-width: 1024px) 40vw, 100vw"
+                      class="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <img
+                      src={heroFallbackImage.src}
+                      alt={featuredArticle.title}
+                      class="h-full w-full object-cover"
+                      loading="lazy"
+                    />
+                  )}
+                </div>
+              </div>
+            </div>
+          </section>
+        )
+      }
+
+      <section class="bg-white pb-6 md:pb-8">
+        <div
+          class="mx-auto w-full max-w-[1480px] px-[clamp(1rem,2.5vw,3.5rem)]">
+          <div class="space-y-3 text-center">
+            <h2
+              class="text-[clamp(2rem,4vw,3.2rem)] leading-[1.02] font-semibold text-stone-950">
+              {t("news.page.archiveTitle")}
+            </h2>
+          </div>
+        </div>
+      </section>
+
+      <NewsArchive anchorId="news-archive" articles={articles} />
+    </div>
+  </div>
+</section>

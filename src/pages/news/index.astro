@@ -1,0 +1,20 @@
+---
+import Base from "@/layouts/Base.astro";
+import NewsPage from "@/components/news/NewsPage.astro";
+import { getAllNews } from "@/lib/strapi/news";
+import { useTranslations } from "@/lib/utils/i18nUtils";
+
+const articles = await getAllNews("it");
+const t = await useTranslations("it");
+---
+
+<Base
+  title={t("news.meta.indexTitle")}
+  description={t("news.meta.indexDescription")}
+  forceBlueHeader={true}
+  overlayHeader={true}
+  metaTitle={t("news.meta.indexMetaTitle")}
+  metaDescription={t("news.meta.indexMetaDescription")}
+  localeUrls={{ it: "/news/", en: "/en/news/" }}>
+  <NewsPage articles={articles} />
+</Base>

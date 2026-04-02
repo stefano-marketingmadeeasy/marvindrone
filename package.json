@@ -52,6 +52,7 @@
     "radix-ui": "^1.4.3",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
+    "resend": "^6.10.0",
     "smoothscroll-for-websites": "^1.5.1",
     "swiper": "12.0.3",
     "tailwind-merge": "^3.5.0"

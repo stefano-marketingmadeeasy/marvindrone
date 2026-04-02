@@ -641,12 +641,15 @@ export const getProductionFilters = async (
   locale = "it",
 ) => inferProductionFilters(productions, locale);
 
+const productionsSegment = (locale: string) =>
+  locale === "en" ? "productions" : "produzioni";
+
 export const getProductionPath = (
   production: Production,
   locale = "it",
 ) =>
   getLocaleUrlCTM(
-    `/produzioni/${production.category.slug}/${production.slug}/`,
+    `/${productionsSegment(locale)}/${production.category.slug}/${production.slug}/`,
     locale,
   );
 
@@ -667,7 +670,7 @@ export const getLocalizedProductionPath = (
   }
 
   return getLocaleUrlCTM(
-    `/produzioni/${localizedTarget.categorySlug}/${localizedTarget.slug}/`,
+    `/${productionsSegment(locale)}/${localizedTarget.categorySlug}/${localizedTarget.slug}/`,
     locale,
   );
 };
@@ -684,7 +687,7 @@ export const getProductionLocaleUrls = (production: Production) => {
 
   (production.localizations || []).forEach((localization) => {
     localeUrls[localization.locale] = getLocaleUrlCTM(
-      `/produzioni/${localization.categorySlug}/${localization.slug}/`,
+      `/${productionsSegment(localization.locale)}/${localization.categorySlug}/${localization.slug}/`,
       localization.locale,
     );
   });

@@ -1,0 +1,47 @@
+---
+import Base from "@/layouts/Base.astro";
+import NewsSingle from "@/components/NewsSingle.astro";
+import { getAllNews, getNewsLocaleUrls } from "@/lib/strapi/news";
+import { useTranslations } from "@/lib/utils/i18nUtils";
+
+export async function getStaticPaths() {
+  const articles = await getAllNews("en");
+
+  return articles.map((article) => ({
+    params: {
+      slug: article.slug,
+    },
+    props: {
+      article,
+      relatedArticles: articles
+        .filter(
+          (candidate) =>
+            candidate.slug !== article.slug &&
+            candidate.category.slug === article.category.slug,
+        )
+        .slice(0, 3),
+    },
+  }));
+}
+
+const { article, relatedArticles } = Astro.props;
+const t = await useTranslations("en");
+const coverImage = article.seo.image || article.heroImage || article.gallery[0];
+const localeUrls = getNewsLocaleUrls(article);
+---
+
+<Base
+  title={article.title}
+  description={article.excerpt || t("news.meta.singleFallbackDescription")}
+  image={coverImage?.url}
+  imageAlt={article.seo.altText || coverImage?.alt}
+  imageCaption={article.seo.caption || coverImage?.caption}
+  forceBlueHeader={true}
+  metaTitle={article.seo.metaTitle ||
+    `${article.title} | ${t("news.meta.singleSuffix")}`}
+  metaDescription={article.seo.metaDescription ||
+    article.excerpt ||
+    t("news.meta.singleFallbackDescription")}
+  localeUrls={localeUrls}>
+  <NewsSingle article={article} relatedArticles={relatedArticles} />
+</Base>

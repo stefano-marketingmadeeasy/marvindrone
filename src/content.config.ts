@@ -69,4 +69,5 @@ export const collections = {
   sections: defineCollection({}),
   homepage: defineCollection({}),
   widgets: defineCollection({}),
+  faq: defineCollection({}),
 };

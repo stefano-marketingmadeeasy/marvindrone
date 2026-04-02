@@ -86,7 +86,7 @@ const introParagraphs =
             cta={
               ctaLabel
                 ? {
-                    href: getLocaleUrlCTM("/produzioni/", Astro.currentLocale),
+                    href: getLocaleUrlCTM(Astro.currentLocale === "en" ? "/productions/" : "/produzioni/", Astro.currentLocale),
                     label: ctaLabel,
                   }
                 : undefined

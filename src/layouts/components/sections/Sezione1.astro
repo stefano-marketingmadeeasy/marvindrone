@@ -3,6 +3,8 @@ import { CalendarDays, Clapperboard, Film, Megaphone, Tv } from "@lucide/astro";
 
 import { getEntryCTM } from "@/lib/contentParser.astro";
 import overrideObjects from "@/lib/utils/overrideObjects.ts";
+import { getLocaleUrlCTM } from "@/lib/utils/i18nUtils";
+import mountainsSvg from "@/assets/images/shapes/marvindrone_mountains.svg";
 
 type SectionCard = {
   title?: string;
@@ -69,6 +71,11 @@ const desktopParallaxEndViewport = 0.5;
 
 const { enable = true } = actualContent;
 
+const currentLocale = Astro.currentLocale || "it";
+const productionsBase = getLocaleUrlCTM(currentLocale === "en" ? "/productions/" : "/produzioni/", currentLocale);
+const getProductionUrl = (icon: string) =>
+  `${productionsBase}?filter=${icon}#productions-archive`;
+
 const cards = (actualContent.cards ?? []).slice(0, 5);
 const renderedCards = cards.map((card, index) => ({
   card,
@@ -84,6 +91,13 @@ const renderedCards = cards.map((card, index) => ({
     <section
       data-sezione1-parallax
       class="relative overflow-clip bg-white text-[#222222]">
+      <div class="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden="true" data-mountains-container>
+        <div data-mountains-track class="absolute inset-y-0 left-0 flex h-full">
+          <img src={mountainsSvg.src} alt="" class="h-full w-auto flex-none select-none" draggable="false" />
+          <img src={mountainsSvg.src} alt="" class="h-full w-auto flex-none select-none" draggable="false" />
+          <img src={mountainsSvg.src} alt="" class="h-full w-auto flex-none select-none" draggable="false" />
+        </div>
+      </div>
       <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.98),rgba(255,255,255,0)_46%),repeating-linear-gradient(90deg,rgba(148,163,184,0)_0,rgba(148,163,184,0)_7%,rgba(148,163,184,0.08)_14%,rgba(148,163,184,0)_22%)] opacity-45 !mb-60"></div>
       <div
         data-sezione1-track
@@ -98,30 +112,32 @@ const renderedCards = cards.map((card, index) => ({
                 const CardIcon = visual.Icon;
 
                 return (
-                  <article
-                    data-sezione1-card
-                    class="mx-auto flex w-full max-w-[22rem] min-w-0 flex-col text-center lg:max-w-none"
-                    style={`--desktop-card-shift: ${desktopShift}; --card-progress: 0;`}>
-                    <div
-                      class:list={[
-                        "relative mb-5 flex min-h-[7rem] w-full items-center justify-center overflow-hidden rounded-[2rem] border-4 px-6 py-4 shadow-[0_4.5px_9px_rgba(27,27,27,0.02),0_9px_13.5px_rgba(27,27,27,0.03),0_13.5px_18px_rgba(27,27,27,0.04),0_18px_27px_rgba(27,27,27,0.04)] sm:aspect-square sm:min-h-0 sm:p-6",
-                        visual.backgroundClass,
-                        visual.borderClass,
-                      ]}>
-                      <div class="pointer-events-none absolute inset-x-5 top-4 h-12 rounded-full bg-white/12 blur-2xl"></div>
-                      <CardIcon class="relative text-white h-18 w-18 md:h-20 md:w-20 xl:h-[5.4rem] xl:w-[5.4rem]" stroke-width={2.35} />
-                    </div>
+                  <a href={getProductionUrl(card.icon)} class="block cursor-pointer">
+                    <article
+                      data-sezione1-card
+                      class="mx-auto flex w-full max-w-[22rem] min-w-0 flex-col text-center lg:max-w-none"
+                      style={`--desktop-card-shift: ${desktopShift}; --card-progress: 0;`}>
+                      <div
+                        class:list={[
+                          "relative mb-5 flex min-h-[7rem] w-full items-center justify-center overflow-hidden rounded-[2rem] border-4 px-6 py-4 shadow-[0_4.5px_9px_rgba(27,27,27,0.02),0_9px_13.5px_rgba(27,27,27,0.03),0_13.5px_18px_rgba(27,27,27,0.04),0_18px_27px_rgba(27,27,27,0.04)] sm:aspect-square sm:min-h-0 sm:p-6",
+                          visual.backgroundClass,
+                          visual.borderClass,
+                        ]}>
+                        <div class="pointer-events-none absolute inset-x-5 top-4 h-12 rounded-full bg-white/12 blur-2xl"></div>
+                        <CardIcon class="relative text-white h-18 w-18 md:h-20 md:w-20 xl:h-[5.4rem] xl:w-[5.4rem]" stroke-width={2.35} />
+                      </div>
 
-                    <h3 class="font-secondary text-[clamp(1.75rem,1.7vw,2.35rem)] leading-none font-bold tracking-[-0.06em] text-[#222222]">
-                      {card.title}
-                    </h3>
+                      <h3 class="font-secondary text-[clamp(1.75rem,1.7vw,2.35rem)] leading-none font-bold tracking-[-0.06em] text-[#222222]">
+                        {card.title}
+                      </h3>
 
-                    {card.description && (
-                      <p class="mx-auto mt-3 max-w-[28ch] text-balance text-[clamp(0.98rem,0.95vw,1.18rem)] leading-[1.55] text-[#5f5b57]">
-                        {card.description}
-                      </p>
-                    )}
-                  </article>
+                      {card.description && (
+                        <p class="mx-auto mt-3 max-w-[28ch] text-balance text-[clamp(0.98rem,0.95vw,1.18rem)] leading-[1.55] text-[#5f5b57]">
+                          {card.description}
+                        </p>
+                      )}
+                    </article>
+                  </a>
                 );
               })
             }
@@ -221,7 +237,47 @@ const renderedCards = cards.map((card, index) => ({
   }
 </script>
 
+<script is:inline>
+  (function () {
+    var track = document.querySelector("[data-mountains-track]");
+    if (!(track instanceof HTMLElement)) return;
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    var imgWidth = 0;
+
+    var refreshWidth = function () {
+      var img = track.querySelector("img");
+      imgWidth = img ? img.offsetWidth : 0;
+    };
+
+    var animate = function (timestamp) {
+      if (!imgWidth) refreshWidth();
+      if (imgWidth > 0) {
+        // slow time-based drift (8 px/s) + scroll-driven parallax (0.15 px per scroll px)
+        var timeOffset = (timestamp / 1000) * 8;
+        var scrollOffset = window.scrollY * 0.15;
+        var x = (timeOffset + scrollOffset) % imgWidth;
+        track.style.setProperty("--mountains-x", "-" + x.toFixed(2) + "px");
+      }
+      requestAnimationFrame(animate);
+    };
+
+    requestAnimationFrame(animate);
+    window.addEventListener("resize", refreshWidth, { passive: true });
+  })();
+</script>
+
 <style>
+  [data-mountains-container] {
+    opacity: 0.07;
+  }
+
+  [data-mountains-track] {
+    transform: translateX(var(--mountains-x, 0px));
+    will-change: transform;
+  }
+
   @media (max-width: 767px) {
     [data-sezione1-card] > div:first-child {
       background: transparent !important;

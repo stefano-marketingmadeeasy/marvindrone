@@ -1,0 +1,505 @@
+---
+import { CONTACT, whatsappUrl } from "@/lib/config/endpoints";
+
+const isEN = Astro.currentLocale === "en";
+
+const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
+
+const copy = {
+  heading:       isEN ? "Contact" : "Contatti",
+  intro:         isEN
+    ? "For information, write to us or call the contacts below. You can also submit the form or start a WhatsApp chat directly."
+    : "Per informazioni scrivici o chiamaci ai riferimenti qui sotto. Puoi anche inviarci una richiesta dal modulo oppure avviare direttamente la chat WhatsApp.",
+  whatsappTitle: isEN ? "Chat on WhatsApp"  : "Contattaci su WhatsApp",
+  whatsappSub:   isEN ? "Start a chat now"  : "Avvia una chat ora",
+  phone:         isEN ? "Phone" : "Telefono",
+  email:         isEN ? "Email" : "Email",
+  fname:         isEN ? "First name *"    : "Nome *",
+  lname:         isEN ? "Last name *"     : "Cognome *",
+  emailPh:       isEN ? "Email *"         : "Email *",
+  phonePh:       isEN ? "Phone number *"  : "Numero di telefono *",
+  messagePh:     isEN ? "Message... *"    : "Messaggio... *",
+  privacy:       isEN
+    ? "I have read and I accept the [Privacy Policy](/en/privacy-policy/)"
+    : "Ho letto e accetto l'[informativa sulla Privacy](/privacy-policy/)",
+  submit:        isEN ? "Send message" : "Invia messaggio",
+  sending:       isEN ? "Sending…"     : "Invio in corso…",
+  success:       isEN
+    ? "Request sent successfully. We will contact you shortly."
+    : "Richiesta inviata correttamente. Ti ricontatteremo al più presto.",
+  errorFallback: isEN
+    ? "Submission failed. Please email us at"
+    : "Invio non riuscito. Scrivici a",
+  antispam:      isEN
+    ? "Complete the anti-spam verification and try again."
+    : "Completa la verifica antispam e riprova.",
+  connError:     isEN
+    ? "Connection error. Please try again."
+    : "Errore di connessione. Riprova.",
+  // validation
+  vFname:   isEN ? "First name required" : "Nome obbligatorio",
+  vFname2:  isEN ? "Name: minimum 2 characters" : "Nome: minimo 2 caratteri",
+  vFname50: isEN ? "Name: maximum 50 characters" : "Nome: massimo 50 caratteri",
+  vFnameC:  isEN ? "Name: invalid characters" : "Nome: caratteri non validi",
+  vLname:   isEN ? "Last name required" : "Cognome obbligatorio",
+  vLname2:  isEN ? "Surname: minimum 2 characters" : "Cognome: minimo 2 caratteri",
+  vLname50: isEN ? "Surname: maximum 50 characters" : "Cognome: massimo 50 caratteri",
+  vLnameC:  isEN ? "Surname: invalid characters" : "Cognome: caratteri non validi",
+  vEmail:   isEN ? "Email is required" : "Email obbligatoria",
+  vEmailI:  isEN ? "Email is invalid" : "Email non valida",
+  vPhone:   isEN ? "Phone is required" : "Telefono obbligatorio",
+  vPhoneL:  isEN ? "Phone: invalid length" : "Telefono: lunghezza non valida",
+  vPhoneC:  isEN ? "Phone: only digits, spaces, dashes and optional leading +" : "Telefono: solo numeri/spazi/trattini e + all'inizio",
+  vMsg:     isEN ? "Message is required" : "Messaggio obbligatorio",
+  vMsg10:   isEN ? "Message: minimum 10 characters" : "Messaggio: minimo 10 caratteri",
+  vMsg1000: isEN ? "Message: maximum 1000 characters" : "Messaggio: massimo 1000 caratteri",
+  vMsgC:    isEN ? "Message: forbidden characters" : "Messaggio: caratteri non consentiti",
+  vPrivacy: isEN ? "Please accept the Privacy Policy" : "Devi accettare la Privacy Policy",
+};
+
+const lang = isEN ? "en" : "it";
+---
+
+<section class="contact-section">
+  <div class="container">
+    <div class="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:items-start">
+
+      <!-- Left: contact info -->
+      <div
+        class="space-y-6 pt-2 max-lg:text-center lg:self-center"
+        data-aos="fade-right-sm"
+        data-aos-delay="100"
+        data-aos-duration="900">
+
+        <h1 class="font-primary text-h2-sm md:text-h2 font-extrabold capitalize">
+          {copy.heading}
+        </h1>
+
+        <p class="text-lg leading-relaxed">
+          {copy.intro}
+        </p>
+
+        <!-- Contact details: WhatsApp + Phone -->
+        <div class="mt-2 grid gap-6 max-lg:justify-items-center sm:grid-cols-2">
+
+          <!-- WhatsApp -->
+          <div class="space-y-2 max-lg:text-center">
+            <span class="max-lg:mx-auto inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
+              </svg>
+            </span>
+            <div>
+              <p class="font-semibold">{copy.whatsappTitle}</p>
+              <a class="block underline underline-offset-4 transition hover:opacity-70" href={whatsappUrl(lang)} target="_blank" rel="noopener noreferrer">
+                {copy.whatsappSub}
+              </a>
+            </div>
+          </div>
+
+          <!-- Phone -->
+          <div class="space-y-2 max-lg:text-center">
+            <span class="max-lg:mx-auto inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.62 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.18 6.18l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+              </svg>
+            </span>
+            <div>
+              <p class="font-semibold">{copy.phone}</p>
+              <a class="block underline underline-offset-4 transition hover:opacity-70" href={`tel:${CONTACT.phone.replace(/\s/g, "")}`}>
+                {CONTACT.phoneDisplay}
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Right: contact form -->
+      <div
+        class="lg:self-center"
+        data-aos="fade-left-sm"
+        data-aos-delay="120"
+        data-aos-duration="900">
+
+        <form
+          id="contact-form"
+          novalidate
+          method="post"
+          class="grid grid-cols-2 gap-x-4 gap-y-5 rounded-xl bg-[#f8f8f8] p-6 md:p-8 lg:p-10">
+
+          <!-- First name -->
+          <div class="col-span-1 max-sm:col-span-2 flex flex-col">
+            <input
+              type="text"
+              name="Nome"
+              placeholder={copy.fname}
+              required
+              class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-gray-400 focus:ring-2 focus:ring-gray-200"
+            />
+          </div>
+
+          <!-- Last name -->
+          <div class="col-span-1 max-sm:col-span-2 flex flex-col">
+            <input
+              type="text"
+              name="Cognome"
+              placeholder={copy.lname}
+              required
+              class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-gray-400 focus:ring-2 focus:ring-gray-200"
+            />
+          </div>
+
+          <!-- Email -->
+          <div class="col-span-2 flex flex-col">
+            <input
+              type="email"
+              name="Email"
+              placeholder={copy.emailPh}
+              required
+              class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-gray-400 focus:ring-2 focus:ring-gray-200"
+            />
+          </div>
+
+          <!-- Phone -->
+          <div class="col-span-2 flex flex-col">
+            <input
+              type="tel"
+              name="Telefono"
+              placeholder={copy.phonePh}
+              required
+              class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-gray-400 focus:ring-2 focus:ring-gray-200"
+            />
+          </div>
+
+          <!-- Message -->
+          <div class="col-span-2 flex flex-col">
+            <textarea
+              name="Messaggio"
+              rows="4"
+              placeholder={copy.messagePh}
+              required
+              class="w-full resize-none rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-gray-400 focus:ring-2 focus:ring-gray-200"
+            ></textarea>
+          </div>
+
+          <!-- Privacy -->
+          <div class="col-span-2 flex items-start gap-3">
+            <input
+              type="checkbox"
+              name="Privacy"
+              id="privacy-contact"
+              value="Agreed"
+              required
+              class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded border-gray-300 accent-black"
+            />
+            <label for="privacy-contact" class="text-sm leading-relaxed text-gray-600">
+              {isEN
+                ? <Fragment>I have read and I accept the <a href="/en/privacy-policy/" class="underline underline-offset-2 hover:opacity-70">Privacy Policy</a></Fragment>
+                : <Fragment>Ho letto e accetto l'<a href="/privacy-policy/" class="underline underline-offset-2 hover:opacity-70">informativa sulla Privacy</a></Fragment>
+              }
+            </label>
+          </div>
+
+          <!-- Submit -->
+          <div class="col-span-2 mt-2 pb-1">
+            <button
+              type="submit"
+              class="inline-flex items-center justify-center rounded-full bg-black px-7 py-3.5 text-sm font-medium leading-normal text-white transition-opacity hover:opacity-75 disabled:cursor-not-allowed disabled:opacity-50">
+              {copy.submit}
+            </button>
+          </div>
+
+          <!-- Success message -->
+          <div class="col-span-2 hidden message success">
+            <div class="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800 prose-styles">
+              {copy.success}
+            </div>
+          </div>
+
+          <!-- Error message -->
+          <div class="col-span-2 hidden message error">
+            <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 prose-styles">
+              {copy.errorFallback} <a href={`mailto:${CONTACT.email}`} class="underline">{CONTACT.email}</a>.
+            </div>
+          </div>
+
+        </form>
+
+        <!-- Turnstile widget (rendered by JS if site key is present) -->
+        <div
+          id="turnstile-widget"
+          class="mt-3"
+          data-site-key={TURNSTILE_SITE_KEY}>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{TURNSTILE_SITE_KEY ? (
+  <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+) : null}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@25.12.1/build/css/intlTelInput.css" />
+<script is:inline src="https://cdn.jsdelivr.net/npm/intl-tel-input@25.12.1/build/js/intlTelInput.min.js" defer></script>
+
+<script define:vars={{ copy, lang }}>
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("contact-form");
+    if (!form) return;
+
+    // --- Elements ---
+    const successMsg = form.querySelector(".message.success");
+    const errorMsg   = form.querySelector(".message.error");
+    const submitBtn  = form.querySelector('button[type="submit"]');
+
+    const showSuccess = (text) => {
+      if (successMsg) {
+        successMsg.querySelector(".prose-styles").textContent = text;
+        successMsg.classList.remove("hidden");
+      }
+      if (errorMsg) errorMsg.classList.add("hidden");
+      if (submitBtn) submitBtn.removeAttribute("disabled");
+    };
+
+    const showError = (text) => {
+      if (errorMsg) {
+        errorMsg.querySelector(".prose-styles").textContent = text;
+        errorMsg.classList.remove("hidden");
+      }
+      if (successMsg) successMsg.classList.add("hidden");
+      if (submitBtn) submitBtn.removeAttribute("disabled");
+    };
+
+    const setLoading = () => {
+      if (submitBtn) submitBtn.setAttribute("disabled", "true");
+      if (successMsg) successMsg.classList.add("hidden");
+      if (errorMsg)   errorMsg.classList.add("hidden");
+    };
+
+    // --- Honeypot ---
+    const honeypot = document.createElement("input");
+    honeypot.type = "text";
+    honeypot.name = "website";
+    honeypot.autocomplete = "off";
+    honeypot.tabIndex = -1;
+    honeypot.setAttribute("aria-hidden", "true");
+    Object.assign(honeypot.style, {
+      position: "absolute", left: "-10000px", top: "auto",
+      width: "1px", height: "1px", opacity: "0",
+    });
+    form.appendChild(honeypot);
+
+    // --- Helpers ---
+    const getField = (name) => form.querySelector(`[name="${CSS.escape(name)}"]`);
+    const val = (name) => String(getField(name)?.value ?? "").trim();
+    const isName  = (s) => /^[a-zA-ZÀ-ÿ\s'-]+$/.test(s);
+    const isEmail = (s) => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(s);
+    const isPhone = (s) => /^\+?[0-9\s-]+$/.test(s);
+    const hasBad  = (s) => /[<>{}[\]`\\]/.test(s);
+
+    // --- intl-tel-input ---
+    const phoneInput = getField("Telefono");
+    let iti = null;
+
+    const waitFor = (check, timeout = 8000) =>
+      new Promise((res, rej) => {
+        const start = Date.now();
+        const tick = () => {
+          if (check()) return res();
+          if (Date.now() - start > timeout) return rej(new Error("timeout"));
+          requestAnimationFrame(tick);
+        };
+        tick();
+      });
+
+    const initPhone = async () => {
+      if (!phoneInput) return;
+      try {
+        await waitFor(() => typeof window.intlTelInput === "function");
+        iti = window.intlTelInput(phoneInput, {
+          initialCountry: "it",
+          preferredCountries: ["it", "fr", "de", "es", "gb", "us"],
+          separateDialCode: true,
+        });
+        // prevent lenis scroll lock in phone dropdown
+        const patch = () =>
+          document.querySelectorAll(".iti__dropdown-content, .iti__country-list")
+            .forEach((el) => el.setAttribute("data-lenis-prevent", ""));
+        requestAnimationFrame(patch);
+        phoneInput.closest(".iti")?.querySelector(".iti__selected-country")
+          ?.addEventListener("click", () => requestAnimationFrame(patch));
+        phoneInput.addEventListener("focus", () => requestAnimationFrame(patch));
+      } catch (e) {
+        console.warn("intl-tel-input init error:", e);
+      }
+    };
+
+    const composePhone = (raw) => {
+      raw = String(raw ?? "").trim();
+      if (!raw) return "";
+      if (raw.startsWith("+")) return "+" + raw.replace(/[^\d]/g, "");
+      const digits = raw.replace(/[^\d]/g, "");
+      if (!digits) return "";
+      const dial = iti?.getSelectedCountryData?.()?.dialCode;
+      return dial ? `+${dial}${digits}` : digits;
+    };
+
+    // --- Validation ---
+    const validate = (p) => {
+      if (!p.firstName)                               return copy.vFname;
+      if (p.firstName.length < 2)                     return copy.vFname2;
+      if (p.firstName.length > 50)                    return copy.vFname50;
+      if (!isName(p.firstName))                       return copy.vFnameC;
+      if (!p.lastName)                                return copy.vLname;
+      if (p.lastName.length < 2)                      return copy.vLname2;
+      if (p.lastName.length > 50)                     return copy.vLname50;
+      if (!isName(p.lastName))                        return copy.vLnameC;
+      if (!p.email)                                   return copy.vEmail;
+      if (!isEmail(p.email))                          return copy.vEmailI;
+      if (!p.phone)                                   return copy.vPhone;
+      if (p.phone.length < 8 || p.phone.length > 20) return copy.vPhoneL;
+      if (!isPhone(p.phone))                          return copy.vPhoneC;
+      if (!p.message)                                 return copy.vMsg;
+      if (p.message.length < 10)                      return copy.vMsg10;
+      if (p.message.length > 1000)                    return copy.vMsg1000;
+      if (hasBad(p.message))                          return copy.vMsgC;
+      if (!p.privacy)                                 return copy.vPrivacy;
+      return null;
+    };
+
+    // --- Turnstile ---
+    const siteKey = document.getElementById("turnstile-widget")?.dataset.siteKey ?? "";
+    let widgetId = null;
+    let lastToken = "";
+
+    const ensureTurnstile = async () => {
+      if (!siteKey) throw new Error("no-sitekey");
+      if (widgetId) return widgetId;
+      await waitFor(() => typeof window.turnstile !== "undefined");
+      widgetId = window.turnstile.render("#turnstile-widget", {
+        sitekey: siteKey,
+        callback: (t) => { lastToken = t; },
+        "error-callback":   () => { lastToken = ""; },
+        "expired-callback": () => { lastToken = ""; },
+      });
+      return widgetId;
+    };
+
+    const resetTurnstile = () => {
+      lastToken = "";
+      if (widgetId != null && window.turnstile) window.turnstile.reset(widgetId);
+    };
+
+    const getToken = async () => {
+      const id = await ensureTurnstile();
+      const t = lastToken || window.turnstile.getResponse(id);
+      if (!t) throw new Error("Turnstile token missing");
+      return t;
+    };
+
+    // Init
+    if (siteKey) {
+      ensureTurnstile().catch((e) => console.warn("Turnstile init:", e));
+      // Move widget before submit button
+      const widget = document.getElementById("turnstile-widget");
+      const submitRow = submitBtn?.closest(".col-span-2");
+      if (widget && submitRow?.parentElement) {
+        submitRow.parentElement.insertBefore(widget, submitRow);
+        widget.classList.add("mb-4");
+      }
+    }
+
+    initPhone();
+
+    // --- Submit ---
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const firstName = val("Nome");
+      const lastName  = val("Cognome");
+      const email     = val("Email");
+      const phone     = composePhone(getField("Telefono")?.value);
+      const message   = val("Messaggio");
+      const privacy   = !!(getField("Privacy")?.checked);
+
+      const payload = { lang, firstName, lastName, email, phone, message, privacy,
+                        honeypot: String(honeypot.value ?? "").trim() };
+
+      const err = validate(payload);
+      if (err) { showError(err); return; }
+
+      setLoading();
+
+      try {
+        let turnstileToken;
+        if (siteKey) {
+          turnstileToken = await getToken();
+        }
+
+        const res = await fetch("/api/contact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...payload, turnstileToken }),
+        });
+
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok) {
+          if (siteKey) resetTurnstile();
+          showError(data?.error ?? copy.connError);
+          return;
+        }
+
+        form.reset();
+        honeypot.value = "";
+        if (siteKey) resetTurnstile();
+        showSuccess(copy.success);
+
+      } catch (err) {
+        console.error("Contact submit:", err);
+        const msg = err instanceof Error && err.message === "Turnstile token missing"
+          ? copy.antispam
+          : copy.connError;
+        showError(msg);
+      }
+    });
+  });
+</script>
+
+<style is:global>
+  #contact-form .iti { width: 100%; }
+
+  #contact-form .iti__dropdown-content {
+    margin-top: 0.4rem;
+    border-radius: 0.75rem;
+    border: 1px solid #d9d9df;
+    box-shadow: 0 16px 40px rgba(17,24,39,.12);
+    background: #fff;
+    overflow: hidden;
+    z-index: 40;
+  }
+
+  #contact-form .iti__country-list {
+    max-height: 20rem;
+    margin-top: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #contact-form .iti__search-input {
+    border-radius: 0.6rem;
+    border: 1px solid #d9d9df;
+    padding: 0.6rem 0.75rem 0.6rem 2rem;
+  }
+
+  #contact-form .iti__search-input::placeholder { opacity:1; color:#6b7280; }
+  #contact-form .iti__search-input-wrap { position: relative; }
+  #contact-form .iti__search-input-wrap .iti__search-icon { left: 0.7rem; }
+  #contact-form .iti__selected-country { border-radius: 0.65rem 0 0 0.65rem; }
+</style>

@@ -1,0 +1,36 @@
+{
+  "kind": "collectionType",
+  "collectionName": "categorie_news",
+  "info": {
+    "singularName": "categoria-news",
+    "pluralName": "categorie-news",
+    "displayName": "Categoria news",
+    "description": "Categorie per l'archivio news"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "nome": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "nome",
+      "required": true
+    },
+    "ordine": {
+      "type": "integer",
+      "default": 0
+    },
+    "news": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::news.news",
+      "mappedBy": "categoria_news"
+    }
+  }
+}

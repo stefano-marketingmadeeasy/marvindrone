@@ -8,6 +8,7 @@ import CustomButton from "../CustomButton.astro";
 import type { TypeOf } from "astro:schema";
 import type { sharedButtonTag } from "@/content.config";
 import { getServicesWhatsappUrl } from "@/lib/utils/whatsapp";
+import logoMarvinDrone from "@/assets/images/logos/logo_marvindrone.com.svg";
 
 type SliderItem = {
   title: string;
@@ -59,9 +60,9 @@ const heroPrimaryButton =
 const primaryScrollSteps = Math.max(actualContent?.scrollSteps ?? 5, 1);
 const secondaryScrollSteps = Math.max(actualContent?.secondaryScrollSteps ?? 3, 1);
 const tertiaryScrollSteps = Math.max(actualContent?.tertiaryScrollSteps ?? 3, 1);
-const heroIntroSteps = 2;
-const heroGapSteps = 25;
-const heroSecondaryGapSteps = 25;
+const heroIntroSteps = 1;
+const heroGapSteps = 12;
+const heroSecondaryGapSteps = 12;
 const heroOutroSteps = 2;
 const mobileBreakpoint = 767;
 const heroTotalSteps =
@@ -85,7 +86,7 @@ const heroTotalSteps =
     "[--hero-arrow-opacity:1]",
   ]}
   style={{
-    "--hero-scroll-step-size": "8svh",
+    "--hero-scroll-step-size": "6svh",
     "--hero-scroll-total-steps": String(heroTotalSteps),
   }}
   data-home-banner>
@@ -113,24 +114,29 @@ const heroTotalSteps =
         {
           slide && (
             <div
-              class="flex max-w-3xl flex-col items-center justify-center text-center text-white"
+              class="flex max-w-5xl flex-col items-center justify-center text-center text-white"
               style={{
                 "--hero-enter-delay": slide.entranceDelay || "150ms",
                 "--hero-enter-duration": slide.entranceDuration || "1000ms",
               }}>
               <div
-                class="opacity-[var(--hero-primary-opacity)] [transform:translate3d(0,var(--hero-primary-y),0)_scale(var(--hero-primary-scale))] will-change-[transform,opacity] motion-reduce:[transform:none]"
+                class="flex flex-col items-center gap-6 opacity-[var(--hero-primary-opacity)] [transform:translate3d(0,var(--hero-primary-y),0)_scale(var(--hero-primary-scale))] will-change-[transform,opacity] motion-reduce:[transform:none]"
                 data-hero-primary-content>
+                <img
+                  src={logoMarvinDrone.src}
+                  alt="Marvin Drone"
+                  class="mx-auto -mb-6 h-auto w-56 brightness-0 invert sm:w-72 lg:-mb-7 lg:w-80"
+                />
                 {slide.title && (
                   <h1
-                    class="mb-6 !text-4xl/tight text-inherit sm:!text-5xl/tight lg:!text-7xl"
+                    class="m-0 text-2xl/tight! text-inherit sm:text-3xl/tight! lg:text-4xl/tight!"
                     set:html={markdownify(slide.title)}
                   />
                 )}
                 {slide.description && (
                   <div class="overflow-hidden">
                     <p
-                      class="mx-auto max-w-2xl text-lg opacity-90 sm:text-xl md:text-2xl"
+                      class="m-0 mx-auto max-w-2xl text-lg opacity-90 sm:text-xl md:text-2xl"
                       set:html={markdownify(slide.description)}
                     />
                   </div>
@@ -180,27 +186,6 @@ const heroTotalSteps =
       </div>
     </div>
 
-    <button
-      type="button"
-      aria-label="Scorri alla sezione introduttiva"
-      data-lenis-scroll-target="#home-sub-hero"
-      data-lenis-duration="1.35"
-      data-lenis-ease-power="4"
-      data-lenis-reveal-hero-first="true"
-      class="absolute bottom-8 left-1/2 z-30 inline-flex h-14 w-14 -translate-x-1/2 items-center justify-center rounded-full border border-white/35 bg-white/10 text-white opacity-[var(--hero-arrow-opacity)] backdrop-blur-sm transition duration-300 will-change-[opacity] hover:bg-white hover:text-slate-950 md:bottom-10">
-      <svg
-        viewBox="0 0 24 24"
-        class="h-5 w-5"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="1.8"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        aria-hidden="true">
-        <path d="M12 5v14"></path>
-        <path d="m6 13 6 6 6-6"></path>
-      </svg>
-    </button>
   </div>
 </section>
 

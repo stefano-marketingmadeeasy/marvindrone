@@ -1,0 +1,19 @@
+{
+  "titolo": "Nuovo set operativo per riprese aeree in Sicilia",
+  "slug": "nuovo-set-operativo-riprese-aeree-sicilia",
+  "estratto": "Un aggiornamento sul nuovo assetto operativo di Marvin Drone per produzioni cinema, serie TV e ADV.",
+  "contenuto": "Qui puoi inserire il contenuto completo della news, con testo formattato, paragrafi, elenchi e link.",
+  "dataPubblicazione": "2026-04-02T09:00:00.000Z",
+  "inEvidenza": true,
+  "categoria_news": {
+    "connect": [
+      {
+        "slug": "backstage"
+      }
+    ]
+  },
+  "seo": {
+    "metaTitle": "Nuovo set operativo per riprese aeree in Sicilia | News",
+    "metaDescription": "Aggiornamento Marvin Drone sul nuovo assetto operativo per riprese aeree in Sicilia."
+  }
+}

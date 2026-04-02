@@ -74,6 +74,46 @@
       "singleFallbackDescription": "Production page"
     }
   },
+  "news": {
+    "archive": {
+      "all": "All",
+      "emptyLabel": "No content available",
+      "emptyTitle": "The news archive is empty",
+      "emptyDescription": "Connect Strapi and publish at least one news item to populate this page.",
+      "emptyFilterLabel": "No results",
+      "emptyFilterTitle": "There are no news items for this filter",
+      "emptyFilterDescription": "Try selecting another category or return to the full archive."
+    },
+    "card": {
+      "open": "Open story",
+      "noImage": "No image"
+    },
+    "page": {
+      "title": "News",
+      "description": "Updates, productions, backstage notes and editorial stories from Marvin Drone.",
+      "featuredLabel": "Featured story",
+      "archiveTitle": "News archive"
+    },
+    "detail": {
+      "back": "Back to News",
+      "publishedOn": "Published on",
+      "category": "Category",
+      "article": "Article",
+      "gallery": "Gallery",
+      "related": "Related news",
+      "relatedEmpty": "There are no other stories in this category.",
+      "ctaTitle": "Do you need to tell a project, a production update or an announcement?",
+      "ctaLabel": "Contact us"
+    },
+    "meta": {
+      "indexTitle": "News",
+      "indexDescription": "Bilingual news archive powered by Strapi, with category filters and dedicated detail pages.",
+      "indexMetaTitle": "News | marvindrone.com",
+      "indexMetaDescription": "Explore the marvindrone.com News section, powered by Strapi and organised as a filterable editorial archive.",
+      "singleSuffix": "News",
+      "singleFallbackDescription": "News article"
+    }
+  },
   "rentals": {
     "hero": {
       "title": "Professional film equipment rental",

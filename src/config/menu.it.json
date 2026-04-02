@@ -14,6 +14,16 @@
       "enable": true,
       "name": "Noleggio",
       "url": "/noleggio/"
+    },
+    {
+      "enable": true,
+      "name": "News",
+      "url": "/news/"
+    },
+    {
+      "enable": true,
+      "name": "Contatti",
+      "url": "/contatti/"
     }
   ],
   "footerMenu": [
@@ -36,6 +46,11 @@
     },
     {
       "enable": true,
+      "name": "News",
+      "url": "/news/"
+    },
+    {
+      "enable": true,
       "name": "Noleggio",
       "url": "/noleggio/"
     }
@@ -45,6 +60,11 @@
       "enable": true,
       "name": "Produzioni",
       "url": "/produzioni/"
+    },
+    {
+      "enable": true,
+      "name": "News",
+      "url": "/news/"
     },
     {
       "enable": true,

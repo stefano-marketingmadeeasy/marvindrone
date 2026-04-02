@@ -1,0 +1,101 @@
+---
+import { ArrowUpRight } from "@lucide/astro";
+import { getNewsPath } from "@/lib/strapi/news";
+import { useTranslations } from "@/lib/utils/i18nUtils";
+import { markdownify } from "@/lib/utils/textConverter";
+import type { NewsArticle } from "@/types/news";
+import StrapiImage from "@/components/productions/StrapiImage.astro";
+
+interface Props {
+  article: NewsArticle;
+  variant?: "default" | "related";
+}
+
+const { article, variant = "default" } = Astro.props;
+const currentLocale = Astro.currentLocale || "it";
+const href = getNewsPath(article, currentLocale);
+const t = await useTranslations(currentLocale);
+const coverImage = article.heroImage || article.gallery[0];
+const formatter = new Intl.DateTimeFormat(
+  currentLocale === "en" ? "en-US" : "it-IT",
+  {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  },
+);
+const publishedDate = article.publishedAt
+  ? formatter.format(new Date(article.publishedAt))
+  : "";
+const titleMaxWidth = variant === "related" ? "max-w-[24ch]" : "max-w-[22ch]";
+---
+
+<article class="group h-full">
+  <a
+    href={href}
+    class="flex h-full flex-col overflow-hidden rounded-[2rem] border border-black/10 bg-white shadow-[0_18px_48px_rgba(15,23,42,0.08)] transition duration-500 hover:-translate-y-1 hover:shadow-[0_24px_56px_rgba(15,23,42,0.14)]">
+    <div class="relative aspect-[1.28] overflow-hidden bg-stone-100">
+      {
+        coverImage ? (
+          <StrapiImage
+            url={coverImage.url}
+            alt={coverImage.alt || article.title}
+            width={coverImage.width}
+            height={coverImage.height}
+            loading="lazy"
+            sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
+            class="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+          />
+        ) : (
+          <div class="flex h-full items-center justify-center bg-stone-200 px-8 text-center text-sm tracking-[0.24em] text-stone-500 uppercase">
+            {t("news.card.noImage")}
+          </div>
+        )
+      }
+      <div
+        class="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0)_35%,rgba(0,0,0,0.48)_100%)]">
+      </div>
+      <div
+        class="absolute inset-x-0 bottom-0 flex flex-wrap items-center gap-2 p-5">
+        <span
+          class="rounded-full border border-white/20 bg-black/35 px-3 py-1 text-[11px] font-medium tracking-[0.22em] text-white uppercase backdrop-blur">
+          {article.category.name}
+        </span>
+        {
+          publishedDate && (
+            <span class="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] font-medium tracking-[0.18em] text-white uppercase backdrop-blur">
+              {publishedDate}
+            </span>
+          )
+        }
+      </div>
+    </div>
+
+    <div class="flex flex-1 flex-col p-6 md:p-7">
+      <h3
+        class:list={[
+          "text-stone-950",
+          titleMaxWidth,
+          variant === "related"
+            ? "text-[1.3rem] leading-[1.1] font-semibold"
+            : "text-[clamp(1.35rem,1.8vw,2rem)] leading-[1.06] font-semibold",
+        ]}
+        set:html={markdownify(article.title)}
+      />
+
+      {
+        article.excerpt && (
+          <p class="mt-4 line-clamp-4 text-sm leading-7 text-stone-600 md:text-base">
+            {article.excerpt}
+          </p>
+        )
+      }
+
+      <div
+        class="mt-6 flex items-center gap-2 text-sm font-semibold tracking-[0.18em] text-stone-900 uppercase">
+        <span>{t("news.card.open")}</span>
+        <ArrowUpRight size={16} stroke-width={2.1} class="shrink-0" />
+      </div>
+    </div>
+  </a>
+</article>

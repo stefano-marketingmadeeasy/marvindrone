@@ -74,6 +74,46 @@
       "singleFallbackDescription": "Scheda produzione"
     }
   },
+  "news": {
+    "archive": {
+      "all": "Tutte",
+      "emptyLabel": "Nessun contenuto disponibile",
+      "emptyTitle": "L'archivio news e vuoto",
+      "emptyDescription": "Collega Strapi e pubblica almeno una news per popolare questa pagina.",
+      "emptyFilterLabel": "Nessun risultato",
+      "emptyFilterTitle": "Non ci sono news per questo filtro",
+      "emptyFilterDescription": "Prova a selezionare un'altra categoria oppure torna alla vista completa."
+    },
+    "card": {
+      "open": "Apri news",
+      "noImage": "Nessuna immagine"
+    },
+    "page": {
+      "title": "News",
+      "description": "Aggiornamenti, lavorazioni, backstage e notizie dal mondo Marvin Drone.",
+      "featuredLabel": "In primo piano",
+      "archiveTitle": "Archivio news"
+    },
+    "detail": {
+      "back": "Torna a News",
+      "publishedOn": "Pubblicata il",
+      "category": "Categoria",
+      "article": "Articolo",
+      "gallery": "Gallery",
+      "related": "News correlate",
+      "relatedEmpty": "Non ci sono altre news in questa categoria.",
+      "ctaTitle": "Hai un progetto, una lavorazione o un annuncio da raccontare?",
+      "ctaLabel": "Contattaci"
+    },
+    "meta": {
+      "indexTitle": "News",
+      "indexDescription": "Archivio news bilingue alimentato da Strapi, con filtri per categoria e pagine dettaglio dedicate.",
+      "indexMetaTitle": "News | marvindrone.com",
+      "indexMetaDescription": "Esplora la sezione News di marvindrone.com, aggiornata da Strapi e organizzata in un archivio editoriale filtrabile.",
+      "singleSuffix": "News",
+      "singleFallbackDescription": "Articolo news"
+    }
+  },
   "rentals": {
     "hero": {
       "title": "Noleggio attrezzatura cinematografica professionale",

@@ -17,8 +17,9 @@ const currentLocale = Astro.currentLocale || "it";
 const t = await useTranslations(currentLocale);
 const heroImage =
   production.heroImage || production.poster || production.gallery[0];
-const productionsIndexUrl = `${getLocaleUrlCTM("/produzioni/", currentLocale)}#productions-archive`;
-const relatedFilterUrl = `${getLocaleUrlCTM("/produzioni/", currentLocale)}?filter=${production.category.slug}#productions-archive`;
+const productionsBasePath = currentLocale === "en" ? "/productions/" : "/produzioni/";
+const productionsIndexUrl = `${getLocaleUrlCTM(productionsBasePath, currentLocale)}#productions-archive`;
+const relatedFilterUrl = `${getLocaleUrlCTM(productionsBasePath, currentLocale)}?filter=${production.category.slug}#productions-archive`;
 const contactUrl = getLocaleUrlCTM("/contact/", currentLocale);
 
 const normalizeFactLabel = (value: string) =>
