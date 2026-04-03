@@ -1,6 +1,7 @@
 export type DroneParkAsset = {
   url: string;
   alt: string;
+  caption?: string;
   width?: number;
   height?: number;
   mime?: string;

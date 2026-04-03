@@ -53,6 +53,21 @@ const localeUrls = getProductionLocaleUrls(production);
     production.excerpt ||
     production.synopsis ||
     t("productions.meta.singleFallbackDescription")}
+  keywords={production.seo.keywords}
+  robots={production.seo.metaRobots}
+  viewport={production.seo.metaViewport}
+  canonical={production.seo.canonicalUrl}
+  structuredData={production.seo.structuredData}
+  ogTitle={production.seo.openGraph?.title}
+  ogDescription={production.seo.openGraph?.description}
+  ogImage={production.seo.openGraph?.image?.url}
+  ogImageAlt={production.seo.openGraph?.image?.alt}
+  ogUrl={production.seo.openGraph?.url}
+  ogType={production.seo.openGraph?.type}
+  twitterTitle={production.seo.openGraph?.title}
+  twitterDescription={production.seo.openGraph?.description}
+  twitterImage={production.seo.openGraph?.image?.url}
+  twitterImageAlt={production.seo.openGraph?.image?.alt}
   localeUrls={localeUrls}>
   <ProductionSingle
     production={production}

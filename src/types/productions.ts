@@ -51,6 +51,18 @@ export type ProductionSeo = {
   altText?: string;
   caption?: string;
   image?: ProductionAsset;
+  keywords?: string[];
+  metaRobots?: string;
+  metaViewport?: string;
+  canonicalUrl?: string;
+  structuredData?: unknown;
+  openGraph?: {
+    title?: string;
+    description?: string;
+    image?: ProductionAsset;
+    url?: string;
+    type?: string;
+  };
 };
 
 export type Production = {

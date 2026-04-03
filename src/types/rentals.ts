@@ -9,6 +9,7 @@ export type RentalTaxonomy = {
 export type RentalAsset = {
   url: string;
   alt: string;
+  caption?: string;
   width?: number;
   height?: number;
   mime?: string;

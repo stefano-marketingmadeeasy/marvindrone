@@ -8,6 +8,8 @@ export const prerender = true;
 
 const articles = await getAllNews("en");
 const t = await useTranslations("en");
+const featuredImage =
+  articles[0]?.seo.image || articles[0]?.heroImage || articles[0]?.gallery?.[0];
 ---
 
 <Base
@@ -17,6 +19,9 @@ const t = await useTranslations("en");
   overlayHeader={true}
   metaTitle={t("news.meta.indexMetaTitle")}
   metaDescription={t("news.meta.indexMetaDescription")}
+  image={featuredImage?.url}
+  imageAlt={featuredImage?.alt}
+  imageCaption={featuredImage?.caption}
   localeUrls={{ it: "/news/", en: "/en/news/" }}>
   <NewsPage articles={articles} />
 </Base>

@@ -91,6 +91,7 @@ const paragraphHtml = note ? `${body} ${note}` : body;
   class:list={["bg-white", sectionSpacingClass]}
   data-blur-reading-section
   data-animated={animated ? "true" : "false"}
+  data-has-side-action={hasSideAction ? "true" : undefined}
   data-body-progress-offset={bodyProgressOffset}
   data-body-range-multiplier={bodyRangeMultiplier}
   data-title-progress-offset={titleProgressOffset}
@@ -431,6 +432,18 @@ const paragraphHtml = note ? `${body} ${note}` : body;
 
   [data-blur-reading-title] {
     will-change: opacity, filter, transform;
+  }
+
+  @media (max-width: 767px) {
+    [data-blur-reading-section][data-has-side-action="true"] [data-blur-reading-stage] {
+      align-items: center;
+      text-align: center;
+    }
+
+    [data-blur-reading-section][data-has-side-action="true"] [data-blur-reading-stage] > div {
+      margin-right: auto;
+      margin-left: auto;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {

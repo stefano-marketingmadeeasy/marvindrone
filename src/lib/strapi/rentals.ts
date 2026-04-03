@@ -66,6 +66,7 @@ const normalizeAsset = (value: unknown): RentalAsset | undefined => {
     alt:
       pickFirstString(record, ["alternativeText", "alt", "caption", "name"]) ||
       "Noleggio",
+    caption: pickFirstString(record, ["caption", "name"]) || undefined,
     width: typeof record.width === "number" ? record.width : undefined,
     height: typeof record.height === "number" ? record.height : undefined,
     mime: pickFirstString(record, ["mime"]),
@@ -105,7 +106,7 @@ const normalizeTaxonomy = (
     id: record.id,
     name,
     slug: pickFirstString(record, ["slug"]) || slugifyyy(name),
-    order: normalizeInteger(record.order || record.sortOrder),
+    order: normalizeInteger(record.order || record.sortOrder || record.ordine),
     locale: pickFirstString(record, ["locale"]) || undefined,
   };
 };
@@ -190,7 +191,7 @@ const normalizeRental = (
         raw.photo ||
         raw.foto,
     ),
-    order: normalizeInteger(raw.order || raw.sortOrder),
+    order: normalizeInteger(raw.order || raw.sortOrder || raw.ordine),
     locale: pickFirstString(raw, ["locale"]) || locale,
   };
 };

@@ -15,7 +15,7 @@ const { article, variant = "default" } = Astro.props;
 const currentLocale = Astro.currentLocale || "it";
 const href = getNewsPath(article, currentLocale);
 const t = await useTranslations(currentLocale);
-const coverImage = article.heroImage || article.gallery[0];
+const coverImage = article.seo.image || article.heroImage || article.gallery[0];
 const formatter = new Intl.DateTimeFormat(
   currentLocale === "en" ? "en-US" : "it-IT",
   {

@@ -91,6 +91,58 @@ const formatDateYear = (value?: string) => {
   return Number.isNaN(date.getTime()) ? "" : String(date.getFullYear());
 };
 
+const normalizeKeywordList = (value: unknown) => {
+  if (!value) return [] as string[];
+
+  if (typeof value === "string") {
+    return value
+      .split(/[\n,;]+/)
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+
+  if (!Array.isArray(value)) return [] as string[];
+
+  return value
+    .flatMap((item) =>
+      typeof item === "string"
+        ? [item.trim()]
+        : [
+            pickFirstString(unwrapStrapiEntity<Record<string, any>>(item), [
+              "name",
+              "nome",
+              "label",
+              "title",
+              "titolo",
+              "value",
+              "valore",
+            ]),
+          ],
+    )
+    .filter(Boolean);
+};
+
+const parseStructuredData = (value: unknown) => {
+  if (!value) return undefined;
+
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (!trimmed || trimmed === "null") return undefined;
+
+    try {
+      return JSON.parse(trimmed);
+    } catch {
+      return undefined;
+    }
+  }
+
+  if (typeof value === "object") {
+    return value;
+  }
+
+  return undefined;
+};
+
 const normalizeTextList = (value: unknown): string[] => {
   if (!value) return [];
 
@@ -126,6 +178,38 @@ const normalizeTextList = (value: unknown): string[] => {
     return normalizeTextList(record.values || record.list || record.items);
   });
 };
+
+const productionFactLabels = {
+  it: {
+    year: "Anno",
+    duration: "Durata",
+    status: "Stato",
+    genre: "Genere",
+    location: "Location",
+    director: "Regista",
+    directorOfPhotography: "Direttore della fotografia",
+    productionCompany: "Casa di produzione",
+    shootingTypes: "Tipologia riprese",
+    equipmentUsed: "Attrezzatura utilizzata",
+    distribution: "Distribuzione",
+  },
+  en: {
+    year: "Year",
+    duration: "Duration",
+    status: "Status",
+    genre: "Genre",
+    location: "Location",
+    director: "Director",
+    directorOfPhotography: "Director of photography",
+    productionCompany: "Production company",
+    shootingTypes: "Shooting type",
+    equipmentUsed: "Equipment used",
+    distribution: "Distribution",
+  },
+} as const;
+
+const getProductionFactLabels = (locale?: string) =>
+  locale === "en" ? productionFactLabels.en : productionFactLabels.it;
 
 const normalizeAsset = (value: unknown): ProductionAsset | undefined => {
   const record = unwrapStrapiEntity<Record<string, any>>(value);
@@ -222,7 +306,7 @@ const normalizeProductionCompany = (
     name,
     slug: pickFirstString(record, ["slug"]) || slugifyyy(name),
     logo: normalizeAsset(record.logo),
-    order: normalizeInteger(record.order || record.sortOrder),
+    order: normalizeInteger(record.order || record.sortOrder || record.ordine),
     locale: pickFirstString(record, ["locale"]) || undefined,
   };
 };
@@ -245,7 +329,8 @@ const normalizeProductionLocalization = (
 };
 
 
-const normalizeFacts = (raw: Record<string, any>) => {
+const normalizeFacts = (raw: Record<string, any>, locale = "it") => {
+  const labels = getProductionFactLabels(locale);
   const customFacts = pickFirstArray(raw, [
     "facts",
     "informazioni",
@@ -311,35 +396,38 @@ const normalizeFacts = (raw: Record<string, any>) => {
     raw.equipmentUsed || raw.attrezzaturaUtilizzata,
   );
 
-  if (year) derivedFacts.push({ label: "Anno", value: year });
-  if (duration) derivedFacts.push({ label: "Durata", value: duration });
-  if (status) derivedFacts.push({ label: "Stato", value: status });
-  if (genre) derivedFacts.push({ label: "Genere", value: genre });
-  if (location) derivedFacts.push({ label: "Location", value: location });
-  if (director) derivedFacts.push({ label: "Regista", value: director });
+  if (year) derivedFacts.push({ label: labels.year, value: year });
+  if (duration) derivedFacts.push({ label: labels.duration, value: duration });
+  if (status) derivedFacts.push({ label: labels.status, value: status });
+  if (genre) derivedFacts.push({ label: labels.genre, value: genre });
+  if (location) derivedFacts.push({ label: labels.location, value: location });
+  if (director) derivedFacts.push({ label: labels.director, value: director });
   if (directorOfPhotography) {
     derivedFacts.push({
-      label: "Direttore della fotografia",
+      label: labels.directorOfPhotography,
       value: directorOfPhotography,
     });
   }
   if (productionCompany) {
-    derivedFacts.push({ label: "Casa di produzione", value: productionCompany });
+    derivedFacts.push({
+      label: labels.productionCompany,
+      value: productionCompany,
+    });
   }
   if (shootingTypes.length > 0) {
     derivedFacts.push({
-      label: "Tipologia riprese",
+      label: labels.shootingTypes,
       value: shootingTypes.join(", "),
     });
   }
   if (equipmentUsed.length > 0) {
     derivedFacts.push({
-      label: "Attrezzatura utilizzata",
+      label: labels.equipmentUsed,
       value: equipmentUsed.join(", "),
     });
   }
   if (broadcaster)
-    derivedFacts.push({ label: "Distribuzione", value: broadcaster });
+    derivedFacts.push({ label: labels.distribution, value: broadcaster });
 
   const merged = [...derivedFacts, ...customFacts];
   const seen = new Set<string>();
@@ -394,6 +482,7 @@ const normalizeProduction = (
 ): Production | undefined => {
   const raw = unwrapStrapiEntity<Record<string, any>>(entry);
   const title = pickFirstString(raw, ["title", "titolo", "name", "nome"]);
+  const locale = pickFirstString(raw, ["locale"]) || "it";
 
   if (!title) return undefined;
 
@@ -462,27 +551,65 @@ const normalizeProduction = (
       "descrizione",
     ]) ||
     undefined;
+  const seoMetaImage = normalizeAsset(
+    seoRecord.metaImage || seoRecord.meta_image || seoRecord.image,
+  );
+  const seoOpenGraphRecord = unwrapStrapiEntity<Record<string, any>>(
+    seoRecord.openGraph || seoRecord.open_graph,
+  );
+  const seoOpenGraphImage = normalizeAsset(
+    seoOpenGraphRecord["og:image"] ||
+      seoOpenGraphRecord.ogImage ||
+      seoOpenGraphRecord.image,
+  );
   const seoAltText =
     pickFirstString(raw, ["AltText", "altText"]) ||
     pickFirstString(seoRecord, ["altText", "alternativeText", "alt"]) ||
+    seoMetaImage?.alt ||
     heroImage?.alt ||
     undefined;
   const seoCaption =
     pickFirstString(raw, ["Caption", "caption"]) ||
     pickFirstString(seoRecord, ["caption"]) ||
+    seoMetaImage?.caption ||
     heroImage?.caption ||
     undefined;
-  const seoImage = heroImage
+  const seoImage = seoMetaImage
+    ? {
+        ...seoMetaImage,
+        alt: seoAltText || seoMetaImage.alt,
+        caption: seoCaption || seoMetaImage.caption,
+      }
+    : heroImage
     ? {
         ...heroImage,
         alt: seoAltText || heroImage.alt,
         caption: seoCaption || heroImage.caption,
       }
     : undefined;
+  const seoKeywords = normalizeKeywordList(seoRecord.keywords);
+  const seoMetaRobots =
+    pickFirstString(seoRecord, ["metaRobots", "robots"]) || undefined;
+  const seoMetaViewport =
+    pickFirstString(seoRecord, ["metaViewport", "viewport"]) || undefined;
+  const seoCanonicalUrl =
+    pickFirstString(seoRecord, ["canonicalURL", "canonicalUrl"]) || undefined;
+  const seoStructuredData = parseStructuredData(
+    seoRecord.structuredData || seoRecord.schema,
+  );
+  const seoOpenGraphTitle =
+    pickFirstString(seoOpenGraphRecord, ["og:title", "title"]) || undefined;
+  const seoOpenGraphDescription =
+    pickFirstString(seoOpenGraphRecord, ["og:description", "description"]) ||
+    undefined;
+  const seoOpenGraphUrl =
+    pickFirstString(seoOpenGraphRecord, ["og:url", "url"]) || undefined;
+  const seoOpenGraphType =
+    pickFirstString(seoOpenGraphRecord, ["og:type", "type"]) || undefined;
 
   return {
     id: raw.id || title,
-    locale: pickFirstString(raw, ["locale"]) || undefined,
+    locale,
     title,
     slug:
       pickFirstString(raw, ["slug"]) ||
@@ -539,7 +666,7 @@ const normalizeProduction = (
     cast: normalizeTextList(raw.cast || raw.casting || raw.interpreti),
     tags: normalizeTextList(raw.tags || raw.tag),
     awards: normalizeTextList(raw.awards || raw.riconoscimenti || raw.premi),
-    facts: normalizeFacts(raw),
+    facts: normalizeFacts(raw, locale),
     externalLinks: normalizeLinks(raw),
     trailerUrl:
       pickFirstString(raw, ["trailerUrl", "trailer", "videoUrl", "video"]) ||
@@ -553,6 +680,25 @@ const normalizeProduction = (
       altText: seoAltText,
       caption: seoCaption,
       image: seoImage,
+      keywords: seoKeywords,
+      metaRobots: seoMetaRobots,
+      metaViewport: seoMetaViewport,
+      canonicalUrl: seoCanonicalUrl,
+      structuredData: seoStructuredData,
+      openGraph:
+        seoOpenGraphTitle ||
+        seoOpenGraphDescription ||
+        seoOpenGraphImage ||
+        seoOpenGraphUrl ||
+        seoOpenGraphType
+          ? {
+              title: seoOpenGraphTitle,
+              description: seoOpenGraphDescription,
+              image: seoOpenGraphImage,
+              url: seoOpenGraphUrl,
+              type: seoOpenGraphType,
+            }
+          : undefined,
     },
   };
 };
@@ -594,6 +740,7 @@ export const getAllProductions = async (locale = "it") => {
       "populate[tipologia_produzione][populate]": "*",
       "populate[casaProduzione][populate]": "*",
       "populate[localizations][populate]": "*",
+      "populate[seo][populate]": "*",
       locale,
     },
   );

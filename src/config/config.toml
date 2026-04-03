@@ -1,8 +1,8 @@
 # Site Configuration
 [site]
   title            = "marvindrone.com" # Shared title for SEO and OpenGraph
-  description      = "Agenzia creativa e digitale realizzata con Astro e Tailwind CSS" # Shared description for SEO and OpenGraph
-  tagline          = "Agenzia creativa e digitale"
+  description      = "Riprese aeree cinematografiche con drone" # Shared description for SEO and OpenGraph
+  tagline          = "Riprese aeree cinematografiche con drone"
   taglineSeparator = "" # default is " - " 
   baseUrl          = "https://marvindrone.com" # Base URL for the site and used in OpenGraph meta tags.
   logo             = "/images/logo.svg" # Path to the site's logo
@@ -26,7 +26,7 @@
 # -----------------------------------------------------------------------------------------------------------------------------------
 [seo]
   author   = "marvindrone.com"
-  keywords = ["agenzia digitale", "astro", "tailwind"] # SEO keywords
+  keywords = ["riprese aeree", "drone", "produzioni"] # SEO keywords
   robots   = "index, follow" # Instructs search engines on how to crawl and index the pages.
 
   [seo.robotsTxt]

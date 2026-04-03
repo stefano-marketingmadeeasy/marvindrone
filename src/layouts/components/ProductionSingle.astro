@@ -16,7 +16,10 @@ const { production, relatedProductions = [] } = Astro.props;
 const currentLocale = Astro.currentLocale || "it";
 const t = await useTranslations(currentLocale);
 const heroImage =
-  production.heroImage || production.poster || production.gallery[0];
+  production.seo.image ||
+  production.heroImage ||
+  production.poster ||
+  production.gallery[0];
 const productionsBasePath = currentLocale === "en" ? "/productions/" : "/produzioni/";
 const productionsIndexUrl = `${getLocaleUrlCTM(productionsBasePath, currentLocale)}#productions-archive`;
 const relatedFilterUrl = `${getLocaleUrlCTM(productionsBasePath, currentLocale)}?filter=${production.category.slug}#productions-archive`;

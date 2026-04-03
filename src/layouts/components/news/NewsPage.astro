@@ -18,7 +18,10 @@ const featuredArticle = articles[0];
 const featuredHref = featuredArticle
   ? getNewsPath(featuredArticle, currentLocale)
   : "";
-const heroImage = featuredArticle?.heroImage || featuredArticle?.gallery?.[0];
+const heroImage =
+  featuredArticle?.seo.image ||
+  featuredArticle?.heroImage ||
+  featuredArticle?.gallery?.[0];
 const formatter = new Intl.DateTimeFormat(
   currentLocale === "en" ? "en-US" : "it-IT",
   {

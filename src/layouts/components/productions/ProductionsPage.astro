@@ -17,9 +17,13 @@ const { productions, content } = Astro.props;
 
 const heroProduction = productions.find(
   (production) =>
-    production.heroImage || production.poster || production.gallery[0],
+    production.seo.image ||
+    production.heroImage ||
+    production.poster ||
+    production.gallery[0],
 );
 const heroImage =
+  heroProduction?.seo.image ||
   heroProduction?.heroImage ||
   heroProduction?.poster ||
   heroProduction?.gallery?.[0];
@@ -38,7 +42,7 @@ const whatsappUrl = getWhatsappUrl(content.subhero.ctaMessage);
           heroImage ? (
             <StrapiImage
               url={heroImage.url}
-              alt={content.hero.imageAlt}
+              alt={heroImage.alt || content.hero.imageAlt}
               width={heroImage.width}
               height={heroImage.height}
               loading="eager"

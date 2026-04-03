@@ -44,6 +44,21 @@ const localeUrls = getNewsLocaleUrls(article);
   metaDescription={article.seo.metaDescription ||
     article.excerpt ||
     t("news.meta.singleFallbackDescription")}
+  keywords={article.seo.keywords}
+  robots={article.seo.metaRobots}
+  viewport={article.seo.metaViewport}
+  canonical={article.seo.canonicalUrl}
+  structuredData={article.seo.structuredData}
+  ogTitle={article.seo.openGraph?.title}
+  ogDescription={article.seo.openGraph?.description}
+  ogImage={article.seo.openGraph?.image?.url}
+  ogImageAlt={article.seo.openGraph?.image?.alt}
+  ogUrl={article.seo.openGraph?.url}
+  ogType={article.seo.openGraph?.type}
+  twitterTitle={article.seo.openGraph?.title}
+  twitterDescription={article.seo.openGraph?.description}
+  twitterImage={article.seo.openGraph?.image?.url}
+  twitterImageAlt={article.seo.openGraph?.image?.alt}
   localeUrls={localeUrls}>
   <NewsSingle article={article} relatedArticles={relatedArticles} />
 </Base>

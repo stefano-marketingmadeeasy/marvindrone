@@ -26,6 +26,18 @@ export type NewsSeo = {
   altText?: string;
   caption?: string;
   image?: NewsAsset;
+  keywords?: string[];
+  metaRobots?: string;
+  metaViewport?: string;
+  canonicalUrl?: string;
+  structuredData?: unknown;
+  openGraph?: {
+    title?: string;
+    description?: string;
+    image?: NewsAsset;
+    url?: string;
+    type?: string;
+  };
 };
 
 export type NewsArticle = {

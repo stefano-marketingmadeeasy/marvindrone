@@ -18,7 +18,10 @@ const currentLocale = Astro.currentLocale || "it";
 const href = getProductionPath(production, currentLocale);
 const t = await useTranslations(currentLocale);
 const coverImage =
-  production.heroImage || production.poster || production.gallery[0];
+  production.seo.image ||
+  production.heroImage ||
+  production.poster ||
+  production.gallery[0];
 const productionTypeLabel =
   production.category?.slug !== "produzioni"
     ? production.category?.name?.trim()
@@ -98,8 +101,8 @@ const cardLabels = labels || {
             class:list={[
               "mx-auto font-semibold break-words text-white",
               variant === "related"
-                ? "max-w-[22ch] text-[clamp(1.05rem,1.15vw,1.55rem)] leading-[1.1] sm:max-w-[24ch] lg:max-w-[26ch]"
-                : "max-w-[15ch] text-[clamp(1.3rem,1.7vw,2.25rem)] leading-[1.06] sm:max-w-[16ch] lg:max-w-[18ch]",
+                ? "max-w-[22ch] text-[clamp(1.05rem,1.15vw,1.55rem)] leading-[1.40] sm:max-w-[24ch] lg:max-w-[26ch]"
+                : "max-w-[15ch] text-[clamp(1.3rem,1.7vw,2.25rem)] leading-[1.40] sm:max-w-[16ch] lg:max-w-[18ch]",
             ]}
             set:html={markdownify(production.title)}
           />

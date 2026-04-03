@@ -14,7 +14,7 @@ interface Props {
 const { article, relatedArticles = [] } = Astro.props;
 const currentLocale = Astro.currentLocale || "it";
 const t = await useTranslations(currentLocale);
-const heroImage = article.heroImage || article.gallery[0];
+const heroImage = article.seo.image || article.heroImage || article.gallery[0];
 const newsIndexUrl = `${getLocaleUrlCTM("/news/", currentLocale)}#news-archive`;
 const relatedFilterUrl = `${getLocaleUrlCTM("/news/", currentLocale)}?filter=${article.category.slug}#news-archive`;
 const formatter = new Intl.DateTimeFormat(

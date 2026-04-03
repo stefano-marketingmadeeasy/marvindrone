@@ -48,31 +48,49 @@ const copyrightText =
         aria-label={config.site.title}>
         <FooterLogo
           aria-hidden="true"
-          fill="currentColor"
-          class="h-[88px] w-auto text-white md:h-[104px] [&_path]:fill-current [&_polygon]:fill-current"
+          class="footer-brand-logo h-[118px] w-auto md:h-[140px]"
         />
       </a>
     </div>
 
     <nav aria-label="Footer" class="flex justify-center">
-      <ul
-        class="flex flex-nowrap items-center justify-center gap-x-3 gap-y-3 text-center text-[0.7rem] text-white/88 sm:gap-x-4 sm:text-xs md:gap-x-8 md:text-base">
-        {
-          [...mainLinks, ...legalLinks].map((menu) => (
-            <li>
-              <a
-                class="text-white/88! transition hover:text-white!"
-                href={
-                  menu.url.startsWith("#")
-                    ? menu.url
-                    : getLocaleUrlCTM(menu.url, Astro.currentLocale)
-                }>
-                {menu.name}
-              </a>
-            </li>
-          ))
-        }
-      </ul>
+      <div class="flex flex-col items-center gap-y-3 text-center text-[0.7rem] text-white/88 sm:text-xs md:flex-row md:flex-wrap md:items-center md:justify-center md:gap-x-8 md:gap-y-3 md:text-base">
+        <ul class="flex flex-wrap items-center justify-center gap-x-3 gap-y-3 sm:gap-x-4 md:contents">
+          {
+            mainLinks.map((menu) => (
+              <li>
+                <a
+                  class="text-white/88! transition hover:text-white!"
+                  href={
+                    menu.url.startsWith("#")
+                      ? menu.url
+                      : getLocaleUrlCTM(menu.url, Astro.currentLocale)
+                  }>
+                  {menu.name}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+
+        <ul class="flex flex-wrap items-center justify-center gap-x-3 gap-y-3 sm:gap-x-4 md:contents">
+          {
+            legalLinks.map((menu) => (
+              <li>
+                <a
+                  class="text-white/88! transition hover:text-white!"
+                  href={
+                    menu.url.startsWith("#")
+                      ? menu.url
+                      : getLocaleUrlCTM(menu.url, Astro.currentLocale)
+                  }>
+                  {menu.name}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
     </nav>
 
     {
@@ -97,3 +115,9 @@ const copyrightText =
     </div>
   </div>
 </footer>
+
+<style>
+  .footer-brand-logo {
+    filter: brightness(0) invert(1);
+  }
+</style>

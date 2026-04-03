@@ -11,6 +11,7 @@ const currentLocale = Astro.currentLocale || "en";
 const rentals = await getAllRentals(currentLocale);
 const contentEntry = await getEntryCTM("sections", "rentals-page", currentLocale);
 const content = contentEntry?.data as RentalsPageContent;
+const seoImage = rentals.find((rental) => rental.image)?.image;
 const structuredData = {
   pageType: "FAQPage",
   faqItems: content.faq.items.map((item) => ({
@@ -27,6 +28,9 @@ const structuredData = {
   overlayHeader={true}
   metaTitle={content.metaTitle}
   metaDescription={content.metaDescription}
+  image={seoImage?.url}
+  imageAlt={seoImage?.alt}
+  imageCaption={seoImage?.caption}
   structuredData={structuredData}
   localeUrls={{ it: "/noleggio/", en: "/en/rental/" }}>
   <RentalsPage rentals={rentals} content={content} />

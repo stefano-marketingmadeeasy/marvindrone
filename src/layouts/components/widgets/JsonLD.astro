@@ -6,6 +6,39 @@ import { supportedLanguages } from "@/lib/utils/i18nUtils";
 
 const { content } = Astro.props;
 
+const parseStructuredData = (value: unknown) => {
+  if (!value) return undefined;
+
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (!trimmed || trimmed === "null") return undefined;
+
+    try {
+      return JSON.parse(trimmed);
+    } catch {
+      return undefined;
+    }
+  }
+
+  if (Array.isArray(value)) {
+    return value.length > 0 ? value : undefined;
+  }
+
+  if (typeof value === "object") {
+    return value;
+  }
+
+  return undefined;
+};
+
+const isRawSchemaNode = (value: unknown) =>
+  Boolean(
+    value &&
+      typeof value === "object" &&
+      !Array.isArray(value) &&
+      ("@type" in value || "@context" in value),
+  );
+
 let {
   title = config.site.title,
   metaTitle = title,
@@ -33,12 +66,27 @@ description = metaDescription ? metaDescription : description;
 canonical = canonical ? canonical : Astro.url.href;
 lang = Astro.currentLocale || "it";
 image = absoluteUrl(image, Astro);
+const parsedStructuredData = parseStructuredData(structuredData);
+const generatorStructuredData = isRawSchemaNode(parsedStructuredData)
+  ? undefined
+  : parsedStructuredData;
+const extraStructuredData = parsedStructuredData
+  ? Array.isArray(parsedStructuredData)
+    ? parsedStructuredData.filter(isRawSchemaNode)
+    : isRawSchemaNode(parsedStructuredData)
+      ? [parsedStructuredData]
+      : []
+  : [];
 
 // Generate JSON-LD dynamically
 const jsonLdData = JsonLdGenerator(
   {
     ...content,
-    ...structuredData,
+    ...(generatorStructuredData &&
+    !Array.isArray(generatorStructuredData) &&
+    typeof generatorStructuredData === "object"
+      ? generatorStructuredData
+      : {}),
     title,
     description,
     image,
@@ -54,10 +102,19 @@ const jsonLdData = JsonLdGenerator(
 
 <!-- JSON-LD -->{
   content ? (
-    <script
-      type="application/ld+json"
-      is:inline
-      set:html={JSON.stringify(jsonLdData, null, 2)}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        is:inline
+        set:html={JSON.stringify(jsonLdData, null, 2)}
+      />
+      {extraStructuredData.map((schemaNode) => (
+        <script
+          type="application/ld+json"
+          is:inline
+          set:html={JSON.stringify(schemaNode, null, 2)}
+        />
+      ))}
+    </>
   ) : null
 }

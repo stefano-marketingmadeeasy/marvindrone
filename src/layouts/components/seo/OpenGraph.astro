@@ -16,18 +16,31 @@ let {
   disableTagline,
   image = config.opengraph.image,
   imageAlt,
+  ogTitle,
+  ogDescription,
+  ogImage,
+  ogImageAlt,
+  ogUrl,
   twitter = config.opengraph.twitter,
   twitterCard = config.opengraph.twitterCard,
+  twitterTitle,
+  twitterDescription,
+  twitterImage,
+  twitterImageAlt,
   ogType = config.opengraph.ogType,
   ogLocale = getOpenGraphLocale(Astro.currentLocale),
 } = Astro.props;
 
 // Get the possible value for title and description and remove any line breaks and extra spaces
-title = plainify(metaTitle ? metaTitle : title ? title : config.site.title);
+title = plainify(
+  ogTitle ? ogTitle : metaTitle ? metaTitle : title ? title : config.site.title,
+);
 title = removeWhitespace(title);
 
 description = plainify(
-  metaDescription
+  ogDescription
+    ? ogDescription
+    : metaDescription
     ? metaDescription
     : description
       ? description
@@ -37,7 +50,17 @@ description = plainify(
 description = removeWhitespace(description);
 
 // Generate the full URL for the current page
-const pageUrl = new URL(Astro.url.pathname, Astro.site);
+const pageUrl = ogUrl || new URL(Astro.url.pathname, Astro.site);
+const socialImage = ogImage || image;
+const socialImageAlt = ogImageAlt || imageAlt;
+const resolvedTwitterTitle = removeWhitespace(
+  plainify(twitterTitle || title || config.site.title),
+);
+const resolvedTwitterDescription = removeWhitespace(
+  plainify(twitterDescription || description || config.site.description),
+);
+const resolvedTwitterImage = twitterImage || socialImage;
+const resolvedTwitterImageAlt = twitterImageAlt || socialImageAlt;
 
 // Add tagline & separator to title
 if (!disableTagline) {
@@ -51,11 +74,13 @@ if (!disableTagline) {
 <!-------------------------
     Standard Open Graph
 --------------------------->{
-  image && <meta property="og:image" content={absoluteUrl(image, Astro)} />
+  socialImage && (
+    <meta property="og:image" content={absoluteUrl(socialImage, Astro)} />
+  )
 }
 {
-  imageAlt && (
-    <meta property="og:image:alt" content={removeWhitespace(imageAlt)} />
+  socialImageAlt && (
+    <meta property="og:image:alt" content={removeWhitespace(socialImageAlt)} />
   )
 }
 {title && <meta property="og:title" content={removeWhitespace(title)} />}
@@ -90,16 +115,33 @@ if (!disableTagline) {
     Twitter Open Graph
 -------------------------->
 {twitter && <meta name="twitter:creator" content={removeWhitespace(twitter)} />}
-{title && <meta name="twitter:title" content={removeWhitespace(title)} />}
 {
-  description && (
-    <meta name="twitter:description" content={removeWhitespace(description)} />
+  resolvedTwitterTitle && (
+    <meta name="twitter:title" content={resolvedTwitterTitle} />
+  )
+}
+{
+  resolvedTwitterDescription && (
+    <meta
+      name="twitter:description"
+      content={resolvedTwitterDescription}
+    />
   )
 }
 {twitterCard && <meta name="twitter:card" content={twitterCard} />}
-{image && <meta name="twitter:image" content={absoluteUrl(image, Astro)} />}
 {
-  imageAlt && (
-    <meta name="twitter:image:alt" content={removeWhitespace(imageAlt)} />
+  resolvedTwitterImage && (
+    <meta
+      name="twitter:image"
+      content={absoluteUrl(resolvedTwitterImage, Astro)}
+    />
+  )
+}
+{
+  resolvedTwitterImageAlt && (
+    <meta
+      name="twitter:image:alt"
+      content={removeWhitespace(resolvedTwitterImageAlt)}
+    />
   )
 }

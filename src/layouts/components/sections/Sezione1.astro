@@ -242,6 +242,7 @@ const renderedCards = cards.map((card, index) => ({
     var track = document.querySelector("[data-mountains-track]");
     if (!(track instanceof HTMLElement)) return;
 
+    if (window.matchMedia("(max-width: 767px)").matches) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     var imgWidth = 0;
@@ -279,6 +280,10 @@ const renderedCards = cards.map((card, index) => ({
   }
 
   @media (max-width: 767px) {
+    [data-mountains-container] {
+      display: none;
+    }
+
     [data-sezione1-card] > div:first-child {
       background: transparent !important;
       border-color: transparent !important;

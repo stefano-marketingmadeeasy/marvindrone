@@ -4,6 +4,11 @@ import OpenGraph from "@/components/seo/OpenGraph.astro";
 import Favicons from "@/components/seo/Favicons.astro";
 import config from ".astro/config.generated.json" with { type: "json" };
 import JsonLD from "../widgets/JsonLD.astro";
+
+const viewport =
+  typeof Astro.props.viewport === "string" && Astro.props.viewport.trim()
+    ? Astro.props.viewport.trim()
+    : "width=device-width, initial-scale=1, maximum-scale=5";
 ---
 
 <head>
@@ -17,7 +22,7 @@ import JsonLD from "../widgets/JsonLD.astro";
   />
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1, maximum-scale=5"
+    content={viewport}
   />
   <SEO {...Astro.props} />
   <meta

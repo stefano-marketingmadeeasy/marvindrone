@@ -73,6 +73,8 @@ const heroTotalSteps =
   heroSecondaryGapSteps +
   tertiaryScrollSteps +
   heroOutroSteps;
+const heroButtonClass =
+  "[&_.btn]:border-black [&_.btn]:bg-black [&_.btn]:text-white [&_.btn]:ring-1 [&_.btn]:ring-white/85 hover:[&_.btn]:border-stone-800 hover:[&_.btn]:bg-stone-800";
 ---
 
 <section
@@ -146,12 +148,14 @@ const heroTotalSteps =
                     {heroPrimaryButton?.enable && (
                       <CustomButton
                         size="md"
+                        class={heroButtonClass}
                         {...heroPrimaryButton}
                       />
                     )}
                     {slide.secondaryButton?.enable && (
                       <CustomButton
                         size="md"
+                        class={heroButtonClass}
                         {...slide.secondaryButton}
                       />
                     )}
