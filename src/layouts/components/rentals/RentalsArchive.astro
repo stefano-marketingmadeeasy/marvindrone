@@ -17,47 +17,70 @@ const filters = getRentalFilters(rentals, currentLocale);
 const isStrapiConfigured = strapiEnabled();
 const revealStartDelay = 0.12;
 const brandOptions = [
-  { value: "all", label: archive.brandPlaceholder },
-  ...filters.brands.map((brand) => ({ value: brand.slug, label: brand.name })),
+  { value: "all", slug: "all", label: archive.brandPlaceholder },
+  ...filters.brands.map((brand) => ({
+    value: brand.key || brand.slug,
+    slug: brand.slug || brand.key || "",
+    label: brand.name,
+  })),
 ];
 const categoryOptions = [
-  { value: "all", label: archive.categoryPlaceholder },
+  { value: "all", slug: "all", label: archive.categoryPlaceholder },
   ...filters.categories.map((category) => ({
-    value: category.slug,
+    value: category.key || category.slug,
+    slug: category.slug || category.key || "",
     label: category.name,
   })),
 ];
 ---
 
-<section
-  data-rentals-root
-  class="relative bg-white py-2 md:py-4">
+<section data-rentals-root class="relative bg-white py-2 md:py-4">
   <div class="mx-auto w-full max-w-[1480px] px-[clamp(1rem,2.5vw,3.5rem)]">
-    <div class="grid gap-8 lg:grid-cols-[minmax(13.5rem,16rem)_minmax(0,1fr)] lg:items-start lg:gap-10">
-      <aside class="lg:sticky lg:top-[var(--rental-header-offset,76px)] lg:self-start">
+    <div
+      class="grid gap-8 lg:grid-cols-[minmax(13.5rem,16rem)_minmax(0,1fr)] lg:items-start lg:gap-10">
+      <aside
+        class="lg:sticky lg:top-[var(--rental-header-offset,76px)] lg:self-start">
         <div
           data-rentals-filters
           class="rounded-[2rem] border border-stone-200 bg-white p-5 shadow-[0_22px_60px_rgba(15,23,42,0.05)] md:p-6">
           <div class="grid grid-cols-1 gap-4">
             <label class="grid gap-2">
-              <span class="text-xs font-semibold tracking-[0.18em] text-stone-500 uppercase">
+              <span
+                class="text-xs font-semibold tracking-[0.18em] text-stone-500 uppercase">
                 {archive.brandLabel}
               </span>
               <select
                 data-rental-filter-brand-mobile
-                class="min-h-[3.5rem] w-full rounded-[1.25rem] border border-stone-200 bg-stone-50 px-4 text-sm text-stone-900 outline-none transition duration-200 focus:border-stone-900 focus:bg-white md:hidden">
-                {brandOptions.map((option) => <option value={option.value}>{option.label}</option>)}
+                class="min-h-[3.5rem] w-full rounded-[1.25rem] border border-stone-200 bg-stone-50 px-4 text-sm text-stone-900 transition duration-200 outline-none focus:border-stone-900 focus:bg-white md:hidden">
+                {
+                  brandOptions.map((option) => (
+                    <option value={option.value} data-url-slug={option.slug}>
+                      {option.label}
+                    </option>
+                  ))
+                }
               </select>
-              <div data-rental-dropdown data-filter-name="brand" class="relative hidden md:block">
+              <div
+                data-rental-dropdown
+                data-filter-name="brand"
+                class="relative hidden md:block">
                 <select data-rental-filter-brand hidden>
-                  {brandOptions.map((option) => <option value={option.value}>{option.label}</option>)}
+                  {
+                    brandOptions.map((option) => (
+                      <option value={option.value} data-url-slug={option.slug}>
+                        {option.label}
+                      </option>
+                    ))
+                  }
                 </select>
                 <button
                   type="button"
                   data-rental-dropdown-trigger
                   data-placeholder={archive.brandPlaceholder}
-                  class="flex min-h-[3.5rem] w-full items-center justify-between gap-3 rounded-[1.25rem] border border-stone-200 bg-stone-50 px-4 text-left text-sm text-stone-900 outline-none transition duration-200 hover:border-stone-300 hover:bg-white focus:border-stone-900 focus:bg-white">
-                  <span data-rental-dropdown-label class="min-w-0 truncate">{archive.brandPlaceholder}</span>
+                  class="flex min-h-[3.5rem] w-full items-center justify-between gap-3 rounded-[1.25rem] border border-stone-200 bg-stone-50 px-4 text-left text-sm text-stone-900 transition duration-200 outline-none hover:border-stone-300 hover:bg-white focus:border-stone-900 focus:bg-white">
+                  <span data-rental-dropdown-label class="min-w-0 truncate">
+                    {archive.brandPlaceholder}
+                  </span>
                   <svg
                     aria-hidden="true"
                     viewBox="0 0 20 20"
@@ -68,13 +91,14 @@ const categoryOptions = [
                       stroke="currentColor"
                       stroke-width="1.7"
                       stroke-linecap="round"
-                      stroke-linejoin="round"></path>
+                      stroke-linejoin="round">
+                    </path>
                   </svg>
                 </button>
                 <div
                   data-rental-dropdown-panel
                   hidden
-                  class="absolute left-0 right-0 top-[calc(100%+0.55rem)] z-30 overflow-hidden rounded-[1.35rem] border border-stone-200 bg-white p-2 shadow-[0_24px_60px_rgba(15,23,42,0.14)]">
+                  class="absolute top-[calc(100%+0.55rem)] right-0 left-0 z-30 overflow-hidden rounded-[1.35rem] border border-stone-200 bg-white p-2 shadow-[0_24px_60px_rgba(15,23,42,0.14)]">
                   <div class="max-h-72 overflow-y-auto">
                     {
                       brandOptions.map((option) => (
@@ -98,24 +122,42 @@ const categoryOptions = [
             </label>
 
             <label class="grid gap-2">
-              <span class="text-xs font-semibold tracking-[0.18em] text-stone-500 uppercase">
+              <span
+                class="text-xs font-semibold tracking-[0.18em] text-stone-500 uppercase">
                 {archive.categoryLabel}
               </span>
               <select
                 data-rental-filter-category-mobile
-                class="min-h-[3.5rem] w-full rounded-[1.25rem] border border-stone-200 bg-stone-50 px-4 text-sm text-stone-900 outline-none transition duration-200 focus:border-stone-900 focus:bg-white md:hidden">
-                {categoryOptions.map((option) => <option value={option.value}>{option.label}</option>)}
+                class="min-h-[3.5rem] w-full rounded-[1.25rem] border border-stone-200 bg-stone-50 px-4 text-sm text-stone-900 transition duration-200 outline-none focus:border-stone-900 focus:bg-white md:hidden">
+                {
+                  categoryOptions.map((option) => (
+                    <option value={option.value} data-url-slug={option.slug}>
+                      {option.label}
+                    </option>
+                  ))
+                }
               </select>
-              <div data-rental-dropdown data-filter-name="category" class="relative hidden md:block">
+              <div
+                data-rental-dropdown
+                data-filter-name="category"
+                class="relative hidden md:block">
                 <select data-rental-filter-category hidden>
-                  {categoryOptions.map((option) => <option value={option.value}>{option.label}</option>)}
+                  {
+                    categoryOptions.map((option) => (
+                      <option value={option.value} data-url-slug={option.slug}>
+                        {option.label}
+                      </option>
+                    ))
+                  }
                 </select>
                 <button
                   type="button"
                   data-rental-dropdown-trigger
                   data-placeholder={archive.categoryPlaceholder}
-                  class="flex min-h-[3.5rem] w-full items-center justify-between gap-3 rounded-[1.25rem] border border-stone-200 bg-stone-50 px-4 text-left text-sm text-stone-900 outline-none transition duration-200 hover:border-stone-300 hover:bg-white focus:border-stone-900 focus:bg-white">
-                  <span data-rental-dropdown-label class="min-w-0 truncate">{archive.categoryPlaceholder}</span>
+                  class="flex min-h-[3.5rem] w-full items-center justify-between gap-3 rounded-[1.25rem] border border-stone-200 bg-stone-50 px-4 text-left text-sm text-stone-900 transition duration-200 outline-none hover:border-stone-300 hover:bg-white focus:border-stone-900 focus:bg-white">
+                  <span data-rental-dropdown-label class="min-w-0 truncate">
+                    {archive.categoryPlaceholder}
+                  </span>
                   <svg
                     aria-hidden="true"
                     viewBox="0 0 20 20"
@@ -126,13 +168,14 @@ const categoryOptions = [
                       stroke="currentColor"
                       stroke-width="1.7"
                       stroke-linecap="round"
-                      stroke-linejoin="round"></path>
+                      stroke-linejoin="round">
+                    </path>
                   </svg>
                 </button>
                 <div
                   data-rental-dropdown-panel
                   hidden
-                  class="absolute left-0 right-0 top-[calc(100%+0.55rem)] z-30 overflow-hidden rounded-[1.35rem] border border-stone-200 bg-white p-2 shadow-[0_24px_60px_rgba(15,23,42,0.14)]">
+                  class="absolute top-[calc(100%+0.55rem)] right-0 left-0 z-30 overflow-hidden rounded-[1.35rem] border border-stone-200 bg-white p-2 shadow-[0_24px_60px_rgba(15,23,42,0.14)]">
                   <div class="max-h-72 overflow-y-auto">
                     {
                       categoryOptions.map((option) => (
@@ -171,16 +214,16 @@ const categoryOptions = [
         {
           rentals.length > 0 ? (
             <div data-rentals-list class="grid grid-cols-1 gap-6">
-              {rentals.map((rental) => <RentalCard rental={rental} labels={card} />)}
+              {rentals.map((rental) => (
+                <RentalCard rental={rental} labels={card} />
+              ))}
             </div>
           ) : (
             <div class="rounded-[2rem] border border-dashed border-stone-300 bg-white px-6 py-14 text-center shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
               <p class="text-xs font-semibold tracking-[0.24em] text-stone-500 uppercase">
                 {archive.emptyLabel}
               </p>
-              <h3 class="text-h5 mt-3 text-inherit">
-                {archive.emptyTitle}
-              </h3>
+              <h3 class="text-h5 mt-3 text-inherit">{archive.emptyTitle}</h3>
               <p class="mx-auto mt-4 max-w-2xl text-sm leading-7 text-stone-600 md:text-base">
                 {archive.emptyDescription}
               </p>
@@ -197,13 +240,15 @@ const categoryOptions = [
           data-rentals-empty
           hidden
           class="rounded-[2rem] border border-dashed border-stone-300 bg-white px-6 py-14 text-center shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
-          <p class="text-xs font-semibold tracking-[0.24em] text-stone-500 uppercase">
+          <p
+            class="text-xs font-semibold tracking-[0.24em] text-stone-500 uppercase">
             {archive.emptyFilterLabel}
           </p>
           <h3 class="text-h5 mt-3 text-inherit">
             {archive.emptyFilterTitle}
           </h3>
-          <p class="mx-auto mt-4 max-w-2xl text-sm leading-7 text-stone-600 md:text-base">
+          <p
+            class="mx-auto mt-4 max-w-2xl text-sm leading-7 text-stone-600 md:text-base">
             {archive.emptyFilterDescription}
           </p>
         </div>
@@ -218,7 +263,9 @@ const categoryOptions = [
   if (root) {
     const brandSelect = root.querySelector("[data-rental-filter-brand]");
     const categorySelect = root.querySelector("[data-rental-filter-category]");
-    const brandSelectMobile = root.querySelector("[data-rental-filter-brand-mobile]");
+    const brandSelectMobile = root.querySelector(
+      "[data-rental-filter-brand-mobile]",
+    );
     const categorySelectMobile = root.querySelector(
       "[data-rental-filter-category-mobile]",
     );
@@ -240,7 +287,10 @@ const categoryOptions = [
 
     const releaseInteractiveFocus = () => {
       const activeElement = document.activeElement;
-      if (activeElement instanceof HTMLElement && root.contains(activeElement)) {
+      if (
+        activeElement instanceof HTMLElement &&
+        root.contains(activeElement)
+      ) {
         activeElement.blur();
       }
     };
@@ -285,6 +335,31 @@ const categoryOptions = [
       window.innerWidth < 768
         ? categorySelectMobile || categorySelect
         : categorySelect || categorySelectMobile;
+
+    const resolveSelectValue = (select, paramValue) => {
+      if (!(select instanceof HTMLSelectElement) || !paramValue) {
+        return "all";
+      }
+
+      const matchingOption = Array.from(select.options).find(
+        (option) =>
+          option.value === paramValue || option.dataset.urlSlug === paramValue,
+      );
+
+      return matchingOption?.value || "all";
+    };
+
+    const getUrlSlugForValue = (select, value) => {
+      if (!(select instanceof HTMLSelectElement)) {
+        return value;
+      }
+
+      const matchingOption = Array.from(select.options).find(
+        (option) => option.value === value,
+      );
+
+      return matchingOption?.dataset.urlSlug || matchingOption?.value || value;
+    };
 
     const setAllSelectValues = (nextBrand, nextCategory) => {
       [brandSelect, brandSelectMobile].forEach((select) => {
@@ -361,17 +436,26 @@ const categoryOptions = [
 
     const syncUrl = (activeBrand, activeCategory) => {
       const url = new URL(window.location.href);
+      const brandParam = getUrlSlugForValue(
+        getActiveBrandSelect(),
+        activeBrand,
+      );
+      const categoryParam = getUrlSlugForValue(
+        getActiveCategorySelect(),
+        activeCategory,
+      );
+
       if (activeBrand === "all") {
         url.searchParams.delete("brand");
       } else {
-        url.searchParams.set("brand", activeBrand);
+        url.searchParams.set("brand", brandParam);
       }
 
       if (activeCategory === "all") {
         url.searchParams.delete("category");
         url.searchParams.delete("use");
       } else {
-        url.searchParams.set("category", activeCategory);
+        url.searchParams.set("category", categoryParam);
         url.searchParams.delete("use");
       }
 
@@ -380,7 +464,11 @@ const categoryOptions = [
 
     const clearCardAnimationClasses = () => {
       cards.forEach((card) => {
-        card.classList.remove("is-filter-enter", "is-filter-enter-active", "is-filter-exit");
+        card.classList.remove(
+          "is-filter-enter",
+          "is-filter-enter-active",
+          "is-filter-exit",
+        );
         card.style.removeProperty("--rental-filter-delay");
       });
     };
@@ -485,21 +573,15 @@ const categoryOptions = [
       const search = new URLSearchParams(window.location.search);
       const brand = search.get("brand");
       const category = search.get("category") || search.get("use");
-      const nextBrand =
-        brand &&
-        activeBrandSelect.querySelector(`option[value="${brand}"]`)
-          ? brand
-          : "all";
-      const nextCategory =
-        category &&
-        activeCategorySelect.querySelector(`option[value="${category}"]`)
-          ? category
-          : "all";
+      const nextBrand = resolveSelectValue(activeBrandSelect, brand);
+      const nextCategory = resolveSelectValue(activeCategorySelect, category);
 
       setAllSelectValues(nextBrand, nextCategory);
 
       const brandDropdown = root.querySelector('[data-filter-name="brand"]');
-      const categoryDropdown = root.querySelector('[data-filter-name="category"]');
+      const categoryDropdown = root.querySelector(
+        '[data-filter-name="category"]',
+      );
       syncDropdownUi(brandDropdown, nextBrand);
       syncDropdownUi(categoryDropdown, nextCategory);
 
@@ -540,11 +622,7 @@ const categoryOptions = [
         revealConfig.filtersStart,
         revealConfig.filtersEnd,
       );
-      setRevealProgress(
-        list,
-        revealConfig.listStart,
-        revealConfig.listEnd,
-      );
+      setRevealProgress(list, revealConfig.listStart, revealConfig.listEnd);
       if (emptyState instanceof HTMLElement && !emptyState.hidden) {
         setRevealProgress(
           emptyState,
@@ -568,15 +646,24 @@ const categoryOptions = [
         target.value || "all",
         getActiveCategorySelect()?.value || "all",
       );
-      syncDropdownUi(root.querySelector('[data-filter-name="brand"]'), target.value || "all");
+      syncDropdownUi(
+        root.querySelector('[data-filter-name="brand"]'),
+        target.value || "all",
+      );
       applyFilters();
     };
 
     const handleCategoryChange = (event) => {
       const target = event.currentTarget;
       if (!(target instanceof HTMLSelectElement)) return;
-      setAllSelectValues(getActiveBrandSelect()?.value || "all", target.value || "all");
-      syncDropdownUi(root.querySelector('[data-filter-name="category"]'), target.value || "all");
+      setAllSelectValues(
+        getActiveBrandSelect()?.value || "all",
+        target.value || "all",
+      );
+      syncDropdownUi(
+        root.querySelector('[data-filter-name="category"]'),
+        target.value || "all",
+      );
       applyFilters();
     };
 
@@ -617,7 +704,10 @@ const categoryOptions = [
     resetButton?.addEventListener("click", () => {
       setAllSelectValues("all", "all");
       syncDropdownUi(root.querySelector('[data-filter-name="brand"]'), "all");
-      syncDropdownUi(root.querySelector('[data-filter-name="category"]'), "all");
+      syncDropdownUi(
+        root.querySelector('[data-filter-name="category"]'),
+        "all",
+      );
       dropdowns.forEach((dropdown) => closeDropdown(dropdown));
       applyFilters();
     });

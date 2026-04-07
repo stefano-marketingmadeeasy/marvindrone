@@ -1,5 +1,7 @@
 export type RentalTaxonomy = {
   id?: number | string;
+  documentId?: string;
+  key?: string;
   name: string;
   slug: string;
   order?: number;

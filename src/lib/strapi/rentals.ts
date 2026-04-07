@@ -22,6 +22,37 @@ const pickFirstString = (source: Record<string, any>, keys: string[]) => {
   return "";
 };
 
+const pickFirstTaxonomySource = (
+  source: Record<string, any>,
+  keys: string[],
+): unknown => {
+  for (const key of keys) {
+    const value = source[key];
+
+    if (typeof value === "string" && value.trim()) {
+      return value;
+    }
+
+    if (Array.isArray(value) && value.length > 0) {
+      return value;
+    }
+
+    if (value && typeof value === "object") {
+      const entries = unwrapStrapiArray<Record<string, any>>(value);
+      if (entries.length > 0) {
+        return value;
+      }
+
+      const entity = unwrapStrapiEntity<Record<string, any>>(value);
+      if (Object.keys(entity).length > 0) {
+        return value;
+      }
+    }
+  }
+
+  return undefined;
+};
+
 const normalizeInteger = (value: unknown) => {
   if (typeof value === "number" && Number.isFinite(value)) {
     return value;
@@ -55,6 +86,44 @@ const pickLocalizedEntity = (
   return matchingLocalization || record;
 };
 
+const buildTaxonomyKey = (
+  source: Record<string, any>,
+  record: Record<string, any>,
+  fallbackSlug: string,
+) => {
+  const documentId =
+    pickFirstString(record, ["documentId"]) ||
+    pickFirstString(source, ["documentId"]);
+
+  if (documentId) {
+    return documentId;
+  }
+
+  const stableIds = new Set<string>();
+
+  [source, record].forEach((entry) => {
+    if (!entry || Object.keys(entry).length === 0) return;
+
+    if (entry.id !== undefined && entry.id !== null) {
+      stableIds.add(String(entry.id));
+    }
+
+    unwrapStrapiArray<Record<string, any>>(entry.localizations).forEach(
+      (localization) => {
+        if (localization.id !== undefined && localization.id !== null) {
+          stableIds.add(String(localization.id));
+        }
+      },
+    );
+  });
+
+  if (stableIds.size > 0) {
+    return Array.from(stableIds).sort().join(":");
+  }
+
+  return fallbackSlug;
+};
+
 const normalizeAsset = (value: unknown): RentalAsset | undefined => {
   const record = unwrapStrapiEntity<Record<string, any>>(value);
   const url = toStrapiAbsoluteUrl(record.url);
@@ -79,21 +148,22 @@ const normalizeTaxonomy = (
   locale = "it",
 ): RentalTaxonomy | undefined => {
   if (!value) {
-    return fallback
-      ? { name: fallback, slug: slugifyyy(fallback) }
-      : undefined;
+    return fallback ? { name: fallback, slug: slugifyyy(fallback) } : undefined;
   }
 
   if (typeof value === "string") {
     const name = value.trim();
     if (!name) return undefined;
+    const slug = slugifyyy(name);
 
     return {
       name,
-      slug: slugifyyy(name),
+      slug,
+      key: slug,
     };
   }
 
+  const source = unwrapStrapiEntity<Record<string, any>>(value);
   const record = pickLocalizedEntity(value, locale);
   if (!record) return undefined;
   const name =
@@ -102,10 +172,18 @@ const normalizeTaxonomy = (
 
   if (!name) return undefined;
 
+  const slug = pickFirstString(record, ["slug"]) || slugifyyy(name);
+  const documentId =
+    pickFirstString(record, ["documentId"]) ||
+    pickFirstString(source, ["documentId"]) ||
+    undefined;
+
   return {
-    id: record.id,
+    id: record.id || source.id,
+    documentId,
+    key: buildTaxonomyKey(source, record, slug),
     name,
-    slug: pickFirstString(record, ["slug"]) || slugifyyy(name),
+    slug,
     order: normalizeInteger(record.order || record.sortOrder || record.ordine),
     locale: pickFirstString(record, ["locale"]) || undefined,
   };
@@ -144,29 +222,46 @@ const normalizeRental = (
 
   if (!model) return undefined;
 
-  const brand =
-    normalizeTaxonomy(
-      raw.brand || raw.marca || raw.manufacturer || raw.produttore,
-      "",
-      locale,
-    ) || { name: "", slug: "" };
-  const categories = normalizeTaxonomyList(
-    raw.categories ||
-      raw.category ||
-      raw.categorie ||
-      raw.categoria ||
-      raw.Categories ||
-      raw.Category ||
-      raw.Categorie ||
-      raw.Categoria ||
-      raw.usages ||
-      raw.usage ||
-      raw.utilizzi ||
-      raw.utilizzo ||
-      raw.uses ||
-      raw.use,
+  const brand = normalizeTaxonomy(
+    raw.brand || raw.marca || raw.manufacturer || raw.produttore,
+    "",
+    locale,
+  ) || { name: "", slug: "" };
+  const taxonomyKeys = [
+    "categories",
+    "category",
+    "categorie",
+    "categoria",
+    "Categories",
+    "Category",
+    "Categorie",
+    "Categoria",
+    "usages",
+    "usage",
+    "utilizzi",
+    "utilizzo",
+    "uses",
+    "use",
+  ];
+  let categories = normalizeTaxonomyList(
+    pickFirstTaxonomySource(raw, taxonomyKeys),
     locale,
   );
+
+  if (categories.length === 0) {
+    for (const localization of unwrapStrapiArray<Record<string, any>>(
+      raw.localizations,
+    )) {
+      categories = normalizeTaxonomyList(
+        pickFirstTaxonomySource(localization, taxonomyKeys),
+        locale,
+      );
+
+      if (categories.length > 0) {
+        break;
+      }
+    }
+  }
   const description =
     pickFirstString(raw, [
       "shortDescription",
@@ -237,9 +332,10 @@ export const getAllRentals = async (locale = "it") => {
   const entries = await getStrapiCollection<Record<string, any>>(
     RENTALS_ENDPOINT,
     {
-      // Keep the rentals query compatible with Strapi i18n setups that already
-      // localize relations on the server side when `locale` is provided.
-      populate: "*",
+      "populate[brand][populate]": "*",
+      "populate[Categorie][populate][localizations][populate]": "*",
+      "populate[immagine][populate]": "*",
+      "populate[localizations][populate]": "*",
       locale,
     },
   );
@@ -255,13 +351,15 @@ export const getRentalFilters = (rentals: Rental[], locale = "it") => {
   const categories = new Map<string, RentalTaxonomy>();
 
   rentals.forEach((rental) => {
-    if (rental.brand.slug) {
-      brands.set(rental.brand.slug, rental.brand);
+    const brandKey = rental.brand.key || rental.brand.slug;
+    if (brandKey) {
+      brands.set(brandKey, rental.brand);
     }
 
     rental.categories.forEach((category) => {
-      if (category.slug) {
-        categories.set(category.slug, category);
+      const categoryKey = category.key || category.slug;
+      if (categoryKey) {
+        categories.set(categoryKey, category);
       }
     });
   });
