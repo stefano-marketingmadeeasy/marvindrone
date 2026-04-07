@@ -1,9 +1,9 @@
-name                   = "looka-theme"
+name                   = "marvindrone.com"
 compatibility_date     = "2025-01-01"
 pages_build_output_dir = "./dist"
 compatibility_flags    = ["nodejs_compat", "expose_global_message_channel"]
 
 [vars]
   NODE_VERSION = "22.13.1"
-  STRAPI_URL = "https://cms.paoluccisrl.it/"
+  STRAPI_URL = "https://marvindrone-cms.marcopapale.net/"
   STRAPI_NEWS_ENDPOINT = "news-plural"

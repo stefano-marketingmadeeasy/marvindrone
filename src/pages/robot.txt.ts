@@ -14,7 +14,6 @@ Allow: /
 
 # Disallowed pages
 ${disallow?.map((item: string) => `Disallow: ${item}`).join("\n") || ""}
-
 # Sitemap location
 Sitemap: ${sitemapURL.href}
 `;
