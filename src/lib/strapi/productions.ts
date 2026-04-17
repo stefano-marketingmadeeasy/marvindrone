@@ -188,7 +188,6 @@ const productionFactLabels = {
     location: "Location",
     director: "Regista",
     directorOfPhotography: "Direttore della fotografia",
-    productionCompany: "Casa di produzione",
     shootingTypes: "Tipologia riprese",
     equipmentUsed: "Attrezzatura utilizzata",
     distribution: "Distribuzione",
@@ -201,7 +200,6 @@ const productionFactLabels = {
     location: "Location",
     director: "Director",
     directorOfPhotography: "Director of photography",
-    productionCompany: "Production company",
     shootingTypes: "Shooting type",
     equipmentUsed: "Equipment used",
     distribution: "Distribution",
@@ -210,6 +208,14 @@ const productionFactLabels = {
 
 const getProductionFactLabels = (locale?: string) =>
   locale === "en" ? productionFactLabels.en : productionFactLabels.it;
+
+const getProductionCompanyLabel = (count: number, locale = "it") => {
+  if (locale === "en") {
+    return count > 1 ? "Production companies" : "Production company";
+  }
+
+  return count > 1 ? "Case di produzione" : "Casa di produzione";
+};
 
 const normalizeAsset = (value: unknown): ProductionAsset | undefined => {
   const record = unwrapStrapiEntity<Record<string, any>>(value);
@@ -311,6 +317,52 @@ const normalizeProductionCompany = (
   };
 };
 
+const normalizeProductionCompanies = (...values: unknown[]): ProductionCompany[] => {
+  const companies = values.flatMap((value) => {
+    if (!value) return [] as ProductionCompany[];
+
+    if (Array.isArray(value)) {
+      return value
+        .map((item) => normalizeProductionCompany(item))
+        .filter(Boolean) as ProductionCompany[];
+    }
+
+    if (typeof value === "string") {
+      return normalizeTextList(value)
+        .map((item) => normalizeProductionCompany(item))
+        .filter(Boolean) as ProductionCompany[];
+    }
+
+    if (value && typeof value === "object") {
+      const unwrappedArray = unwrapStrapiArray(value);
+      if (unwrappedArray.length > 0) {
+        return unwrappedArray
+          .map((item) => normalizeProductionCompany(item))
+          .filter(Boolean) as ProductionCompany[];
+      }
+    }
+
+    const company = normalizeProductionCompany(value);
+    return company ? [company] : [];
+  });
+
+  const deduped = new Map<string, ProductionCompany>();
+
+  companies.forEach((company) => {
+    const key = company.id
+      ? `id:${company.id}`
+      : company.slug
+        ? `slug:${company.slug}`
+        : `name:${company.name.toLowerCase()}`;
+
+    if (!deduped.has(key)) {
+      deduped.set(key, company);
+    }
+  });
+
+  return Array.from(deduped.values());
+};
+
 const normalizeProductionLocalization = (
   value: unknown,
 ): ProductionLocalization | undefined => {
@@ -383,12 +435,24 @@ const normalizeFacts = (raw: Record<string, any>, locale = "it") => {
     "direttoreFotografia",
     "directorOfPhotography",
   ]);
-  const productionCompanyEntry = normalizeProductionCompany(
-    raw.casaProduzione || raw.productionCompany,
+  const productionCompanyEntries = normalizeProductionCompanies(
+    raw.case_produzione,
+    raw.casaProduzione,
+    raw.productionCompanies,
+    raw.productionCompany,
   );
-  const productionCompany =
-    productionCompanyEntry?.name ||
-    pickFirstString(raw, ["productionCompany", "casaProduzione"]);
+  const productionCompanyNames =
+    productionCompanyEntries.map((entry) => entry.name) ||
+    [];
+  const fallbackProductionCompanyNames = [
+    ...normalizeTextList(raw.case_produzione),
+    ...normalizeTextList(raw.productionCompany),
+  ];
+  const productionCompanyList =
+    productionCompanyNames.length > 0
+      ? productionCompanyNames
+      : fallbackProductionCompanyNames;
+  const productionCompany = productionCompanyList.join(", ");
   const shootingTypes = normalizeTextList(
     raw.shootingTypes || raw.tipologiaRiprese,
   );
@@ -410,7 +474,7 @@ const normalizeFacts = (raw: Record<string, any>, locale = "it") => {
   }
   if (productionCompany) {
     derivedFacts.push({
-      label: labels.productionCompany,
+      label: getProductionCompanyLabel(productionCompanyList.length, locale),
       value: productionCompany,
     });
   }
@@ -517,9 +581,13 @@ const normalizeProduction = (
   const city = pickFirstString(raw, ["city", "citta"]) || undefined;
   const region = pickFirstString(raw, ["region", "regione"]) || undefined;
   const country = pickFirstString(raw, ["country", "paese"]) || undefined;
-  const productionCompanyEntry = normalizeProductionCompany(
-    raw.casaProduzione || raw.productionCompany,
+  const productionCompanyEntries = normalizeProductionCompanies(
+    raw.case_produzione,
+    raw.casaProduzione,
+    raw.productionCompanies,
+    raw.productionCompany,
   );
+  const productionCompanyEntry = productionCompanyEntries[0];
   const director =
     pickFirstString(raw, ["Regista", "regista", "director"]) || undefined;
   const directorOfPhotography =
@@ -529,8 +597,9 @@ const normalizeProduction = (
       "directorOfPhotography",
     ]) || undefined;
   const productionCompany =
-    productionCompanyEntry?.name ||
-    pickFirstString(raw, ["productionCompany", "casaProduzione"]) ||
+    productionCompanyEntries.map((entry) => entry.name).join(", ") ||
+    normalizeTextList(raw.case_produzione).join(", ") ||
+    normalizeTextList(raw.productionCompany).join(", ") ||
     undefined;
   const shootingTypes = normalizeTextList(
     raw.shootingTypes || raw.tipologiaRiprese,
@@ -648,6 +717,8 @@ const normalizeProduction = (
     directorOfPhotography,
     productionCompany,
     productionCompanyEntry,
+    productionCompanies: productionCompanyEntries.map((entry) => entry.name),
+    productionCompanyEntries,
     shootingTypes,
     equipmentDescription:
       pickFirstString(raw, [
@@ -738,7 +809,7 @@ export const getAllProductions = async (locale = "it") => {
       "populate[manifesto][populate]": "*",
       "populate[fotoBackstage][populate]": "*",
       "populate[tipologia_produzione][populate]": "*",
-      "populate[casaProduzione][populate]": "*",
+      "populate[case_produzione][populate]": "*",
       "populate[localizations][populate]": "*",
       "populate[seo][populate]": "*",
       locale,

@@ -89,6 +89,8 @@ export type Production = {
   directorOfPhotography?: string;
   productionCompany?: string;
   productionCompanyEntry?: ProductionCompany;
+  productionCompanies: string[];
+  productionCompanyEntries: ProductionCompany[];
   shootingTypes: string[];
   equipmentDescription?: string;
   equipmentUsed: string[];

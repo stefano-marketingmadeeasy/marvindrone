@@ -21,6 +21,16 @@
       }
     ]
   },
+  "case_produzione": {
+    "connect": [
+      {
+        "slug": "palomar"
+      },
+      {
+        "slug": "fabula-pictures"
+      }
+    ]
+  },
   "cast": [
     {
       "value": "Nome Attore 1"

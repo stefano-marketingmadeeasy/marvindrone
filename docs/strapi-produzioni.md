@@ -32,35 +32,40 @@ Dentro [docs/strapi-blueprint](/Users/stefanopaolucci/Desktop/marvindrone2/docs/
 - componenti `produzione.credito`, `produzione.informazione`
 - un esempio payload in `examples/produzione-sample.json`
 
+In piu, nel progetto Strapi deve esistere anche il collection type `Casa produzione`, perche `Produzione.case_produzione` punta a quel contenuto.
+
 ## Procedura consigliata
 
 1. Copia il contenuto di `docs/strapi-blueprint/src/` dentro `src/` del tuo progetto Strapi.
 2. Riavvia Strapi.
 3. Apri il pannello admin e verifica che esistano:
+   - `Casa produzione`
    - `Tipologia produzione`
    - `Produzione`
-4. Crea prima le tipologie, ad esempio:
+4. Dentro `Casa produzione` crea le voci che vuoi poter associare alle produzioni, ad esempio `Palomar`, `Fabula Pictures`, `Groenlandia`.
+5. Crea prima le tipologie, ad esempio:
    - `Film` con slug `film`
    - `Serie TV` con slug `serie-tv`
    - `Documentario` con slug `documentario`
-5. Crea almeno una produzione completa e pubblicala.
-6. Se in `Public` non vedi `Produzione` o `Tipologia produzione`, controlla di aver copiato anche:
+6. Nel content-type `Produzione`, imposta il campo relazione `case_produzione` come relazione multipla verso `Casa produzione` (`many-to-many`).
+7. Crea almeno una produzione completa, seleziona una o piu `Casa produzione` e pubblicala.
+8. Se in `Public` non vedi `Produzione` o `Tipologia produzione`, controlla di aver copiato anche:
    - `src/api/produzione/routes`
    - `src/api/produzione/controllers`
    - `src/api/produzione/services`
    - `src/api/tipologia-produzione/routes`
    - `src/api/tipologia-produzione/controllers`
    - `src/api/tipologia-produzione/services`
-7. Se vuoi usare API pubbliche:
+9. Se vuoi usare API pubbliche:
    - abilita per il ruolo `Public` le permission `find` e `findOne` su `Produzione`
    - abilita per il ruolo `Public` le permission `find` e `findOne` su `Tipologia produzione`
-8. Se non vuoi API pubbliche:
+10. Se non vuoi API pubbliche:
    - lascia tutto privato
    - genera un API token read-only in Strapi
    - inseriscilo in `STRAPI_TOKEN`
-9. Nel progetto Astro configura `.env`.
-10. Esegui `npm run check:strapi`.
-11. Se il check va bene, esegui `npm run dev` oppure `npm run build`.
+11. Nel progetto Astro configura `.env`.
+12. Esegui `npm run check:strapi`.
+13. Se il check va bene, esegui `npm run dev` oppure `npm run build`.
 
 ## Endpoint atteso
 
@@ -93,6 +98,7 @@ Collection type `Produzione`:
 - `sortOrder`
 - `featured`
 - `tipologia`
+- `case_produzione`
 - `heroImage`
 - `poster`
 - `gallery`
@@ -112,6 +118,7 @@ Collection type `Tipologia produzione`:
 
 ## Note pratiche
 
+- se `case_produzione` e una relazione multipla, la pagina dettaglio mostra automaticamente i nomi come `Produzione 1, Produzione 2, Produzione 3`
 - il build Astro non fallisce se Strapi e spento, ma la pagina produzioni restera vuota
 - le pagine dettaglio vengono generate solo per le produzioni che Strapi restituisce al build
 - se aggiungi una nuova produzione e il sito e statico, devi rifare il deploy/build per vedere la nuova pagina
