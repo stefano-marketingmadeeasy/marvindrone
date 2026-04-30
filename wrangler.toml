@@ -7,6 +7,7 @@ compatibility_flags    = ["nodejs_compat", "expose_global_message_channel"]
   NODE_VERSION = "22.13.1"
   STRAPI_URL = "https://marvindrone-cms.marcopapale.net/"
   STRAPI_NEWS_ENDPOINT = "news-plural"
+  STRAPI_RENTALS_ENDPOINT = "noleggi"
   RESEND_FROM_EMAIL = "noreply@marvindrone.com"
   RESEND_TO_EMAIL = "stefano@paoluccisrl.com"
   RESEND_API_KEY = "re_cb4i7zES_CcrFzjqwkZrAMgsWHKpKYViZ"

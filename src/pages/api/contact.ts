@@ -18,6 +18,12 @@ interface ContactPayload {
   turnstileToken?: string;
 }
 
+interface CloudflareRuntimeLike {
+  runtime?: {
+    env?: Record<string, string | undefined>;
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Validation helpers (mirrors client-side validation)
 // ---------------------------------------------------------------------------
@@ -147,12 +153,18 @@ function buildEmailText(p: ContactPayload): string {
 // ---------------------------------------------------------------------------
 // Route handler
 // ---------------------------------------------------------------------------
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, locals }) => {
   const json = (body: object, status = 200) =>
     new Response(JSON.stringify(body), {
       status,
       headers: { "Content-Type": "application/json" },
     });
+
+  const runtimeEnv = (locals as CloudflareRuntimeLike | undefined)?.runtime?.env;
+  const getEnv = (key: keyof ImportMetaEnv & string) =>
+    runtimeEnv?.[key] ??
+    import.meta.env[key] ??
+    process.env[key];
 
   // Parse body
   let payload: ContactPayload;
@@ -174,7 +186,7 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   // Turnstile verification (optional — only runs if secret key is configured)
-  const turnstileSecret = import.meta.env.TURNSTILE_SECRET_KEY;
+  const turnstileSecret = getEnv("TURNSTILE_SECRET_KEY");
   if (turnstileSecret) {
     if (!payload.turnstileToken) {
       return json({ error: "Verifica antispam mancante" }, 422);
@@ -186,10 +198,10 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   // Send email via Resend
-  const resendKey = import.meta.env.RESEND_API_KEY;
+  const resendKey = getEnv("RESEND_API_KEY");
   const fromEmail =
-    import.meta.env.RESEND_FROM_EMAIL ?? "Marvin Drone <noreply@marvindrone.com>";
-  const toEmail = (import.meta.env.RESEND_TO_EMAIL ?? "info@marvindrone.com")
+    getEnv("RESEND_FROM_EMAIL") ?? "Marvin Drone <noreply@marvindrone.com>";
+  const toEmail = (getEnv("RESEND_TO_EMAIL") ?? "info@marvindrone.com")
     .split(",")
     .map((email) => email.trim())
     .filter(Boolean);
