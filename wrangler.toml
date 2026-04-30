@@ -9,3 +9,4 @@ compatibility_flags    = ["nodejs_compat", "expose_global_message_channel"]
   STRAPI_NEWS_ENDPOINT = "news-plural"
   RESEND_FROM_EMAIL = "noreply@marvindrone.com"
   RESEND_TO_EMAIL = "stefano@paoluccisrl.com"
+  RESEND_API_KEY = "re_cb4i7zES_CcrFzjqwkZrAMgsWHKpKYViZ"
