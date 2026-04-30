@@ -44,7 +44,7 @@ export const SOCIAL = {
 // ---------------------------------------------------------------------------
 export const API = {
   /** Contact form submission endpoint (POST) */
-  contact: "/api/contact",
+  contact: "/api/contact/",
 } as const;
 
 // ---------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 ---
-import { CONTACT, whatsappUrl } from "@/lib/config/endpoints";
+import { API, CONTACT, whatsappUrl } from "@/lib/config/endpoints";
 
 const isEN = Astro.currentLocale === "en";
 
@@ -30,6 +30,9 @@ const copy = {
   errorFallback: isEN
     ? "Submission failed. Please email us at"
     : "Invio non riuscito. Scrivici a",
+  serverError:   isEN
+    ? "Server configuration error. Please try again later or contact us by email."
+    : "Errore di configurazione server. Riprova più tardi oppure contattaci via email.",
   antispam:      isEN
     ? "Complete the anti-spam verification and try again."
     : "Completa la verifica antispam e riprova.",
@@ -244,7 +247,7 @@ const lang = isEN ? "en" : "it";
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@25.12.1/build/css/intlTelInput.css" />
 <script is:inline src="https://cdn.jsdelivr.net/npm/intl-tel-input@25.12.1/build/js/intlTelInput.min.js" defer></script>
 
-<script define:vars={{ copy, lang }}>
+<script define:vars={{ copy, lang, contactApi: API.contact }}>
   document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("contact-form");
     if (!form) return;
@@ -438,17 +441,20 @@ const lang = isEN ? "en" : "it";
           turnstileToken = await getToken();
         }
 
-        const res = await fetch("/api/contact", {
+        const res = await fetch(contactApi, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ...payload, turnstileToken }),
         });
 
-        const data = await res.json().catch(() => ({}));
+        const contentType = res.headers.get("content-type") ?? "";
+        const data = contentType.includes("application/json")
+          ? await res.json().catch(() => ({}))
+          : null;
 
-        if (!res.ok) {
+        if (!res.ok || data?.ok !== true) {
           if (siteKey) resetTurnstile();
-          showError(data?.error ?? copy.connError);
+          showError(data?.error ?? (res.ok ? copy.serverError : copy.connError));
           return;
         }
 
