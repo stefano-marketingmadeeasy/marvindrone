@@ -27,6 +27,14 @@ const isEmail = (s: string) =>
 const isPhone = (s: string) => /^\+?[0-9\s-]+$/.test(s);
 const hasDangerousChars = (s: string) => /[<>{}[\]`\\]/.test(s);
 
+const escapeHtml = (value: string) =>
+  value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+
 function validate(p: ContactPayload): string | null {
   if (!p.firstName || p.firstName.length < 2 || p.firstName.length > 50 || !isName(p.firstName))
     return "Nome non valido";
@@ -63,21 +71,77 @@ async function verifyTurnstile(token: string, secret: string): Promise<boolean> 
 // HTML email template
 // ---------------------------------------------------------------------------
 function buildEmailHtml(p: ContactPayload): string {
+  const fullName = escapeHtml(`${p.firstName} ${p.lastName}`);
+  const email = escapeHtml(p.email);
+  const phone = escapeHtml(p.phone);
+  const message = escapeHtml(p.message);
+  const labels =
+    p.lang === "en"
+      ? {
+          title: "New contact request from marvindrone.com",
+          name: "Name",
+          email: "Email",
+          phone: "Phone",
+          lang: "Language",
+          message: "Message",
+        }
+      : {
+          title: "Nuova richiesta da marvindrone.com",
+          name: "Nome",
+          email: "Email",
+          phone: "Telefono",
+          lang: "Lingua",
+          message: "Messaggio",
+        };
+
   return `
     <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px;border:1px solid #e5e7eb;border-radius:8px;">
-      <h2 style="margin-top:0;color:#111827;">Nuova richiesta da marvindrone.com</h2>
+      <h2 style="margin-top:0;color:#111827;">${labels.title}</h2>
       <table style="width:100%;border-collapse:collapse;">
-        <tr><td style="padding:8px 0;color:#6b7280;width:140px;">Nome</td><td style="padding:8px 0;font-weight:600;">${p.firstName} ${p.lastName}</td></tr>
-        <tr><td style="padding:8px 0;color:#6b7280;">Email</td><td style="padding:8px 0;"><a href="mailto:${p.email}">${p.email}</a></td></tr>
-        <tr><td style="padding:8px 0;color:#6b7280;">Telefono</td><td style="padding:8px 0;">${p.phone}</td></tr>
-        <tr><td style="padding:8px 0;color:#6b7280;">Lingua</td><td style="padding:8px 0;">${p.lang.toUpperCase()}</td></tr>
+        <tr><td style="padding:8px 0;color:#6b7280;width:140px;">${labels.name}</td><td style="padding:8px 0;font-weight:600;">${fullName}</td></tr>
+        <tr><td style="padding:8px 0;color:#6b7280;">${labels.email}</td><td style="padding:8px 0;"><a href="mailto:${email}">${email}</a></td></tr>
+        <tr><td style="padding:8px 0;color:#6b7280;">${labels.phone}</td><td style="padding:8px 0;">${phone}</td></tr>
+        <tr><td style="padding:8px 0;color:#6b7280;">${labels.lang}</td><td style="padding:8px 0;">${p.lang.toUpperCase()}</td></tr>
         <tr>
-          <td style="padding:8px 0;color:#6b7280;vertical-align:top;">Messaggio</td>
-          <td style="padding:8px 0;white-space:pre-wrap;">${p.message}</td>
+          <td style="padding:8px 0;color:#6b7280;vertical-align:top;">${labels.message}</td>
+          <td style="padding:8px 0;white-space:pre-wrap;">${message}</td>
         </tr>
       </table>
     </div>
   `;
+}
+
+function buildEmailText(p: ContactPayload): string {
+  const labels =
+    p.lang === "en"
+      ? {
+          title: "New contact request from marvindrone.com",
+          name: "Name",
+          email: "Email",
+          phone: "Phone",
+          lang: "Language",
+          message: "Message",
+        }
+      : {
+          title: "Nuova richiesta da marvindrone.com",
+          name: "Nome",
+          email: "Email",
+          phone: "Telefono",
+          lang: "Lingua",
+          message: "Messaggio",
+        };
+
+  return [
+    labels.title,
+    "",
+    `${labels.name}: ${p.firstName} ${p.lastName}`,
+    `${labels.email}: ${p.email}`,
+    `${labels.phone}: ${p.phone}`,
+    `${labels.lang}: ${p.lang.toUpperCase()}`,
+    "",
+    `${labels.message}:`,
+    p.message,
+  ].join("\n");
 }
 
 // ---------------------------------------------------------------------------
@@ -123,8 +187,12 @@ export const POST: APIRoute = async ({ request }) => {
 
   // Send email via Resend
   const resendKey = import.meta.env.RESEND_API_KEY;
-  const fromEmail = import.meta.env.RESEND_FROM_EMAIL ?? "noreply@marvindrone.com";
-  const toEmail = import.meta.env.RESEND_TO_EMAIL ?? "info@marvindrone.com";
+  const fromEmail =
+    import.meta.env.RESEND_FROM_EMAIL ?? "Marvin Drone <noreply@marvindrone.com>";
+  const toEmail = (import.meta.env.RESEND_TO_EMAIL ?? "info@marvindrone.com")
+    .split(",")
+    .map((email) => email.trim())
+    .filter(Boolean);
 
   if (!resendKey) {
     console.error("[contact] RESEND_API_KEY not set");
@@ -139,6 +207,7 @@ export const POST: APIRoute = async ({ request }) => {
     replyTo: payload.email,
     subject: `Nuova richiesta da marvindrone.com — ${payload.firstName} ${payload.lastName}`,
     html: buildEmailHtml(payload),
+    text: buildEmailText(payload),
   });
 
   if (error) {
