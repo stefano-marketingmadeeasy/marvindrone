@@ -102,8 +102,12 @@ const heroButtonClass =
             <OptimizedImage
               src={slide.backgroundImage}
               alt="Banner Image"
+              loading="eager"
+              fetchpriority="high"
+              widths={[480, 640, 768, 960, 1280, 1536]}
+              quality={72}
               class="block h-full min-h-full w-full min-w-full object-cover object-[58%_center] [transform:scale(var(--hero-bg-scale))] [transform-origin:center] will-change-transform motion-reduce:transform-none md:h-[calc(100svh+8rem)] md:min-h-[calc(100svh+8rem)] md:w-[calc(100vw+8rem)] md:min-w-[calc(100vw+8rem)] md:object-center"
-              sizes="(max-width: 640px) 200vw, (min-width: 1320px) 1320w, 100vw"
+              sizes="100vw"
               data-content={slide.backgroundImage}
             />
           </div>
@@ -127,6 +131,11 @@ const heroButtonClass =
                 <img
                   src={logoMarvinDrone.src}
                   alt="Marvin Drone"
+                  loading="eager"
+                  fetchpriority="high"
+                  decoding="async"
+                  width="320"
+                  height="119"
                   class="mx-auto -mb-6 h-auto w-56 brightness-0 invert sm:w-72 lg:-mb-7 lg:w-80"
                 />
                 {slide.title && (

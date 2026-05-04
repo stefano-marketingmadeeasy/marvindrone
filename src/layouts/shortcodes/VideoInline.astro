@@ -56,8 +56,6 @@ const isLocalHostedVideo = src?.includes("/videos/") && provider === "html5";
 
 <script>
   // @ts-nocheck
-  import AOS from "aos";
-
   // Function to handle AOS-related fixes
   function removeAosAttributesAfterAnimation() {
     const handleAosAnimateClass = (mutationsList: MutationRecord[]) => {
@@ -92,6 +90,16 @@ const isLocalHostedVideo = src?.includes("/videos/") && provider === "html5";
 
     if (!targetElement) return;
 
+    const loadPlyrStyles = () => {
+      if (document.querySelector('link[data-plyr-styles="true"]')) return;
+
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = "/plyr/plyr.css";
+      link.dataset.plyrStyles = "true";
+      document.head.appendChild(link);
+    };
+
     const checkViewportAndLoadScript = () => {
       const rect = targetElement.getBoundingClientRect();
       const isInViewport = rect.top < window.innerHeight - 100;
@@ -102,8 +110,8 @@ const isLocalHostedVideo = src?.includes("/videos/") && provider === "html5";
 
         (async () => {
           try {
+            loadPlyrStyles();
             const { default: Plyr } = await import("plyr");
-            await import("plyr/dist/plyr.css");
 
             Plyr.setup(".video-inline-player");
           } catch (error) {

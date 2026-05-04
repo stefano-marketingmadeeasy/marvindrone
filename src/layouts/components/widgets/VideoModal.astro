@@ -75,8 +75,6 @@ const isLocalHostedVideo = src?.includes("/videos/") && provider === "html5";
 
 <script>
   // @ts-nocheck
-  import AOS from "aos";
-
   const videoButtons = document.querySelectorAll(
     "[data-hs-overlay].video-modal-toggle",
   );
@@ -124,12 +122,22 @@ const isLocalHostedVideo = src?.includes("/videos/") && provider === "html5";
   // Call the function when you need to monitor the element with the "content" class.
   removeAosAttributesAfterAnimation();
 
+  function loadPlyrStyles() {
+    if (document.querySelector('link[data-plyr-styles="true"]')) return;
+
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "/plyr/plyr.css";
+    link.dataset.plyrStyles = "true";
+    document.head.appendChild(link);
+  }
+
   videoButtons.forEach((button) => {
     button.addEventListener("click", async () => {
       try {
         // Dynamically import Plyr and its css
+        loadPlyrStyles();
         const { default: Plyr } = await import("plyr");
-        await import("plyr/dist/plyr.css");
 
         const players = Plyr.setup(".video-player") as Plyr[];
 

@@ -26,6 +26,8 @@ type Props = {
   logoWidth?: string;
   logoHeight?: string;
   logoText?: string;
+  loading?: "eager" | "lazy";
+  fetchpriority?: "high" | "low" | "auto";
 };
 
 let {
@@ -34,6 +36,8 @@ let {
   logoWidth: logoWidthOverride,
   logoHeight: logoHeightOverride,
   logoText: logoTextOverride,
+  loading,
+  fetchpriority,
 } = Astro.props;
 
 let {
@@ -60,6 +64,8 @@ logoText = logoTextOverride ?? logoText;
           class="logo"
           width={getNumber(logoWidth)}
           height={getNumber(logoHeight)}
+          loading={loading}
+          fetchpriority={fetchpriority}
           alt={toSentenceCase("Brand logo of " + title)}
           style={{
             height: getNumber(logoHeight) + "px",

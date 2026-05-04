@@ -1,42 +1,73 @@
 /* AOS Animations */
 /* --------------------------------- */
-[data-aos] {
-  opacity: 1;
-  transform: translateY(0);
-  transition: none;
-  will-change: transform;
-}
+@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+  [data-aos] {
+    opacity: 0;
+    transition-property: opacity, transform, filter;
+    transition-duration: 700ms;
+    transition-timing-function: ease-out;
+    will-change: opacity, transform, filter;
+  }
 
-[data-aos="fade-up-sm"] {
-  transform: translate3d(0, 30px, 0);
-}
+  [data-aos].aos-animate {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    filter: none;
+  }
 
-[data-aos="fade-down-sm"] {
-  transform: translate3d(0, -30px, 0);
-}
+  [data-aos="fade-up"],
+  [data-aos="fade-up-sm"] {
+    transform: translate3d(0, 30px, 0);
+  }
 
-[data-aos="fade-right-sm"] {
-  transform: translate3d(-30px, 0, 0);
-}
+  [data-aos="fade-down"],
+  [data-aos="fade-down-sm"] {
+    transform: translate3d(0, -30px, 0);
+  }
 
-[data-aos="fade-left-sm"] {
-  transform: translate3d(30px, 0, 0);
-}
+  [data-aos="fade-right-sm"] {
+    transform: translate3d(-30px, 0, 0);
+  }
 
-[data-aos="fade-up-sm"] {
-  transform: translate3d(0, 30px, 0);
-}
+  [data-aos="fade-left-sm"] {
+    transform: translate3d(30px, 0, 0);
+  }
 
-[data-aos="fade-down-sm"] {
-  transform: translate3d(0, -30px, 0);
-}
+  [data-aos-delay="100"] {
+    transition-delay: 100ms;
+  }
 
-[data-aos="fade-right-sm"] {
-  transform: translate3d(-30px, 0, 0);
-}
+  [data-aos-delay="120"] {
+    transition-delay: 120ms;
+  }
 
-[data-aos="fade-left-sm"] {
-  transform: translate3d(30px, 0, 0);
+  [data-aos-delay="200"] {
+    transition-delay: 200ms;
+  }
+
+  [data-aos-delay="250"] {
+    transition-delay: 250ms;
+  }
+
+  [data-aos-delay="300"] {
+    transition-delay: 300ms;
+  }
+
+  [data-aos-delay="400"] {
+    transition-delay: 400ms;
+  }
+
+  [data-aos-delay="500"] {
+    transition-delay: 500ms;
+  }
+
+  [data-aos-duration="750"] {
+    transition-duration: 750ms;
+  }
+
+  [data-aos-duration="900"] {
+    transition-duration: 900ms;
+  }
 }
 
 /* Kenburns*/
