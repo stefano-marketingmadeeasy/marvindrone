@@ -13,6 +13,12 @@ export const CONTACT = {
   /** Phone number as displayed to the user */
   phoneDisplay: "+39 351 93 85 209",
 
+  /** Secondary phone number in international format (used for tel: links) */
+  secondaryPhone: "+39 388 16 70 798",
+
+  /** Secondary phone number as displayed to the user */
+  secondaryPhoneDisplay: "+39 388 16 70 798",
+
   /**
    * WhatsApp number WITHOUT + or spaces (e.g. "393401234567").
    * Used to build the wa.me deep-link.

@@ -2,14 +2,31 @@
 import Base from "@/layouts/Base.astro";
 import ProductionsPage from "@/components/productions/ProductionsPage.astro";
 import { getEntryCTM } from "@/lib/contentParser.astro";
+import { getImpostazioniGenerali } from "@/lib/strapi/impostazioni-generali";
 import { getAllProductions } from "@/lib/strapi/productions";
 import type { ProductionsPageContent } from "@/types/productions-page";
 
-export const prerender = true;
+export const prerender = false;
 
-const productions = await getAllProductions("it");
-const contentEntry = await getEntryCTM("sections", "productions-page", "it");
+const [productions, contentEntry, impostazioniGenerali] = await Promise.all([
+  getAllProductions("it"),
+  getEntryCTM("sections", "productions-page", "it"),
+  getImpostazioniGenerali(),
+]);
 const content = contentEntry?.data as ProductionsPageContent;
+const produzioneConImmagineFallback = productions.find(
+  (production) =>
+    production.seo.image ||
+    production.heroImage ||
+    production.poster ||
+    production.gallery[0],
+);
+const immagineHero =
+  impostazioniGenerali.heroProduzioni ||
+  produzioneConImmagineFallback?.seo.image ||
+  produzioneConImmagineFallback?.heroImage ||
+  produzioneConImmagineFallback?.poster ||
+  produzioneConImmagineFallback?.gallery?.[0];
 ---
 
 <Base
@@ -19,6 +36,13 @@ const content = contentEntry?.data as ProductionsPageContent;
   overlayHeader={true}
   metaTitle={content.metaTitle}
   metaDescription={content.metaDescription}
+  image={immagineHero?.url}
+  imageAlt={immagineHero?.alt || content.hero.imageAlt}
+  imageCaption={immagineHero?.caption}
   localeUrls={{ it: "/produzioni/", en: "/en/productions/" }}>
-  <ProductionsPage productions={productions} content={content} />
+  <ProductionsPage
+    productions={productions}
+    content={content}
+    immagineHero={immagineHero}
+  />
 </Base>

@@ -61,6 +61,10 @@ const copy = {
 };
 
 const lang = isEN ? "en" : "it";
+const phoneContacts = [
+  { href: CONTACT.phone, label: CONTACT.phoneDisplay },
+  { href: CONTACT.secondaryPhone, label: CONTACT.secondaryPhoneDisplay },
+];
 ---
 
 <section class="contact-section">
@@ -100,7 +104,6 @@ const lang = isEN ? "en" : "it";
             </div>
           </div>
 
-          <!-- Phone -->
           <div class="space-y-2 max-lg:text-center">
             <span class="max-lg:mx-auto inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -109,9 +112,11 @@ const lang = isEN ? "en" : "it";
             </span>
             <div>
               <p class="font-semibold">{copy.phone}</p>
-              <a class="block underline underline-offset-4 transition hover:opacity-70" href={`tel:${CONTACT.phone.replace(/\s/g, "")}`}>
-                {CONTACT.phoneDisplay}
-              </a>
+              {phoneContacts.map((phoneContact) => (
+                <a class="block underline underline-offset-4 transition hover:opacity-70" href={`tel:${phoneContact.href.replace(/\s/g, "")}`}>
+                  {phoneContact.label}
+                </a>
+              ))}
             </div>
           </div>
 

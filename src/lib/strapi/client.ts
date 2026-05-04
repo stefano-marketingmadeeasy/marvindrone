@@ -118,3 +118,50 @@ export const getStrapiCollection = async <T extends Record<string, any>>(
     return [];
   }
 };
+
+export const getStrapiSingle = async <T extends Record<string, any>>(
+  endpoint: string,
+  params?: Record<string, string | number | boolean | undefined>,
+  options?: {
+    suppressNotFound?: boolean;
+  },
+): Promise<T | undefined> => {
+  const apiUrl = getStrapiApiUrl();
+
+  if (!apiUrl) return undefined;
+
+  const url = new URL(`${apiUrl}/${endpoint.replace(/^\/+/, "")}`);
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") {
+      url.searchParams.set(key, String(value));
+    }
+  });
+
+  const token = import.meta.env.STRAPI_TOKEN?.trim();
+
+  try {
+    const response = await fetch(url, {
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    });
+
+    if (!response.ok) {
+      if (response.status === 404 && options?.suppressNotFound) {
+        return undefined;
+      }
+
+      console.warn(
+        `[Strapi] Request failed for ${endpoint}: ${response.status} ${response.statusText}`,
+      );
+      return undefined;
+    }
+
+    const payload = await response.json();
+    const entity = unwrapStrapiEntity<T>(payload);
+
+    return Object.keys(entity).length > 0 ? entity : undefined;
+  } catch (error) {
+    console.warn(`[Strapi] Request failed for ${endpoint}`, error);
+    return undefined;
+  }
+};

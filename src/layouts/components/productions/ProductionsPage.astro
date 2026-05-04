@@ -11,22 +11,10 @@ import type { ProductionsPageContent } from "@/types/productions-page";
 interface Props {
   productions: Production[];
   content: ProductionsPageContent;
+  immagineHero?: Production["heroImage"];
 }
 
-const { productions, content } = Astro.props;
-
-const heroProduction = productions.find(
-  (production) =>
-    production.seo.image ||
-    production.heroImage ||
-    production.poster ||
-    production.gallery[0],
-);
-const heroImage =
-  heroProduction?.seo.image ||
-  heroProduction?.heroImage ||
-  heroProduction?.poster ||
-  heroProduction?.gallery?.[0];
+const { productions, content, immagineHero } = Astro.props;
 const whatsappUrl = getWhatsappUrl(content.subhero.ctaMessage);
 ---
 
@@ -39,12 +27,12 @@ const whatsappUrl = getWhatsappUrl(content.subhero.ctaMessage);
         data-productions-page-hero-visual
         class="absolute inset-0 origin-center">
         {
-          heroImage ? (
+          immagineHero ? (
             <StrapiImage
-              url={heroImage.url}
-              alt={heroImage.alt || content.hero.imageAlt}
-              width={heroImage.width}
-              height={heroImage.height}
+              url={immagineHero.url}
+              alt={immagineHero.alt || content.hero.imageAlt}
+              width={immagineHero.width}
+              height={immagineHero.height}
               loading="eager"
               sizes="100vw"
               class="h-full w-full object-cover"

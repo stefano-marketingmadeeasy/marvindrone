@@ -8,6 +8,8 @@ interface ImportMetaEnv {
   readonly STRAPI_NEWS_ENDPOINT?: string;
   readonly STRAPI_RENTALS_ENDPOINT?: string;
   readonly STRAPI_DRONE_PARK_ENDPOINT?: string;
+  readonly STRAPI_IMPOSTAZIONI_GENERALI_ENDPOINT?: string;
+  readonly STRAPI_SITE_SETTINGS_ENDPOINT?: string;
   readonly WHATSAPP_PHONE?: string;
   readonly RESEND_API_KEY?: string;
   readonly RESEND_FROM_EMAIL?: string;

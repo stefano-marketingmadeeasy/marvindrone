@@ -1,0 +1,262 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - navigation [ref=e3]:
+      - generic [ref=e4]:
+        - link "Brand logo of marvindrone.com" [ref=e5] [cursor=pointer]:
+          - /url: /
+          - img "Brand logo of marvindrone.com" [ref=e6]
+        - list [ref=e8]:
+          - menuitem "Home" [ref=e9]:
+            - link "Home" [ref=e10] [cursor=pointer]:
+              - /url: /
+          - menuitem "Produzioni" [ref=e11]:
+            - link "Produzioni" [ref=e12] [cursor=pointer]:
+              - /url: /produzioni/
+          - menuitem "Noleggio" [ref=e13]:
+            - link "Noleggio" [ref=e14] [cursor=pointer]:
+              - /url: /noleggio/
+          - menuitem "News" [ref=e15]:
+            - link "News" [ref=e16] [cursor=pointer]:
+              - /url: /news/
+          - menuitem "Contatti" [ref=e17]:
+            - link "Contatti" [ref=e18] [cursor=pointer]:
+              - /url: /contatti/
+        - generic [ref=e19]:
+          - button "Seleziona lingua" [ref=e21] [cursor=pointer]:
+            - generic [ref=e22]: 🇮🇹
+            - generic [ref=e23]: IT
+            - img [ref=e24]
+          - list [ref=e26]:
+            - listitem [ref=e27]:
+              - link "facebook" [ref=e28] [cursor=pointer]:
+                - /url: https://www.facebook.com/MarvinDroneTM
+                - generic [ref=e29]: facebook
+                - img [ref=e30]
+            - listitem [ref=e34]:
+              - link "instagram" [ref=e35] [cursor=pointer]:
+                - /url: https://www.instagram.com/marvindrone_tm
+                - generic [ref=e36]: instagram
+                - img [ref=e37]
+  - main [ref=e39]:
+    - generic [ref=e41]:
+      - generic [ref=e42]:
+        - img "Succede anche nelle migliori famiglie, film di alessandro siani" [ref=e44]
+        - heading "Produzioni e riprese aeree realizzate" [level=1] [ref=e49]
+      - generic [ref=e51]:
+        - generic [ref=e54]:
+          - paragraph [ref=e55]: Nel corso degli anni Marvin Drone ha realizzato riprese aeree professionali per produzioni cinematografiche, televisive e pubblicitarie, lavorando su set strutturati in Italia e all’estero.
+          - paragraph [ref=e56]: "Questa sezione raccoglie progetti reali: per ogni produzione trovi contesto operativo, tipologie di ripresa, configurazioni tecniche e location."
+          - paragraph [ref=e58]: Se cerchi un partner tecnico per integrare le riprese aeree nel piano di produzione, puoi partire da qui per valutare lavori affini al tuo progetto.
+          - link "Contattaci" [ref=e60] [cursor=pointer]:
+            - /url: https://wa.me/3519385209?text=Ciao%2C%20vorrei%20valutare%20una%20collaborazione%20per%20riprese%20aeree%20integrate%20in%20una%20produzione.
+            - generic [ref=e61]: Contattaci
+        - heading "Produzioni" [level=2] [ref=e65]
+        - generic [ref=e67]:
+          - generic [ref=e68]:
+            - button "Tutte" [pressed] [ref=e69] [cursor=pointer]:
+              - generic [ref=e70]: Tutte
+            - button "Cinema" [ref=e71] [cursor=pointer]:
+              - generic [ref=e72]: Cinema
+            - button "Serie TV" [ref=e73] [cursor=pointer]:
+              - generic [ref=e74]: Serie TV
+          - generic [ref=e75]:
+            - article [ref=e77]:
+              - link "Succede anche nelle migliori famiglie, film di alessandro siani 2025 Cinema Succede anche nelle migliori famiglie Apri" [ref=e78] [cursor=pointer]:
+                - /url: /produzioni/cinema/succede-anche-nelle-migliori-famiglie/
+                - generic [ref=e79]:
+                  - img "Succede anche nelle migliori famiglie, film di alessandro siani" [ref=e80]
+                  - generic [ref=e82]: "2025"
+                - generic [ref=e84]:
+                  - generic [ref=e85]:
+                    - generic [ref=e86]: Cinema
+                    - heading "Succede anche nelle migliori famiglie" [level=3] [ref=e87]
+                  - generic:
+                    - generic:
+                      - text: Apri
+                      - img
+            - article [ref=e89]:
+              - link "i-leoni-di-sicilia-libro-differenze-serie.jpg 2023 Serie TV I LEONI DI SICILIA Apri" [ref=e90] [cursor=pointer]:
+                - /url: /produzioni/serie-tv/produzione-1/
+                - generic [ref=e91]:
+                  - img "i-leoni-di-sicilia-libro-differenze-serie.jpg" [ref=e92]
+                  - generic [ref=e94]: "2023"
+                - generic [ref=e96]:
+                  - generic [ref=e97]:
+                    - generic [ref=e98]: Serie TV
+                    - heading "I LEONI DI SICILIA" [level=3] [ref=e99]
+                  - generic:
+                    - generic:
+                      - text: Apri
+                      - img
+            - article [ref=e101]:
+              - link "IT_FASMMS2_Main_Horizontal_RGB_PRE.jpg 2023 Serie TV Incastrati Apri" [ref=e102] [cursor=pointer]:
+                - /url: /produzioni/serie-tv/incastrati/
+                - generic [ref=e103]:
+                  - img "IT_FASMMS2_Main_Horizontal_RGB_PRE.jpg" [ref=e104]
+                  - generic [ref=e106]: "2023"
+                - generic [ref=e108]:
+                  - generic [ref=e109]:
+                    - generic [ref=e110]: Serie TV
+                    - heading "Incastrati" [level=3] [ref=e111]
+                  - generic:
+                    - generic:
+                      - text: Apri
+                      - img
+            - article [ref=e113]:
+              - link "Cover_Garrone.jpg 2023 Cinema Io Capitano Apri" [ref=e114] [cursor=pointer]:
+                - /url: /produzioni/cinema/Produzione/
+                - generic [ref=e115]:
+                  - img "Cover_Garrone.jpg" [ref=e116]
+                  - generic [ref=e118]: "2023"
+                - generic [ref=e120]:
+                  - generic [ref=e121]:
+                    - generic [ref=e122]: Cinema
+                    - heading "Io Capitano" [level=3] [ref=e123]
+                  - generic:
+                    - generic:
+                      - text: Apri
+                      - img
+            - article [ref=e125]:
+              - link "santocielo.jpg 2023 Cinema Santocielo Apri" [ref=e126] [cursor=pointer]:
+                - /url: /produzioni/cinema/santocielo/
+                - generic [ref=e127]:
+                  - img "santocielo.jpg" [ref=e128]
+                  - generic [ref=e130]: "2023"
+                - generic [ref=e132]:
+                  - generic [ref=e133]:
+                    - generic [ref=e134]: Cinema
+                    - heading "Santocielo" [level=3] [ref=e135]
+                  - generic:
+                    - generic:
+                      - text: Apri
+                      - img
+            - article [ref=e137]:
+              - link "La%20Stranezza_S.%20Ficarra,%20T.%20Servillo%20e%20V.%20Picone%20copia.webp 2022 Cinema LA STRANEZZA Apri" [ref=e138] [cursor=pointer]:
+                - /url: /produzioni/cinema/produzione/
+                - generic [ref=e139]:
+                  - img "La%20Stranezza_S.%20Ficarra,%20T.%20Servillo%20e%20V.%20Picone%20copia.webp" [ref=e140]
+                  - generic [ref=e142]: "2022"
+                - generic [ref=e144]:
+                  - generic [ref=e145]:
+                    - generic [ref=e146]: Cinema
+                    - heading "LA STRANEZZA" [level=3] [ref=e147]
+                  - generic:
+                    - generic:
+                      - text: Apri
+                      - img
+            - article [ref=e149]:
+              - link "maxresdefault.jpg 2022 Cinema TIME IS IP 2 Apri" [ref=e150] [cursor=pointer]:
+                - /url: /produzioni/cinema/produzione-2/
+                - generic [ref=e151]:
+                  - img "maxresdefault.jpg" [ref=e152]
+                  - generic [ref=e154]: "2022"
+                - generic [ref=e156]:
+                  - generic [ref=e157]:
+                    - generic [ref=e158]: Cinema
+                    - heading "TIME IS IP 2" [level=3] [ref=e159]
+                  - generic:
+                    - generic:
+                      - text: Apri
+                      - img
+            - article [ref=e161]:
+              - link "Viola come il mare 2022 Serie TV Viola come il mare Apri" [ref=e162] [cursor=pointer]:
+                - /url: /produzioni/serie-tv/viola-come-il-mare/
+                - generic [ref=e163]:
+                  - img "Viola come il mare" [ref=e164]
+                  - generic [ref=e166]: "2022"
+                - generic [ref=e168]:
+                  - generic [ref=e169]:
+                    - generic [ref=e170]: Serie TV
+                    - heading "Viola come il mare" [level=3] [ref=e171]
+                  - generic:
+                    - generic:
+                      - text: Apri
+                      - img
+            - article [ref=e173]:
+              - link "MV5BNWY1Mjk1ZTEtNjU3My00ZjRlLTgzY2QtY2U3YTg0ZjEwZGRkXkEyXkFqcGc@._V1_.jpg 2017 Serie TV MALTESE il romanzo del commissario Apri" [ref=e174] [cursor=pointer]:
+                - /url: /produzioni/serie-tv/produzione-3/
+                - generic [ref=e175]:
+                  - img "MV5BNWY1Mjk1ZTEtNjU3My00ZjRlLTgzY2QtY2U3YTg0ZjEwZGRkXkEyXkFqcGc@._V1_.jpg" [ref=e176]
+                  - generic [ref=e178]: "2017"
+                - generic [ref=e180]:
+                  - generic [ref=e181]:
+                    - generic [ref=e182]: Serie TV
+                    - heading "MALTESE il romanzo del commissario" [level=3] [ref=e183]
+                  - generic:
+                    - generic:
+                      - text: Apri
+                      - img
+        - generic [ref=e187]:
+          - heading "Riprese aeree per cinema, TV, ADV e documentari" [level=2] [ref=e189]
+          - paragraph [ref=e191]: Le schede raccolgono produzioni cinematografiche, serie TV, spot ADV e documentari in cui Marvin Drone ha realizzato riprese aeree cinematografiche e riprese con drone integrate nel workflow di set. Ogni progetto evidenzia obiettivi di ripresa, contesto operativo e soluzioni adottate.
+        - generic [ref=e194]:
+          - generic [ref=e195]:
+            - heading "Un archivio basato su produzioni reali" [level=2] [ref=e196]
+            - paragraph [ref=e197]: "Questo archivio documenta lavori reali, non contenuti dimostrativi. Per ogni produzione sono indicati: contesto produttivo, location (città, regioni o paesi), tipologie di riprese aeree e configurazioni operative impiegate per le riprese da drone."
+          - generic [ref=e198]:
+            - article [ref=e199]:
+              - generic [ref=e201]: "01"
+              - generic [ref=e202]:
+                - heading "Contesto produttivo" [level=3] [ref=e203]
+                - paragraph [ref=e204]: Ogni scheda chiarisce il tipo di progetto, il formato e il contesto operativo in cui le riprese aeree sono state integrate nel set.
+            - article [ref=e205]:
+              - generic [ref=e207]: "02"
+              - generic [ref=e208]:
+                - heading "Località coinvolte" [level=3] [ref=e209]
+                - paragraph [ref=e210]: Vengono riportate città, regioni o paesi interessati, per leggere meglio il rapporto tra location, accessi e pianificazione operativa.
+            - article [ref=e211]:
+              - generic [ref=e213]: "03"
+              - generic [ref=e214]:
+                - heading "Tipologie di riprese aeree" [level=3] [ref=e215]
+                - paragraph [ref=e216]: Le produzioni evidenziano quali linguaggi di ripresa sono stati utilizzati, dal drone cinematografico alle configurazioni più dinamiche.
+            - article [ref=e217]:
+              - generic [ref=e219]: "04"
+              - generic [ref=e220]:
+                - heading "Piattaforme e configurazioni" [level=3] [ref=e221]
+                - paragraph [ref=e222]: Quando rilevante, sono indicate le piattaforme operative e le scelte tecniche adottate per rispondere alle esigenze del progetto.
+        - generic [ref=e226]:
+          - heading "Operatività nazionale e internazionale" [level=2] [ref=e228]
+          - paragraph [ref=e230]: Le produzioni includono set in Italia e all’estero, in contesti urbani, naturali e aree storiche. La varietà delle location e degli scenari operativi riflette esperienza sul campo e capacità di adattare pianificazione e configurazioni alle esigenze del progetto.
+  - contentinfo [ref=e231]:
+    - img
+    - generic [ref=e232]:
+      - link "marvindrone.com" [ref=e234] [cursor=pointer]:
+        - /url: /
+        - img [ref=e235]
+      - navigation "Footer" [ref=e245]:
+        - generic [ref=e246]:
+          - list [ref=e247]:
+            - listitem [ref=e248]:
+              - link "Home" [ref=e249] [cursor=pointer]:
+                - /url: /
+            - listitem [ref=e250]:
+              - link "Produzioni" [ref=e251] [cursor=pointer]:
+                - /url: /produzioni/
+            - listitem [ref=e252]:
+              - link "Noleggio" [ref=e253] [cursor=pointer]:
+                - /url: /noleggio/
+            - listitem [ref=e254]:
+              - link "News" [ref=e255] [cursor=pointer]:
+                - /url: /news/
+            - listitem [ref=e256]:
+              - link "Contatti" [ref=e257] [cursor=pointer]:
+                - /url: /contatti/
+          - list [ref=e258]:
+            - listitem [ref=e259]:
+              - link "Privacy policy" [ref=e260] [cursor=pointer]:
+                - /url: /privacy-policy/
+            - listitem [ref=e261]:
+              - link "Cookie policy" [ref=e262] [cursor=pointer]:
+                - /url: /cookie-policy/
+      - list [ref=e264]:
+        - listitem [ref=e265]:
+          - link "facebook" [ref=e266] [cursor=pointer]:
+            - /url: https://www.facebook.com/MarvinDroneTM
+            - generic [ref=e267]: facebook
+            - img [ref=e268]
+        - listitem [ref=e272]:
+          - link "instagram" [ref=e273] [cursor=pointer]:
+            - /url: https://www.instagram.com/marvindrone_tm
+            - generic [ref=e274]: instagram
+            - img [ref=e275]
+      - paragraph [ref=e278]: © 2026 marvindrone.com. Tutti i diritti riservati.
