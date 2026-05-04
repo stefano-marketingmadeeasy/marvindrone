@@ -1,0 +1,1 @@
+- generic [ref=e2]: "# Robots.txt file for controlling web crawler access User-agent: * # Allowed pages Allow: / # Disallowed pages # Sitemap location Sitemap: https://marvindrone.com/sitemap-index.xml"
