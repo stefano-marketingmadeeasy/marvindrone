@@ -27,7 +27,16 @@ const loadDotEnv = () => {
 
 loadDotEnv();
 
-const baseUrl = process.env.STRAPI_URL?.trim().replace(/\/$/, "");
+const normalizeStrapiBaseUrl = (value) => {
+  const trimmed = value?.trim().replace(/\/$/, "") || "";
+
+  if (!trimmed) return "";
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+
+  return `https://${trimmed}`;
+};
+
+const baseUrl = normalizeStrapiBaseUrl(process.env.STRAPI_URL);
 const endpoint =
   process.env.STRAPI_PRODUCTIONS_ENDPOINT?.trim() || "produzioni";
 const token = process.env.STRAPI_TOKEN?.trim();

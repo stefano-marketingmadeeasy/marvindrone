@@ -1,5 +1,14 @@
+const normalizeStrapiBaseUrl = (value?: string) => {
+  const trimmed = value?.trim().replace(/\/$/, "") || "";
+
+  if (!trimmed) return "";
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+
+  return `https://${trimmed}`;
+};
+
 const getStrapiBaseUrl = () =>
-  import.meta.env.STRAPI_URL?.trim().replace(/\/$/, "") || "";
+  normalizeStrapiBaseUrl(import.meta.env.STRAPI_URL);
 
 const getStrapiApiUrl = () => {
   const baseUrl = getStrapiBaseUrl();
