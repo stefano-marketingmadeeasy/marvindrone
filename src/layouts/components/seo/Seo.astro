@@ -20,6 +20,9 @@ let {
   localeUrls,
 } = Astro.props;
 
+const toAbsoluteUrl = (url: string) =>
+  new URL(url, Astro.site || Astro.url).href;
+
 title = plainify(metaTitle ? metaTitle : title ? title : config.site.title);
 keywords = keywords.join(", ");
 
@@ -39,16 +42,21 @@ description = plainify(
       : config.site.description,
 );
 
-canonical =
-  localeUrls?.[Astro.currentLocale || "it"] ||
-  getLocaleUrlCTM(new URL(Astro.url.href, Astro.site).href, Astro.currentLocale);
+canonical = toAbsoluteUrl(
+  canonical ||
+    localeUrls?.[Astro.currentLocale || "it"] ||
+    getLocaleUrlCTM(Astro.url.pathname, Astro.currentLocale),
+);
 
 const alternateTags = localeUrls
   ? Object.entries(localeUrls).map(([hreflang, href]) => ({
       hreflang,
-      href: String(href),
+      href: toAbsoluteUrl(String(href)),
     }))
-  : getAlternateLocaleLinks(Astro.url.pathname);
+  : getAlternateLocaleLinks(Astro.url.pathname).map((tag) => ({
+      ...tag,
+      href: toAbsoluteUrl(tag.href),
+    }));
 ---
 
 {title && <title>{removeWhitespace(title)}</title>}
