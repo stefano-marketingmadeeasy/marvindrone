@@ -50,12 +50,12 @@ const { stickyHeader } = config.settings;
           id="nav-menu"
           class="navbar has-customized-scrollbar max-lg:transform-none! lg:static! lg:transform-none!">
           {main.map((menu) => <NavMenuItem menu={menu} />)}
-          <li class="max-lg:px-4 max-lg:py-2 lg:hidden" role="menuitem">
+          <li class="max-lg:px-4 max-lg:py-2 lg:hidden">
             <LanguageSwitcher localeUrls={Astro.props.localeUrls} />
           </li>
           {
             socialLinks.length > 0 && (
-              <li class="px-4 py-3 lg:hidden" role="menuitem">
+              <li class="px-4 py-3 lg:hidden">
                 <Social
                   class="gap-4"
                   layout="dark"

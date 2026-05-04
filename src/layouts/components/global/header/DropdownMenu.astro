@@ -19,7 +19,7 @@ const { pathname } = Astro.url;
         ? "[--strategy:static] lg:[--strategy:absolute]"
         : "",
   ]}
-  role="menuitem">
+>
   <span
     class:list={[
       "nav-dropdown-toggle hs-dropdown-toggle flex items-center",
@@ -51,13 +51,12 @@ const { pathname } = Astro.url;
   {
     !menu.hasMegaMenu && menu.hasChildren && (
       <ul
-        class="nav-dropdown-list hs-dropdown-menu hs-dropdown-open:mt-2! hs-dropdown-open:pointer-events-auto hs-dropdown-open:opacity-100 pointer-events-none top-0 mt-4 hidden opacity-0 transition-[opacity,margin] max-lg:m-0! max-lg:transform-none!"
-        {...(recursive ? { "aria-orientation": "vertical" } : {})}>
+        class="nav-dropdown-list hs-dropdown-menu hs-dropdown-open:mt-2! hs-dropdown-open:pointer-events-auto hs-dropdown-open:opacity-100 pointer-events-none top-0 mt-4 hidden opacity-0 transition-[opacity,margin] max-lg:m-0! max-lg:transform-none!">
         {menu.children?.map((child) =>
           child.hasChildren ? (
             child.hasChildren && <Astro.self recursive menu={child} />
           ) : (
-            <li class="nav-dropdown-item" role="menuitem">
+            <li class="nav-dropdown-item">
               <a
                 href={getLocaleUrlCTM(
                   child.url || Astro.url.origin,
