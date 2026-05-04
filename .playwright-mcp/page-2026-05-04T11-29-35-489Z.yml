@@ -1,0 +1,216 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - navigation [ref=e3]:
+      - generic [ref=e4]:
+        - link "Brand logo of marvindrone.com" [ref=e5] [cursor=pointer]:
+          - /url: /
+          - img "Brand logo of marvindrone.com" [ref=e6]
+        - list [ref=e8]:
+          - menuitem "Home" [ref=e9]:
+            - link "Home" [ref=e10] [cursor=pointer]:
+              - /url: /
+          - menuitem "Produzioni" [ref=e11]:
+            - link "Produzioni" [ref=e12] [cursor=pointer]:
+              - /url: /produzioni/
+          - menuitem "Noleggio" [ref=e13]:
+            - link "Noleggio" [ref=e14] [cursor=pointer]:
+              - /url: /noleggio/
+          - menuitem "News" [ref=e15]:
+            - link "News" [ref=e16] [cursor=pointer]:
+              - /url: /news/
+          - menuitem "Contatti" [ref=e17]:
+            - link "Contatti" [ref=e18] [cursor=pointer]:
+              - /url: /contatti/
+        - generic [ref=e19]:
+          - button "Seleziona lingua" [ref=e21] [cursor=pointer]:
+            - generic [ref=e22]: 🇮🇹
+            - generic [ref=e23]: IT
+            - img [ref=e24]
+          - list [ref=e26]:
+            - listitem [ref=e27]:
+              - link "facebook" [ref=e28] [cursor=pointer]:
+                - /url: https://www.facebook.com/MarvinDroneTM
+                - generic [ref=e29]: facebook
+                - img [ref=e30]
+            - listitem [ref=e34]:
+              - link "instagram" [ref=e35] [cursor=pointer]:
+                - /url: https://www.instagram.com/marvindrone_tm
+                - generic [ref=e36]: instagram
+                - img [ref=e37]
+  - main [ref=e39]:
+    - generic [ref=e41]:
+      - generic [ref=e42]:
+        - img "Viola come il mare" [ref=e43]
+        - generic [ref=e47]:
+          - link "Torna a Produzioni" [ref=e49] [cursor=pointer]:
+            - /url: /produzioni/#productions-archive
+            - img [ref=e50]
+            - text: Torna a Produzioni
+          - heading "Viola come il mare" [level=1] [ref=e54]
+      - generic [ref=e56]:
+        - generic [ref=e57]:
+          - complementary [ref=e58]:
+            - img "Viola come il mare manifesto" [ref=e60]
+          - generic [ref=e61]:
+            - paragraph [ref=e62]: Informazioni
+            - generic [ref=e63]:
+              - generic [ref=e64]:
+                - term [ref=e65]: Anno
+                - definition [ref=e66]: "2022"
+              - generic [ref=e67]:
+                - term [ref=e68]: Tipo produzione
+                - definition [ref=e69]: Serie TV
+              - generic [ref=e70]:
+                - term [ref=e71]: Location
+                - definition [ref=e72]: Palermo, Roma, Sicilia, Lazio, Italia
+              - generic [ref=e73]:
+                - term [ref=e74]: Regista
+                - definition [ref=e75]: Francesco Vicario, Alexis Sweet, Laszlo Barbo
+              - generic [ref=e76]:
+                - term [ref=e77]: Direttore della fotografia
+                - definition [ref=e78]: Antonello Emidi, Mark Melville, Alessandro Pavoni
+              - generic [ref=e79]:
+                - term [ref=e80]: Tipologia riprese
+                - definition [ref=e81]: Drone FPV
+              - generic [ref=e82]:
+                - term [ref=e83]: Attrezzatura utilizzata
+                - definition [ref=e84]: DJI Avata 2
+        - generic [ref=e85]:
+          - heading "Riprese aeree realizzate per Serie TV in Sicilia, Lazio" [level=2] [ref=e86]
+          - paragraph [ref=e88]: Viola come il mare è una serie televisiva italiana con protagonisti Francesca Chillemi e Can Yaman, in onda su Canale 5 dal 30 settembre 2022. Ispirata al romanzo Conosci l’estate? di Simona Tanzini, è prodotta da Lux Vide con RTI e diretta da Francesco Vicario (prima stagione) e da Alexis Sweet e Laszlo Barbo (stagioni successive).
+        - generic [ref=e89]:
+          - heading "Scelte tecniche" [level=2] [ref=e90]
+          - paragraph [ref=e92]: è stato utilizzato un drone fpv
+        - generic [ref=e93]:
+          - heading "Video" [level=2] [ref=e94]
+          - iframe [ref=e96]:
+            - generic [active] [ref=f3e1]:
+              - generic "YouTube Video Player" [ref=f3e3]
+              - generic [ref=f3e5]:
+                - generic:
+                  - generic:
+                    - button "Play video" [ref=f3e10] [cursor=pointer]
+                    - button "Hide player controls" [ref=f3e12] [cursor=pointer]
+                    - generic [ref=f3e14]:
+                      - generic [ref=f3e19]:
+                        - generic [ref=f3e20]:
+                          - link "SUCCEDE ANCHE NELLE MIGLIORI FAMIGLIE di Alessandro Siani (2024) - Trailer Ufficiale HD" [ref=f3e21] [cursor=pointer]:
+                            - /url: https://www.youtube.com/watch?v=ZZge3I95jII
+                          - link "01Distribution" [ref=f3e22] [cursor=pointer]:
+                            - /url: /channel/UCVBlH5eoWuuaAhy5HprJE8w
+                            - generic [ref=f3e23]: 01Distribution
+                        - generic [ref=f3e24]:
+                          - button [ref=f3e25] [cursor=pointer]
+                          - generic [ref=f3e27]:
+                            - generic: 01Distribution
+                            - generic: 513K subscribers
+                      - generic [ref=f3e28]:
+                        - button "Copy link" [ref=f3e31] [cursor=pointer]:
+                          - generic [ref=f3e35]:
+                            - img
+                        - link "Watch on YouTube" [ref=f3e42] [cursor=pointer]:
+                          - /url: https://www.youtube.com/watch?v=ZZge3I95jII
+                          - generic [ref=f3e45]:
+                            - text: Watch on
+                            - img [ref=f3e47]:
+                              - generic [ref=f3e49]:
+                                - img
+        - generic [ref=e97]:
+          - generic [ref=e98]:
+            - heading "Produzioni correlate" [level=2] [ref=e99]
+            - link "Serie TV" [ref=e100] [cursor=pointer]:
+              - /url: /produzioni/?filter=serie-tv#productions-archive
+              - text: Serie TV
+              - img [ref=e101]
+          - generic [ref=e104]:
+            - article [ref=e105]:
+              - link "i-leoni-di-sicilia-libro-differenze-serie.jpg 2023 Serie TV I LEONI DI SICILIA Apri" [ref=e106] [cursor=pointer]:
+                - /url: /produzioni/serie-tv/produzione-1/
+                - generic [ref=e107]:
+                  - img "i-leoni-di-sicilia-libro-differenze-serie.jpg" [ref=e108]
+                  - generic [ref=e110]: "2023"
+                - generic [ref=e112]:
+                  - generic [ref=e113]:
+                    - generic [ref=e114]: Serie TV
+                    - heading "I LEONI DI SICILIA" [level=3] [ref=e115]
+                  - generic:
+                    - generic:
+                      - text: Apri
+                      - img
+            - article [ref=e116]:
+              - link "IT_FASMMS2_Main_Horizontal_RGB_PRE.jpg 2023 Serie TV Incastrati Apri" [ref=e117] [cursor=pointer]:
+                - /url: /produzioni/serie-tv/incastrati/
+                - generic [ref=e118]:
+                  - img "IT_FASMMS2_Main_Horizontal_RGB_PRE.jpg" [ref=e119]
+                  - generic [ref=e121]: "2023"
+                - generic [ref=e123]:
+                  - generic [ref=e124]:
+                    - generic [ref=e125]: Serie TV
+                    - heading "Incastrati" [level=3] [ref=e126]
+                  - generic:
+                    - generic:
+                      - text: Apri
+                      - img
+            - article [ref=e127]:
+              - link "MV5BNWY1Mjk1ZTEtNjU3My00ZjRlLTgzY2QtY2U3YTg0ZjEwZGRkXkEyXkFqcGc@._V1_.jpg 2017 Serie TV MALTESE il romanzo del commissario Apri" [ref=e128] [cursor=pointer]:
+                - /url: /produzioni/serie-tv/produzione-3/
+                - generic [ref=e129]:
+                  - img "MV5BNWY1Mjk1ZTEtNjU3My00ZjRlLTgzY2QtY2U3YTg0ZjEwZGRkXkEyXkFqcGc@._V1_.jpg" [ref=e130]
+                  - generic [ref=e132]: "2017"
+                - generic [ref=e134]:
+                  - generic [ref=e135]:
+                    - generic [ref=e136]: Serie TV
+                    - heading "MALTESE il romanzo del commissario" [level=3] [ref=e137]
+                  - generic:
+                    - generic:
+                      - text: Apri
+                      - img
+        - generic [ref=e139]:
+          - heading "Vuoi valutare la fattibilità di riprese simili?" [level=2] [ref=e141]
+          - link "Contattaci" [ref=e142] [cursor=pointer]:
+            - /url: /contact/
+            - img [ref=e143]
+            - text: Contattaci
+  - contentinfo [ref=e144]:
+    - img
+    - generic [ref=e145]:
+      - link "marvindrone.com" [ref=e147] [cursor=pointer]:
+        - /url: /
+        - img [ref=e148]
+      - navigation "Footer" [ref=e158]:
+        - generic [ref=e159]:
+          - list [ref=e160]:
+            - listitem [ref=e161]:
+              - link "Home" [ref=e162] [cursor=pointer]:
+                - /url: /
+            - listitem [ref=e163]:
+              - link "Produzioni" [ref=e164] [cursor=pointer]:
+                - /url: /produzioni/
+            - listitem [ref=e165]:
+              - link "Noleggio" [ref=e166] [cursor=pointer]:
+                - /url: /noleggio/
+            - listitem [ref=e167]:
+              - link "News" [ref=e168] [cursor=pointer]:
+                - /url: /news/
+            - listitem [ref=e169]:
+              - link "Contatti" [ref=e170] [cursor=pointer]:
+                - /url: /contatti/
+          - list [ref=e171]:
+            - listitem [ref=e172]:
+              - link "Privacy policy" [ref=e173] [cursor=pointer]:
+                - /url: /privacy-policy/
+            - listitem [ref=e174]:
+              - link "Cookie policy" [ref=e175] [cursor=pointer]:
+                - /url: /cookie-policy/
+      - list [ref=e177]:
+        - listitem [ref=e178]:
+          - link "facebook" [ref=e179] [cursor=pointer]:
+            - /url: https://www.facebook.com/MarvinDroneTM
+            - generic [ref=e180]: facebook
+            - img [ref=e181]
+        - listitem [ref=e185]:
+          - link "instagram" [ref=e186] [cursor=pointer]:
+            - /url: https://www.instagram.com/marvindrone_tm
+            - generic [ref=e187]: instagram
+            - img [ref=e188]
+      - paragraph [ref=e191]: © 2026 marvindrone.com. Tutti i diritti riservati. P. IVA IT06485300823

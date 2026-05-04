@@ -6,7 +6,7 @@ import { getImpostazioniGenerali } from "@/lib/strapi/impostazioni-generali";
 import { getAllProductions } from "@/lib/strapi/productions";
 import type { ProductionsPageContent } from "@/types/productions-page";
 
-export const prerender = false;
+export const prerender = true;
 
 const [productions, contentEntry, impostazioniGenerali] = await Promise.all([
   getAllProductions("it"),

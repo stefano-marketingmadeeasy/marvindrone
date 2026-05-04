@@ -1,0 +1,134 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - navigation [ref=e3]:
+      - generic [ref=e4]:
+        - link "Brand logo of marvindrone.com" [ref=e5] [cursor=pointer]:
+          - /url: /
+          - img "Brand logo of marvindrone.com" [ref=e6]
+        - list [ref=e8]:
+          - menuitem "Home" [ref=e9]:
+            - link "Home" [ref=e10] [cursor=pointer]:
+              - /url: /
+          - menuitem "Produzioni" [ref=e11]:
+            - link "Produzioni" [ref=e12] [cursor=pointer]:
+              - /url: /produzioni/
+          - menuitem "Noleggio" [ref=e13]:
+            - link "Noleggio" [ref=e14] [cursor=pointer]:
+              - /url: /noleggio/
+          - menuitem "News" [ref=e15]:
+            - link "News" [ref=e16] [cursor=pointer]:
+              - /url: /news/
+          - menuitem "Contatti" [ref=e17]:
+            - link "Contatti" [ref=e18] [cursor=pointer]:
+              - /url: /contatti/
+        - generic [ref=e19]:
+          - button "Seleziona lingua" [ref=e21] [cursor=pointer]:
+            - generic [ref=e22]: 🇮🇹
+            - generic [ref=e23]: IT
+            - img [ref=e24]
+          - list [ref=e26]:
+            - listitem [ref=e27]:
+              - link "facebook" [ref=e28] [cursor=pointer]:
+                - /url: https://www.facebook.com/MarvinDroneTM
+                - generic [ref=e29]: facebook
+                - img [ref=e30]
+            - listitem [ref=e34]:
+              - link "instagram" [ref=e35] [cursor=pointer]:
+                - /url: https://www.instagram.com/marvindrone_tm
+                - generic [ref=e36]: instagram
+                - img [ref=e37]
+  - main [ref=e39]:
+    - generic [ref=e41]:
+      - generic [ref=e42]:
+        - img "Riprese aeree professionali realizzate per produzioni cinematografiche, televisive e pubblicitarie" [ref=e44]
+        - heading "Produzioni e riprese aeree realizzate" [level=1] [ref=e49]
+      - generic [ref=e51]:
+        - generic [ref=e54]:
+          - paragraph [ref=e55]: Nel corso degli anni Marvin Drone ha realizzato riprese aeree professionali per produzioni cinematografiche, televisive e pubblicitarie, lavorando su set strutturati in Italia e all’estero.
+          - paragraph [ref=e56]: "Questa sezione raccoglie progetti reali: per ogni produzione trovi contesto operativo, tipologie di ripresa, configurazioni tecniche e location."
+          - paragraph [ref=e58]: Se cerchi un partner tecnico per integrare le riprese aeree nel piano di produzione, puoi partire da qui per valutare lavori affini al tuo progetto.
+          - link "Contattaci" [ref=e60] [cursor=pointer]:
+            - /url: https://wa.me/3519385209?text=Ciao%2C%20vorrei%20valutare%20una%20collaborazione%20per%20riprese%20aeree%20integrate%20in%20una%20produzione.
+            - generic [ref=e61]: Contattaci
+        - heading "Produzioni" [level=2] [ref=e65]
+        - generic [ref=e67]:
+          - button "Tutte" [pressed] [ref=e69] [cursor=pointer]:
+            - generic [ref=e70]: Tutte
+          - generic [ref=e71]:
+            - paragraph [ref=e72]: Nessun contenuto disponibile
+            - heading "L'archivio produzioni è vuoto" [level=3] [ref=e73]
+            - paragraph [ref=e74]: Collega Strapi e pubblica almeno una produzione per popolare questa pagina.
+        - generic [ref=e78]:
+          - heading "Riprese aeree per cinema, TV, ADV e documentari" [level=2] [ref=e80]
+          - paragraph [ref=e82]: Le schede raccolgono produzioni cinematografiche, serie TV, spot ADV e documentari in cui Marvin Drone ha realizzato riprese aeree cinematografiche e riprese con drone integrate nel workflow di set. Ogni progetto evidenzia obiettivi di ripresa, contesto operativo e soluzioni adottate.
+        - generic [ref=e85]:
+          - generic [ref=e86]:
+            - heading "Un archivio basato su produzioni reali" [level=2] [ref=e87]
+            - paragraph [ref=e88]: "Questo archivio documenta lavori reali, non contenuti dimostrativi. Per ogni produzione sono indicati: contesto produttivo, location (città, regioni o paesi), tipologie di riprese aeree e configurazioni operative impiegate per le riprese da drone."
+          - generic [ref=e89]:
+            - article [ref=e90]:
+              - generic [ref=e92]: "01"
+              - generic [ref=e93]:
+                - heading "Contesto produttivo" [level=3] [ref=e94]
+                - paragraph [ref=e95]: Ogni scheda chiarisce il tipo di progetto, il formato e il contesto operativo in cui le riprese aeree sono state integrate nel set.
+            - article [ref=e96]:
+              - generic [ref=e98]: "02"
+              - generic [ref=e99]:
+                - heading "Località coinvolte" [level=3] [ref=e100]
+                - paragraph [ref=e101]: Vengono riportate città, regioni o paesi interessati, per leggere meglio il rapporto tra location, accessi e pianificazione operativa.
+            - article [ref=e102]:
+              - generic [ref=e104]: "03"
+              - generic [ref=e105]:
+                - heading "Tipologie di riprese aeree" [level=3] [ref=e106]
+                - paragraph [ref=e107]: Le produzioni evidenziano quali linguaggi di ripresa sono stati utilizzati, dal drone cinematografico alle configurazioni più dinamiche.
+            - article [ref=e108]:
+              - generic [ref=e110]: "04"
+              - generic [ref=e111]:
+                - heading "Piattaforme e configurazioni" [level=3] [ref=e112]
+                - paragraph [ref=e113]: Quando rilevante, sono indicate le piattaforme operative e le scelte tecniche adottate per rispondere alle esigenze del progetto.
+        - generic [ref=e117]:
+          - heading "Operatività nazionale e internazionale" [level=2] [ref=e119]
+          - paragraph [ref=e121]: Le produzioni includono set in Italia e all’estero, in contesti urbani, naturali e aree storiche. La varietà delle location e degli scenari operativi riflette esperienza sul campo e capacità di adattare pianificazione e configurazioni alle esigenze del progetto.
+  - contentinfo [ref=e122]:
+    - img
+    - generic [ref=e123]:
+      - link "marvindrone.com" [ref=e125] [cursor=pointer]:
+        - /url: /
+        - img [ref=e126]
+      - navigation "Footer" [ref=e136]:
+        - generic [ref=e137]:
+          - list [ref=e138]:
+            - listitem [ref=e139]:
+              - link "Home" [ref=e140] [cursor=pointer]:
+                - /url: /
+            - listitem [ref=e141]:
+              - link "Produzioni" [ref=e142] [cursor=pointer]:
+                - /url: /produzioni/
+            - listitem [ref=e143]:
+              - link "Noleggio" [ref=e144] [cursor=pointer]:
+                - /url: /noleggio/
+            - listitem [ref=e145]:
+              - link "News" [ref=e146] [cursor=pointer]:
+                - /url: /news/
+            - listitem [ref=e147]:
+              - link "Contatti" [ref=e148] [cursor=pointer]:
+                - /url: /contatti/
+          - list [ref=e149]:
+            - listitem [ref=e150]:
+              - link "Privacy policy" [ref=e151] [cursor=pointer]:
+                - /url: /privacy-policy/
+            - listitem [ref=e152]:
+              - link "Cookie policy" [ref=e153] [cursor=pointer]:
+                - /url: /cookie-policy/
+      - list [ref=e155]:
+        - listitem [ref=e156]:
+          - link "facebook" [ref=e157] [cursor=pointer]:
+            - /url: https://www.facebook.com/MarvinDroneTM
+            - generic [ref=e158]: facebook
+            - img [ref=e159]
+        - listitem [ref=e163]:
+          - link "instagram" [ref=e164] [cursor=pointer]:
+            - /url: https://www.instagram.com/marvindrone_tm
+            - generic [ref=e165]: instagram
+            - img [ref=e166]
+      - paragraph [ref=e169]: © 2026 marvindrone.com. Tutti i diritti riservati. P. IVA IT06485300823
