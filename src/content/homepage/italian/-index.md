@@ -1,6 +1,5 @@
 ---
 title: ""
-metaDescription: "This is a example description"
 
 # Override Default Content of `/sections/services-section.md`
 # Uncomment key values that you wan to override

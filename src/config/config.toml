@@ -1,7 +1,7 @@
 # Site Configuration
 [site]
   title            = "marvindrone.com" # Shared title for SEO and OpenGraph
-  description      = "Riprese aeree cinematografiche con drone" # Shared description for SEO and OpenGraph
+  description      = "Riprese aeree e produzioni video con drone. Specializzati in cinema, pubblicità e documentari. Piloti certificati ENAC, operativi in tutta Italia." # Shared description for SEO and OpenGraph
   tagline          = "Riprese aeree cinematografiche con drone"
   taglineSeparator = "" # default is " - " 
   baseUrl          = "https://marvindrone.com" # Base URL for the site and used in OpenGraph meta tags.
@@ -91,7 +91,7 @@
 # Specific OpenGraph settings, using values from the [site] section where possible.
 # -----------------------------------------------------------------------------------------------------------------------------------
 [opengraph]
-  image       = "/images/og-image.png" # Image used in OpenGraph previews
+  image       = "/images/og-image.jpg" # Image used in OpenGraph previews
   ogLocale    = "it_IT" # Locale setting for OpenGraph
   ogType      = "website" # Type of content for OpenGraph protocol
   twitter     = "" # Twitter handle for Twitter Card meta tags
